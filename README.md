@@ -5,6 +5,7 @@
 Note: This code is still somehow experimental. For older mcHF board revisions, please use the better supported 
 fork of the code here: https://github.com/df8oe/UHSDR
 
+-------------------------------------------------------------------------------------------------------------
 How to compile:
 
 - Download SW4STM32 studio (http://www.openstm32.org) and install
@@ -29,6 +30,15 @@ Run->Run Configuraions...->Ac6 STM32 Debugging, then Right click New
 - It is possible to customize Eclipse to your liking - dictionary file, compile with F7, run with F9, etc
 but needs lots of Google search and digging into menues
 
+-------------------------------------------------------------------------------------------------------------
+Produced binaries and compilation speed:
+
+If using external builder, full rebuild is extremly slow, but i use to produce .elf and .bin file at the same
+time. If faster compilation is needed, you can switch to internal builder and select unlimited parallel threads
+(Project Explorer window on left, right click on project name, Properties, then C/C++ Build, Builder Settings ->
+Builder Type (external or internal), second tab - Behaviour 'Enable parallel build' check box)
+
+______________________________________________________________
 All mcHF downloads here: http://www.m0nka.co.uk/?page_id=5269
 
 --------------------------------------------------------------
