@@ -1,0 +1,18 @@
+---------------------------------------------------------------------------------------------
+Cortex M7 math libs 
+
+ToDo: check include criteria
+
+---------------------------------------------------------------------------------------------
+STemWin:
+
+The library is compiled for CM4 and CM7 cores:
+• With and without OS support.
+• With size and time optimization
+• Using ABGR and ARGB format
+• The FPU is enabled.
+
+
+_GCC.a			- optimized for size
+_ot.a			- optimized for time
+_ARGB.a			- swapped color
