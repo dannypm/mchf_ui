@@ -1008,7 +1008,7 @@
 		<link>
 			<name>drivers/ui/controls/smeter/scale1.c</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/docs/screen_graphics/meter/nice/scale1.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/smeter/scale1.c</locationURI>
 		</link>
 		<link>
 			<name>drivers/ui/controls/smeter/ui_controls_smeter.c</name>
