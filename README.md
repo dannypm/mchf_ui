@@ -2,6 +2,9 @@
 
 -- mcHF rev 0.8 UI board firmware --
 
+Note: This code is still somehow experimental. For older mcHF board revisions, please use the better supported 
+fork of the code here: https://github.com/df8oe/UHSDR
+
 How to compile:
 
 - Download SW4STM32 studio (http://www.openstm32.org) and install
