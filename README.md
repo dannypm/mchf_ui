@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # mcHFx
 
 -- mcHF rev 0.8 UI board firmware --
@@ -31,7 +30,4 @@ All mcHF downloads here: http://www.m0nka.co.uk/?page_id=5269
 
 --------------------------------------------------------------
 Krassi Atanassov, M0NKA
-mcHF project, 2013 - 2019
-=======
-# mchf_ui
->>>>>>> branch 'master' of https://github.com/m0nka/mchf_ui.git
+mcHF project, 2012 - 2019
