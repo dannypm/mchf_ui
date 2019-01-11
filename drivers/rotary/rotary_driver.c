@@ -50,9 +50,39 @@ ushort freq_old = 0;
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
 
+extern struct	UI_DRIVER_STATE			ui_s;
+
 #ifdef USE_SIDE_ENC_FOR_S_METER
 extern ulong s_met_pos;
 #endif
+
+static void rotary_init_audio_encoder_switch_pin(void)
+{
+	GPIO_InitTypeDef  	GPIO_InitStruct;
+
+	GPIO_InitStruct.Pin 		= GPIO_PIN_13;
+	GPIO_InitStruct.Mode 		= GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull 		= GPIO_PULLUP;
+	GPIO_InitStruct.Speed 		= GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+}
+
+static void rotary_check_audio_encoder_switch(void)
+{
+	// Encoder button clicked ?
+	if(!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13))
+	{
+		while(!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13));
+
+		printf("encoder clicked\r\n");
+
+		// Toggle UI driver state
+		if(ui_s.req_state != MODE_AUDIO_POPUP)
+			ui_s.req_state = MODE_AUDIO_POPUP;
+		else
+			ui_s.req_state = MODE_DESKTOP;
+	}
+}
 
 static void rotary_check_audio_enc(void)
 {
@@ -351,6 +381,8 @@ void rotary_driver_hw_init(void)
 {
 	rotary_audio_enc_init();
 	rotary_freq_enc_init();
+
+	rotary_init_audio_encoder_switch_pin();
 }
 
 //*----------------------------------------------------------------------------
@@ -390,6 +422,7 @@ void rotary_driver(void const * argument)
 rotary_driver_loop:
 
 	rotary_worker();
+	rotary_check_audio_encoder_switch();
 	
 	// Driver sleep period
 	OsDelayMs(50);

@@ -176,6 +176,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/signal_gen/signal_e.h</locationURI>
 		</link>
 		<link>
+			<name>drivers/ui/ui_audio_popup.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_audio_popup.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/ui_audio_popup.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_audio_popup.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/ui_driver.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_driver.c</locationURI>

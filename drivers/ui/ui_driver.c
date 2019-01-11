@@ -35,6 +35,7 @@
 #include "ui_controls_cpu_stat.h"
 #include "ui_controls_dsp_stat.h"
 #include "C:\Projects\mcHFx\firmware\mchf_ui\drivers\ui\controls\sd_icon\ui_controls_sd_icon.h"
+#include "ui_audio_popup.h"
 
 // Emulated signal
 #include "signal_e.h"
@@ -64,7 +65,7 @@ struct	UI_DRIVER_STATE			ui_s;
 GUI_PID_STATE 	TS_State;
 
 // Public radio state
-extern struct	TRANSCEIVER_STATE_UI	tsu;
+//extern struct	TRANSCEIVER_STATE_UI	tsu;
 
 // Touch driver state - needed here at all ?
 extern struct TD 				t_d;
@@ -146,6 +147,29 @@ static void ui_driver_change_mode(void)
 
 		// Show the main menu
 		k_InitMenu();
+
+		// Initial paint
+		GUI_Exec();
+
+		goto done;
+	}
+
+	// Switch to audio popup mode
+	if(state == MODE_AUDIO_POPUP)
+	{
+		printf("Entering Audio popup mode...\r\n");
+
+		// Destroy desktop controls
+		ui_controls_smeter_quit();
+		ui_controls_spectrum_quit();
+
+		// Set General Graphical properties
+		//k_SetGuiProfile();
+
+		// Show the main menu
+		//k_InitMenu();
+
+		ui_audio_popup_create();
 
 		// Initial paint
 		GUI_Exec();
@@ -276,6 +300,14 @@ ui_driver_loop:
 
 		// 25 Hz refresh
 		OsDelayMs(40);
+	}
+	if(ui_s.cur_state == MODE_AUDIO_POPUP)
+	{
+		// Repaint Menu controls
+		GUI_Exec();
+
+		// ...
+		OsDelayMs(100);
 	}
 	goto ui_driver_loop;
 }

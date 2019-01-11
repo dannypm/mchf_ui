@@ -23,6 +23,10 @@
 #include "ui_controls_volume.h"
 #include "ui_controls_layout.h"
 
+#ifdef CHIP_H7
+#include "stm32h7xx_hal_gpio.h"
+#endif
+
 // Speaker icon in C file as binary resource
 extern GUI_CONST_STORAGE GUI_BITMAP bmtechrubio;
 extern GUI_CONST_STORAGE GUI_BITMAP bmtechrubio_mute;

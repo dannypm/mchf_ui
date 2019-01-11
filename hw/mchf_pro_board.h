@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				62
+#define	MCHFX_VER_BUILD				63
 //
 // -----------------------------------------------------------------------------
 //
@@ -240,6 +240,7 @@
 // Public UI driver state
 #define	MODE_DESKTOP			0
 #define MODE_MENU				1
+#define MODE_AUDIO_POPUP		2
 //
 struct UI_DRIVER_STATE {
 	// Current LCD state - Desktop or Menu
@@ -249,8 +250,9 @@ struct UI_DRIVER_STATE {
 	uchar	cur_state;
 	// Flag to lock out keyboard driver request updates while GUI repaints
 	uchar	lock_requests;
-
+	//
 	uchar	dummy;
+	//
 } UI_DRIVER_STATE;
 //
 struct KEYPAD_STATE {
