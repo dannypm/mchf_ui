@@ -38,3 +38,4 @@ bootloader
 ptr
 addr
 nuke
+multitouch

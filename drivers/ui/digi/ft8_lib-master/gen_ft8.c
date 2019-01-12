@@ -12,6 +12,8 @@
 #include "ft8/encode_v2.h"
 #include "ft8/ft8_constants.h"
 
+#include "gen_ft8.h"
+
 //#include <cstdlib>
 //#include <cstring>
 //#include <cstdio>
@@ -24,18 +26,28 @@
 //#include "ft8/encode_v2.h"
 //#include "ft8/constants.h"
 
+float signal_p[100];	//elements_c];
+
 // Convert a sequence of symbols (tones) into a sinewave of continuous phase (FSK).
 // Symbol 0 gets encoded as a sine of frequency f0, the others are spaced in increasing
 // fashion.
-void synth_fsk(const uint8_t *symbols, int num_symbols, float f0, float spacing, 
-                float symbol_rate, float signal_rate, float *signal) {
+void synth_fsk(	uint8_t *symbols,
+				int num_symbols,
+				float f0,
+				float spacing,
+                float symbol_rate,
+				float signal_rate,
+				float *signal)
+{
     float phase = 0;
     float dt = 1/signal_rate;
     float dt_sym = 1/symbol_rate;
     float t = 0;
     int j = 0;
     int i = 0;
-    while (j < num_symbols) {
+#if 1
+    while (j < num_symbols)
+    {
         float f = f0 + symbols[j] * spacing;
         phase += 2 * M_PI * f / signal_rate;
         signal[i] = sin(phase);
@@ -47,6 +59,7 @@ void synth_fsk(const uint8_t *symbols, int num_symbols, float f0, float spacing,
         }
         ++i;
     }
+#endif
 }
 
 #if 0
@@ -152,16 +165,11 @@ void encode_ft8_message(char *msg)
 	printf("\r\n");
 
 	// Third, convert the FSK tones into an audio signal
-	const int sample_rate = 12000;
-	const float symbol_rate = 6.25f;
-	const int num_samples = (int)(0.5f + FT8_NN / symbol_rate * sample_rate);
-	const int num_silence = (15 * sample_rate - num_samples) / 2;
-	float signal[num_silence + num_samples + num_silence];
 	for (int i = 0; i < num_silence + num_samples + num_silence; i++)
 	{
-	    signal[i] = 0;
+	  //  signal[i] = 0;
 	}
 
-	synth_fsk(tones, FT8_NN, 1000, symbol_rate, symbol_rate, sample_rate, signal + num_silence);
-	save_wav(signal, num_silence + num_samples + num_silence, sample_rate, "C:\\sample.wave");
+	//synth_fsk(tones, FT8_NN, 1000, symbol_rate, symbol_rate, sample_rate, signal_p + num_silence);
+	//save_wav(signal_p, num_silence + num_samples + num_silence, sample_rate, "C:\\sample.wave");
 }

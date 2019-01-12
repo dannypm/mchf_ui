@@ -548,7 +548,7 @@ static void threads_launcher(void)
 	// Create UI driver
 	// ToDo: Check stack usage and priority level !!!
 	#ifdef CONTEXT_DRIVER_UI
-	osThreadDef(ui_driver_task_m, 	ui_driver_task, 					osPriorityNormal, 		0, 	4096);
+	osThreadDef(ui_driver_task_m, 	ui_driver_task, 					osPriorityNormal, 		0, 	8192);
 	osThreadCreate (osThread(ui_driver_task_m), NULL);
 	#endif
 	// Create digitizer driver

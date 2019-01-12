@@ -76,10 +76,15 @@ static void rotary_check_audio_encoder_switch(void)
 
 		printf("encoder clicked\r\n");
 
-		// Toggle UI driver state
-		if(ui_s.req_state != MODE_AUDIO_POPUP)
+		// Toggle UI driver state(only enter from desktop)
+		if(ui_s.req_state == MODE_DESKTOP)
+		{
 			ui_s.req_state = MODE_AUDIO_POPUP;
-		else
+			return;
+		}
+
+		// Do not return from Menu mode
+		if(ui_s.req_state == MODE_AUDIO_POPUP)
 			ui_s.req_state = MODE_DESKTOP;
 	}
 }

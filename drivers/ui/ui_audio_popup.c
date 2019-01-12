@@ -15,6 +15,19 @@
 **          third party drivers specifies otherwise. Thank you!                    **
 ************************************************************************************/
 
+// Audio Popup Menu, invoked via side encoder push switch
+// it has three sliders. Super ugly for now, sliders are
+// click-able, aka Windows Mobile 2001, instead slide-able
+// and responsive to gentle touch and slide ;(
+//
+// Also not glued to DSP functionality or encoder value yet
+//
+// emWin resources are properly released on exit, so Desktop
+// can repaint normally
+//
+// ToDo: Set controls default values(skin) as the Menu mode
+//       will mess around with formatting of this pop up
+
 #include "mchf_pro_board.h"
 
 #include "gui.h"
@@ -23,19 +36,63 @@
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
 {
-  { FRAMEWIN_CreateIndirect, "Side Encoder Options", 0,       100,  100, 500, 300, FRAMEWIN_CF_MOVEABLE },
-  { RADIO_CreateIndirect,     NULL,           GUI_ID_RADIO0,   5,  10,   0,   0,   0,  3 },
-  { TEXT_CreateIndirect,     "Suspend",       GUI_ID_TEXT0,   25,  10,  70,  20, TEXT_CF_LEFT },
-  { TEXT_CreateIndirect,     "Shut down",     GUI_ID_TEXT1,   25,  30,  70,  20, TEXT_CF_LEFT },
-  { TEXT_CreateIndirect,     "Restart after", GUI_ID_TEXT2,   25,  50,  70,  20, TEXT_CF_LEFT },
-  { TEXT_CreateIndirect,     "seconds",       GUI_ID_TEXT3,  130,  50,  70,  20, TEXT_CF_LEFT },
-  { EDIT_CreateIndirect,     "200",           GUI_ID_EDIT0,   95,  47,  30,  19, 0, 3},
-  { BUTTON_CreateIndirect,   "OK",            GUI_ID_OK,     180,  10,  60,  20 },
-  { BUTTON_CreateIndirect,   "Cancel",        GUI_ID_CANCEL, 180,  40,  60,  20 }
+  { FRAMEWIN_CreateIndirect, "Side Encoder Options", 	0,       			150,  	90, 	500, 	300, 	FRAMEWIN_CF_ACTIVE	 		},
+  //
+  { TEXT_CreateIndirect,     "Audio Gain" ,  			0,                	5,		30,  	70,  	20, 	TEXT_CF_LEFT 				},
+  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT0,   	5,  	50,  	70,  	20, 	0, 						3 	},
+  { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER0,		80, 	30, 	400,  	40 									},
+  //
+  { TEXT_CreateIndirect,     "RF Gain", 				0,              	5,  	100,  	70,  	20, 	TEXT_CF_LEFT 				},
+  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT1,   	5,  	120,  	70,  	20, 	0, 						3 	},
+  { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER1,  	80, 	100, 	400,  	40 									},
+  //
+  { TEXT_CreateIndirect,     "CW Keyer",		  		0,           		5,  	170,  	70,  	20, 	TEXT_CF_LEFT 				},
+  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT2,   	5,  	190,  	70,  	20, 	0, 						3 	},
+  { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER2,  	80, 	170, 	400,  	40 									},
 };
 
 WM_HWIN hWin = 0;
 
+static U8 _aColorSep[3] = {0, 127, 255};  // Red, green and blue components
+
+// Sliders/Edits handler
+static void _OnValueChanged(WM_HWIN hDlg, int Id)
+{
+  unsigned Index;
+  unsigned v;
+  WM_HWIN  hSlider;
+  WM_HWIN  hEdit;
+
+  Index = 0;
+  v     = 0;
+  if ((Id >= GUI_ID_SLIDER0) && (Id <= GUI_ID_SLIDER2))
+  {
+    Index = Id - GUI_ID_SLIDER0;
+    //
+    // SLIDER-widget has changed, update EDIT-widget
+    //
+    hSlider = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0 + Index);
+    hEdit   = WM_GetDialogItem(hDlg, GUI_ID_EDIT0 + Index);
+    v = SLIDER_GetValue(hSlider);
+    EDIT_SetValue(hEdit, v);
+  } else if ((Id >= GUI_ID_EDIT0) && (Id <= GUI_ID_EDIT2)) {
+    Index = Id - GUI_ID_EDIT0;
+    //
+    // If EDIT-widget has changed, update SLIDER-widget
+    //
+    hSlider = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0 + Index);
+    hEdit   = WM_GetDialogItem(hDlg, GUI_ID_EDIT0 + Index);
+    v = EDIT_GetValue(hEdit);
+    SLIDER_SetValue(hSlider, v);
+  }
+  _aColorSep[Index] = v;
+  //
+  // At last invalidate dialog client window
+  //
+  WM_InvalidateWindow(WM_GetClientWindow(hDlg));
+}
+
+// Foreground window handler
 static void _cbBkWindow(WM_MESSAGE* pMsg)
 {
 	switch (pMsg->MsgId)
@@ -47,6 +104,7 @@ static void _cbBkWindow(WM_MESSAGE* pMsg)
 	}
 }
 
+// Dialog handler
 static void _cbCallback(WM_MESSAGE * pMsg)
 {
 	WM_HWIN hDlg;
@@ -54,6 +112,7 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 	int     Sel;
 	int     NCode;
 	int     Id;
+	int     i;
 
 	GUI_PID_STATE * pState;
 	hDlg = pMsg->hWin;
@@ -62,9 +121,17 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 	{
     	case WM_INIT_DIALOG:
     	{
-    		hItem = WM_GetDialogItem(hDlg, GUI_ID_EDIT0);
-    		EDIT_SetDecMode(hItem, 30,   0, 999, 0, 0);    // Select decimal mode
-    		WM_DisableWindow(hItem);
+    		for (i = 0; i < 3; i++)
+    		{
+    			hItem = WM_GetDialogItem(hDlg, GUI_ID_EDIT0 + i);
+    			EDIT_SetDecMode(hItem, _aColorSep[i],   0, 255, 0, 0);
+
+    			hItem = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0 + i);
+    			SLIDER_SetRange(hItem, 0, 255);
+    			SLIDER_SetValue(hItem, _aColorSep[i]);
+
+    			// ToDo: Make them all beautiful..
+    		}
     		break;
     	}
 
@@ -82,7 +149,7 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     		break;
     	}
 
-    	case WM_TOUCH_CHILD:
+    	/*case WM_TOUCH_CHILD:
     	{
     		Id = WM_GetId(pMsg->hWinSrc);      // Id of widget
     		switch (Id)
@@ -103,7 +170,7 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     				break;
     		}
     		break;
-    	}
+    	}*/
 
     	case WM_NOTIFY_PARENT:
     	{
@@ -127,10 +194,7 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 
     			case WM_NOTIFICATION_VALUE_CHANGED:
     			{
-    				hItem = WM_GetDialogItem(hDlg, GUI_ID_RADIO0);
-    				Sel   = RADIO_GetValue(hItem);
-    				hItem = WM_GetDialogItem(hDlg, GUI_ID_EDIT0);
-    				WM_SetEnableState(hItem, Sel == 2);
+    				_OnValueChanged(hDlg, Id);
     				break;
     			}
     		}
