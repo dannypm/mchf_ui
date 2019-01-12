@@ -1,7 +1,13 @@
+// ******************************************
+//
+// ft8_lib by Karlis Goba, YL3JG
+// https://github.com/kgoba/ft8_lib
+//
+// ******************************************
 
 #include "mchf_pro_board.h"
 
-//#include "common/wave.h"
+#include "common/wave.h"
 #include "ft8/pack_v2.h"
 #include "ft8/encode_v2.h"
 #include "ft8/ft8_constants.h"
@@ -157,5 +163,5 @@ void encode_ft8_message(char *msg)
 	}
 
 	synth_fsk(tones, FT8_NN, 1000, symbol_rate, symbol_rate, sample_rate, signal + num_silence);
-	//save_wav(signal, num_silence + num_samples + num_silence, sample_rate, wav_path);
+	save_wav(signal, num_silence + num_samples + num_silence, sample_rate, "C:\\sample.wave");
 }

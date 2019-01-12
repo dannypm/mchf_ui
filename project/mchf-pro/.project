@@ -2611,6 +2611,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/middleware/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c</locationURI>
 		</link>
 		<link>
+			<name>drivers/ui/digi/ft8_lib-master/common/wave.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/common/wave.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/common/wave.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/common/wave.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/digi/ft8_lib-master/ft8/encode_v2.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/ft8/encode_v2.c</locationURI>

@@ -1,3 +1,9 @@
+// ******************************************
+//
+// ft8_lib by Karlis Goba, YL3JG
+// https://github.com/kgoba/ft8_lib
+//
+// ******************************************
 
 #include "mchf_pro_board.h"
 
