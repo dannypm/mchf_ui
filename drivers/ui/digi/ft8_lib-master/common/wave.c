@@ -49,9 +49,13 @@ void save_wav(const float *signal, int num_samples, int sample_rate, const char 
 
     //FILE *f = fopen(path, "wb");
     if(f_open(&f,path,FA_WRITE|FA_CREATE_NEW))
+    {
+    	vPortFree(raw_data);
     	return;
+    }
 
     // ToDo: test file creation and enable write...
+    //		 also crashes the OS
 
 #if 0
     // NOTE: works only on little-endian architecture

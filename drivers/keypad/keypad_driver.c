@@ -1078,6 +1078,8 @@ static void keypad_cmd_processor(uchar x,uchar y, uchar hold)
 		keypad_cmd_processor_desktop(x,y,hold);
 	else
 		keypad_cmd_processor_menu(x,y,hold);
+
+	//ToDo: manage other UI driver states (like Audio options popup, etc)
 }
 
 //*----------------------------------------------------------------------------

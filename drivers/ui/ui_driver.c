@@ -130,69 +130,77 @@ static void ui_driver_change_mode(void)
 	if(ui_s.cur_state == state)
 		return;
 
-	GUI_SetBkColor(GUI_BLACK);
-	GUI_Clear();
-
-	// Switch to menu mode
-	if(state == MODE_MENU)
+	switch(state)
 	{
-		printf("Entering Menu mode...\r\n");
+		// Switch to menu mode
+		case MODE_MENU:
+		{
+			printf("Entering Menu mode...\r\n");
 
-		// Destroy desktop controls
-		ui_controls_smeter_quit();
-		ui_controls_spectrum_quit();
+			// Destroy desktop controls
+			ui_controls_smeter_quit();
+			ui_controls_spectrum_quit();
 
-		// Set General Graphical properties
-		k_SetGuiProfile();
+			// Clear screen
+			GUI_SetBkColor(GUI_BLACK);
+			GUI_Clear();
 
-		// Show the main menu
-		k_InitMenu();
+			// Set General Graphical properties
+			k_SetGuiProfile();
 
-		// Initial paint
-		GUI_Exec();
+			// Show the main menu
+			k_InitMenu();
 
-		goto done;
+			// Initial paint
+			GUI_Exec();
+
+			break;
+		}
+
+		// Switch to audio popup mode
+		case MODE_AUDIO_POPUP:
+		{
+			printf("Entering Audio popup mode...\r\n");
+
+			// Destroy desktop controls
+			ui_controls_smeter_quit();
+			ui_controls_spectrum_quit();
+
+			// Clear screen
+			GUI_SetBkColor(GUI_BLACK);
+			GUI_Clear();
+
+			// Show popup
+			ui_audio_popup_create();
+
+			// Initial paint
+			GUI_Exec();
+
+			break;
+		}
+
+		// Switch to desktop mode
+		case MODE_DESKTOP:
+		{
+			printf("Entering Desktop mode...\r\n");
+
+			// Destroy any Window Manager items
+			destroy_menu();
+			ui_audio_popup_destroy();
+
+			// Clear screen
+			GUI_SetBkColor(GUI_BLACK);
+			GUI_Clear();
+
+			// Init controls
+			ui_driver_init_desktop();
+
+			break;
+		}
+
+		default:
+			break;
 	}
-
-	// Switch to audio popup mode
-	if(state == MODE_AUDIO_POPUP)
-	{
-		printf("Entering Audio popup mode...\r\n");
-
-		// Destroy desktop controls
-		ui_controls_smeter_quit();
-		ui_controls_spectrum_quit();
-
-		// Set General Graphical properties
-		//k_SetGuiProfile();
-
-		// Show the main menu
-		//k_InitMenu();
-
-		ui_audio_popup_create();
-
-		// Initial paint
-		GUI_Exec();
-
-		goto done;
-	}
-
-	// Switch to desktop mode
-	if(state == MODE_DESKTOP)
-	{
-		printf("Entering Desktop mode...\r\n");
-
-		// Disable window manager
-		WM_SetCallback		(WM_HBKWIN, 0);
-		WM_InvalidateWindow	(WM_HBKWIN);
-
-		// Init controls
-		ui_driver_init_desktop();
-
-		goto done;
-	}
-
-done:
 
 	// Update flag
 	ui_s.cur_state = state;
@@ -282,33 +290,47 @@ ui_driver_loop:
 	// Process mode change requests
 	ui_driver_change_mode();
 
-	if(ui_s.cur_state == MODE_DESKTOP)
+	// Refresh screen
+	switch(ui_s.cur_state)
 	{
-		// Repaint Desktop controls
-		ui_driver_state_machine();
+		case MODE_DESKTOP:
+		{
+			// Repaint Desktop controls
+			ui_driver_state_machine();
 
-		// 100 Hz refresh
-		OsDelayMs(10);
+			// 100 Hz refresh
+			OsDelayMs(10);
+			break;
+		}
+
+		case MODE_MENU:
+		{
+			// Repaint Menu controls
+			GUI_Exec();
+
+			// If main menu needs constant refresh
+			k_PeriodicProcesses();
+
+			// 25 Hz refresh
+			OsDelayMs(40);
+			break;
+		}
+
+		case MODE_AUDIO_POPUP:
+		{
+			// Repaint Menu controls
+			GUI_Exec();
+
+			// Can't be bothered with fast repaint, unless on screen slider and multitouch
+			OsDelayMs(100);
+			break;
+		}
+
+		default:
+			OsDelayMs(500);
+			break;
 	}
-	if(ui_s.cur_state == MODE_MENU)
-	{
-		// Repaint Menu controls
-		GUI_Exec();
 
-		// If main menu needs constant refresh
-		k_PeriodicProcesses();
-
-		// 25 Hz refresh
-		OsDelayMs(40);
-	}
-	if(ui_s.cur_state == MODE_AUDIO_POPUP)
-	{
-		// Repaint Menu controls
-		GUI_Exec();
-
-		// ...
-		OsDelayMs(100);
-	}
 	goto ui_driver_loop;
 }
 
@@ -397,7 +419,12 @@ static void ui_driver_touch_router(void)
 	// ---------------------------------------------------------
 	//
 	// Submit to emWin
-	if(ui_s.cur_state == MODE_MENU)
+	//
+	// - the reason this is here, instead of the touch driver -
+	//   emWin doesn't like being accessed from separate threads
+	//   and we don't want critical sections on touch events!
+	//
+	if((ui_s.cur_state == MODE_MENU)||(ui_s.cur_state == MODE_AUDIO_POPUP))
 	{
 		// Process pending from digitizer driver
 		if((t_d.pending) && (!TS_State.Pressed))
@@ -504,9 +531,6 @@ static void ui_driver_touch_router(void)
 		return;
 	}
 }
-
-
-
 
 // -------------------------------------------
 // -------------------------------------------

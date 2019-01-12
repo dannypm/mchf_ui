@@ -18,7 +18,8 @@
 #define ID_MENU_NAME                	(GUI_ID_USER + 0xD0)
 
 ICONVIEW_Handle 						hIcon;
-WM_HWIN         						hCPULoad;
+//WM_HWIN         						hCPULoad;
+WM_HWIN   								hItem;
 
 uchar									main_repaint_done;
 
@@ -477,7 +478,6 @@ void k_SetGuiProfile(void)
 void k_InitMenu(void)
 {
 	uint8_t i = 0;
-	WM_HWIN   hItem;
 
 	main_repaint_done = 0;
 
@@ -532,6 +532,14 @@ void k_InitMenu(void)
     WM_SetFocus(hIcon);
 }
 #endif
+
+void destroy_menu(void)
+{
+	WM_DeleteWindow(hIcon);
+	WM_DeleteWindow(hItem);
+	WM_SetCallback		(WM_HBKWIN, 0);
+	WM_InvalidateWindow	(WM_HBKWIN);
+}
 
 #ifndef USE_ANIMATED_ICON_VIEW
 void k_InitMenu(void)

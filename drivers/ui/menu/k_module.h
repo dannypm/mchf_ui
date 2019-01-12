@@ -81,7 +81,10 @@ extern K_ModulePropertyTypedef    module_prop[];
 /* Exported constants --------------------------------------------------------*/
 /* Exported macros -----------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+
 void    k_InitMenu(void);
+void destroy_menu(void);
+
 void    k_StartUp(void);
 void 	k_PeriodicProcesses(void);
 void    k_SetGuiProfile(void);
