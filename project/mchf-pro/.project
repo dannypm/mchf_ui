@@ -1066,6 +1066,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/volume/ui_controls_volume.h</locationURI>
 		</link>
 		<link>
+			<name>drivers/ui/digi/ft8_lib-master/decode_ft8.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/decode_ft8.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/decode_ft8.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/decode_ft8.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/digi/ft8_lib-master/gen_ft8.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/gen_ft8.c</locationURI>
@@ -2621,6 +2631,36 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/common/wave.h</locationURI>
 		</link>
 		<link>
+			<name>drivers/ui/digi/ft8_lib-master/fft/kiss_fft.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/fft/kiss_fft.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/fft/kiss_fft.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/fft/kiss_fft.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/fft/kiss_fftr.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/fft/kiss_fftr.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/fft/kiss_fftr.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/fft/kiss_fftr.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/ft8/decode.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/ft8/decode.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/ft8/decode.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/ft8/decode.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/digi/ft8_lib-master/ft8/encode_v2.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/ft8/encode_v2.c</locationURI>
@@ -2639,6 +2679,16 @@
 			<name>drivers/ui/digi/ft8_lib-master/ft8/ft8_constants.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/ft8/ft8_constants.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/ft8/ldpc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/ft8/ldpc.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/digi/ft8_lib-master/ft8/ldpc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/digi/ft8_lib-master/ft8/ldpc.h</locationURI>
 		</link>
 		<link>
 			<name>drivers/ui/digi/ft8_lib-master/ft8/pack_v2.c</name>

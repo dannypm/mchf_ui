@@ -6,6 +6,7 @@
  *  See COPYING file for more information.
  */
 
+#if 0
 
 #include "_kiss_fft_guts.h"
 /* The guts header contains all the multiplication and addition macros that are defined for
@@ -400,3 +401,4 @@ int kiss_fft_next_fast_size(int n)
     }
     return n;
 }
+#endif

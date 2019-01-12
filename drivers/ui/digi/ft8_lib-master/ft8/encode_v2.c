@@ -14,8 +14,6 @@
 
 //namespace ft8_v2 {
 
-
-
 // Returns 1 if an odd number of bits are set in x, zero otherwise
 uint8_t parity8(uint8_t x) {
     x ^= x >> 4;    // a b c d ae bf cg dh

@@ -1,19 +1,25 @@
+// ******************************************
+//
+// ft8_lib by Karlis Goba, YL3JG
+// https://github.com/kgoba/ft8_lib
+//
+// ******************************************
 
-#if 0
+#include "mchf_pro_board.h"
 
 #include "decode.h"
+#include "ft8_constants.h"
 
 #include <math.h>
 
-#include "constants.h"
-
 static float max2(float a, float b);
 static float max4(float a, float b, float c, float d);
-static void heapify_down(Candidate *heap, int heap_size);
-static void heapify_up(Candidate *heap, int heap_size);
+//static void heapify_down(Candidate *heap, int heap_size);
+//static void heapify_up(Candidate *heap, int heap_size);
 static void decode_symbol(const uint8_t *power, const uint8_t *code_map, int bit_idx, float *log174);
 static void decode_multi_symbols(const uint8_t *power, int num_bins, int n_syms, const uint8_t *code_map, int bit_idx, float *log174);
 
+#if 0
 
 // Localize top N candidates in frequency and time according to their sync strength (looking at Costas symbols)
 // We treat and organize the candidate list as a min-heap (empty initially).
@@ -82,7 +88,6 @@ int find_sync(const uint8_t *power, int num_blocks, int num_bins, const uint8_t 
     return heap_size;
 }
 
-
 // Compute log likelihood log(p(1) / p(0)) of 174 message bits 
 // for later use in soft-decision LDPC decoding
 void extract_likelihood(const uint8_t *power, int num_bins, const Candidate & cand, const uint8_t *code_map, float *log174) {
@@ -119,18 +124,17 @@ void extract_likelihood(const uint8_t *power, int num_bins, const Candidate & ca
         log174[i] *= norm_factor;
     }
 }
-
+#endif
 
 static float max2(float a, float b) {
     return (a >= b) ? a : b;
 }
 
-
 static float max4(float a, float b, float c, float d) {
     return max2(max2(a, b), max2(c, d));
 }
 
-
+#if 0
 static void heapify_down(Candidate *heap, int heap_size) {
     // heapify from the root down
     int current = 0;
@@ -155,8 +159,9 @@ static void heapify_down(Candidate *heap, int heap_size) {
         current = largest;
     }
 }
+#endif
 
-
+#if 0
 static void heapify_up(Candidate *heap, int heap_size) {
     // heapify from the last node up
     int current = heap_size - 1;
@@ -172,7 +177,7 @@ static void heapify_up(Candidate *heap, int heap_size) {
         current = parent;
     }
 }
-
+#endif
 
 // Compute unnormalized log likelihood log(p(1) / p(0)) of 3 message bits (1 FSK symbol)
 static void decode_symbol(const uint8_t *power, const uint8_t *code_map, int bit_idx, float *log174) {
@@ -187,7 +192,6 @@ static void decode_symbol(const uint8_t *power, const uint8_t *code_map, int bit
     log174[bit_idx + 1] = max4(s2[2], s2[3], s2[6], s2[7]) - max4(s2[0], s2[1], s2[4], s2[5]);
     log174[bit_idx + 2] = max4(s2[1], s2[3], s2[5], s2[7]) - max4(s2[0], s2[2], s2[4], s2[6]);
 }
-
 
 // Compute unnormalized log likelihood log(p(1) / p(0)) of bits corresponding to several FSK symbols at once
 static void decode_multi_symbols(const uint8_t *power, int num_bins, int n_syms, const uint8_t *code_map, int bit_idx, float *log174) {
@@ -244,5 +248,3 @@ static void decode_multi_symbols(const uint8_t *power, int num_bins, int n_syms,
         log174[bit_idx + i] = max_one - max_zero;
     }    
 }
-
-#endif

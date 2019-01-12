@@ -9,6 +9,8 @@
 #ifndef KISS_FFT_H
 #define KISS_FFT_H
 
+#if 0
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -128,5 +130,5 @@ int kiss_fft_next_fast_size(int n);
 #ifdef __cplusplus
 } 
 #endif
-
+#endif
 #endif

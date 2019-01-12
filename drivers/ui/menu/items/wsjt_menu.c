@@ -8,6 +8,7 @@
 #include "k_module.h"
 
 #include "C:\Projects\mcHFx\firmware\mchf_ui\drivers\ui\digi\ft8_lib-master\gen_ft8.h"
+#include "C:\Projects\mcHFx\firmware\mchf_ui\drivers\ui\digi\ft8_lib-master\decode_ft8.h"
 
 extern GUI_CONST_STORAGE GUI_BITMAP bmwsjtx_globe_1024x1024;
 
@@ -90,7 +91,9 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 			switch(NCode)
 			{
 				case WM_NOTIFICATION_RELEASED:
-					GUI_MessageBox("Decode button clicked.","Information",GUI_MB_OK);
+					//GUI_MessageBox("Decode button clicked.","Information",GUI_MB_OK);
+
+					decode_ft8_message(NULL);
 					break;
 			}
 			break;

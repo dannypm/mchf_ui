@@ -29,6 +29,7 @@ void save_wav(const float *signal, int num_samples, int sample_rate, const char 
     uint32_t byteRate = sampleRate * blockAlign;
 
     FIL f;
+    uint written;
 
     char subChunk2ID[4] = {'d', 'a', 't', 'a'};
     uint32_t subChunk2Size = num_samples * blockAlign;
@@ -57,26 +58,50 @@ void save_wav(const float *signal, int num_samples, int sample_rate, const char 
     // ToDo: test file creation and enable write...
     //		 also crashes the OS
 
-#if 0
+
     // NOTE: works only on little-endian architecture
-    fwrite(chunkID, sizeof(chunkID), 1, f);
-    fwrite(&chunkSize, sizeof(chunkSize), 1, f);
-    fwrite(format, sizeof(format), 1, f);
+    //fwrite(chunkID, sizeof(chunkID), 1, f);
+    f_write(&f,chunkID, sizeof(chunkID), &written);
 
-    fwrite(subChunk1ID, sizeof(subChunk1ID), 1, f);
-    fwrite(&subChunk1Size, sizeof(subChunk1Size), 1, f);
-    fwrite(&audioFormat, sizeof(audioFormat), 1, f);
-    fwrite(&numChannels, sizeof(numChannels), 1, f);
-    fwrite(&sampleRate, sizeof(sampleRate), 1, f);
-    fwrite(&byteRate, sizeof(byteRate), 1, f);
-    fwrite(&blockAlign, sizeof(blockAlign), 1, f);
-    fwrite(&bitsPerSample, sizeof(bitsPerSample), 1, f);
+    //fwrite(&chunkSize, sizeof(chunkSize), 1, f);
+    f_write(&f,&chunkSize, sizeof(chunkSize), &written);
 
-    fwrite(subChunk2ID, sizeof(subChunk2ID), 1, f);
-    fwrite(&subChunk2Size, sizeof(subChunk2Size), 1, f);
+    //fwrite(format, sizeof(format), 1, f);
+    f_write(&f,format, sizeof(format), &written);
 
-    fwrite(raw_data, blockAlign, num_samples, f);
-#endif
+    //fwrite(subChunk1ID, sizeof(subChunk1ID), 1, f);
+    f_write(&f,subChunk1ID, sizeof(subChunk1ID), &written);
+
+    //fwrite(&subChunk1Size, sizeof(subChunk1Size), 1, f);
+    f_write(&f,&subChunk1Size, sizeof(subChunk1Size), &written);
+
+    //fwrite(&audioFormat, sizeof(audioFormat), 1, f);
+    f_write(&f,&audioFormat, sizeof(audioFormat), &written);
+
+    //fwrite(&numChannels, sizeof(numChannels), 1, f);
+    f_write(&f,&numChannels, sizeof(numChannels), &written);
+
+    //fwrite(&sampleRate, sizeof(sampleRate), 1, f);
+    f_write(&f,&sampleRate, sizeof(sampleRate), &written);
+
+    //fwrite(&byteRate, sizeof(byteRate), 1, f);
+    f_write(&f,&byteRate, sizeof(byteRate), &written);
+
+    //fwrite(&blockAlign, sizeof(blockAlign), 1, f);
+    f_write(&f,&blockAlign, sizeof(blockAlign), &written);
+
+    //fwrite(&bitsPerSample, sizeof(bitsPerSample), 1, f);
+    f_write(&f,&bitsPerSample, sizeof(bitsPerSample), &written);
+
+    //fwrite(subChunk2ID, sizeof(subChunk2ID), 1, f);
+    f_write(&f,subChunk2ID, sizeof(subChunk2ID), &written);
+
+    //fwrite(&subChunk2Size, sizeof(subChunk2Size), 1, f);
+    f_write(&f,&subChunk2Size, sizeof(subChunk2Size), &written);
+
+    //fwrite(raw_data, blockAlign, num_samples, f);
+    f_write(&f,raw_data, blockAlign, &written);		// (blockAlign * num_samples) ??
+
     f_close(&f);
 
     vPortFree(raw_data);

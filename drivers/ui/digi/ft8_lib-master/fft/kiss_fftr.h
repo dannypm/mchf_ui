@@ -9,6 +9,8 @@
 #ifndef KISS_FTR_H
 #define KISS_FTR_H
 
+#if 0
+
 #include "kiss_fft.h"
 #ifdef __cplusplus
 extern "C" {
@@ -50,5 +52,6 @@ void kiss_fftri(kiss_fftr_cfg cfg,const kiss_fft_cpx *freqdata,kiss_fft_scalar *
 
 #ifdef __cplusplus
 }
+#endif
 #endif
 #endif

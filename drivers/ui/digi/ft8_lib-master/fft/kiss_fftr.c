@@ -6,6 +6,8 @@
  *  See COPYING file for more information.
  */
 
+#if 0
+
 #include "kiss_fftr.h"
 #include "_kiss_fft_guts.h"
 
@@ -151,3 +153,5 @@ void kiss_fftri(kiss_fftr_cfg st,const kiss_fft_cpx *freqdata,kiss_fft_scalar *t
     }
     kiss_fft (st->substate, st->tmpbuf, (kiss_fft_cpx *) timedata);
 }
+
+#endif
