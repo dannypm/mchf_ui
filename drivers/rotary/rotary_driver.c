@@ -20,6 +20,9 @@
 #include "rotary_driver.h"
 #include "api_driver.h"
 
+#include "gui.h"
+#include "dialog.h"
+
 #ifdef CHIP_F7
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_gpio.h"
@@ -56,7 +59,7 @@ extern struct	UI_DRIVER_STATE			ui_s;
 extern ulong s_met_pos;
 #endif
 
-static void rotary_init_audio_encoder_switch_pin(void)
+static void rotary_init_side_encoder_switch_pin(void)
 {
 	GPIO_InitTypeDef  	GPIO_InitStruct;
 
@@ -67,7 +70,7 @@ static void rotary_init_audio_encoder_switch_pin(void)
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 
-static void rotary_check_audio_encoder_switch(void)
+static void rotary_check_side_encoder_switch(void)
 {
 	// Encoder button clicked ?
 	if(!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13))
@@ -89,7 +92,42 @@ static void rotary_check_audio_encoder_switch(void)
 	}
 }
 
-static void rotary_check_audio_enc(void)
+static void rotary_update_audio_publics(int pot_diff)
+{
+	// Update public volume
+	if(pot_diff < 0)
+	{
+		if(tsu.band[tsu.curr_band].volume > 0)
+			tsu.band[tsu.curr_band].volume += pot_diff;
+	}
+	else
+	{
+		if(tsu.band[tsu.curr_band].volume < 17)
+			tsu.band[tsu.curr_band].volume += pot_diff;
+	}
+	// Save band info to eeprom
+	save_band_info();
+	//
+	// Set request flag - now in volume control, so 'Mute' works better!
+	//tsu.update_audio_dsp_req = 1;
+	//
+}
+
+static void rotary_update_popup_menu_publics(int pot_diff)
+{
+	if(pot_diff > 0)
+	{
+		GUI_StoreKeyMsg(GUI_KEY_RIGHT,1);
+		GUI_StoreKeyMsg(GUI_KEY_RIGHT,0);
+	}
+	else
+	{
+		GUI_StoreKeyMsg(GUI_KEY_LEFT,1);
+		GUI_StoreKeyMsg(GUI_KEY_LEFT,0);
+	}
+}
+
+static void rotary_check_side_enc(void)
 {
 	ushort 	cnt;
 	int		pot_diff = 0;
@@ -107,80 +145,20 @@ static void rotary_check_audio_enc(void)
 		pot_diff = +1;
 
 	//printf("pot_diff = %d\r\n",pot_diff);
-	#ifndef USE_SIDE_ENC_FOR_S_METER
-	// Update public volume
-	if(pot_diff < 0)
-	{
-		if(tsu.band[tsu.curr_band].volume > 0)
-			//tsu.audio_volume += pot_diff;
-			tsu.band[tsu.curr_band].volume += pot_diff;
 
-	}
-	else
-	{
-		if(tsu.band[tsu.curr_band].volume < 17)
-			//tsu.audio_volume += pot_diff;
-			tsu.band[tsu.curr_band].volume += pot_diff;
-	}
-	// Save band info to eeprom
-	save_band_info();
-	//
-	// Set request flag - now in volume control, so 'Mute' works better!
-	//tsu.update_audio_dsp_req = 1;
-	//
-	#endif
-	#ifdef USE_SIDE_ENC_FOR_S_METER
-	// Update public volume
-	if(pot_diff < 0)
-	{
-		if(s_met_pos > 135)
-			s_met_pos += pot_diff;
-	}
-	else
-	{
-		if(s_met_pos < 225)
-			s_met_pos += pot_diff;
-	}
-	#endif
+	// Do not update publics while in Menu(or other non desktop modes, where UI is not painted and processed)
+	if(ui_s.cur_state == MODE_DESKTOP)
+		rotary_update_audio_publics(pot_diff);
 
+	if(ui_s.cur_state == MODE_AUDIO_POPUP)
+		rotary_update_popup_menu_publics(pot_diff);
+
+	// Flag preventing calling too often
 	audio_old = cnt;
 }
 
-static void rotary_check_freq_enc(void)
+static void rotary_update_freq_publics(int pot_diff)
 {
-	ushort 	cnt;
-	int		pot_diff = 0;
-
-	// No update on invalid local copy of the frequency
-	if(tsu.band[tsu.curr_band].active_vfo == 0)
-	{
-		if(tsu.band[tsu.curr_band].vfo_a == 0xFFFFFFFF)
-			return;
-	}
-	else
-	{
-		if(tsu.band[tsu.curr_band].vfo_b == 0xFFFFFFFF)
-			return;
-	}
-
-	// No update on invalid local copy of the vfo step
-	if(tsu.band[tsu.curr_band].step == 0xFFFFFFFF)
-		return;
-
-	cnt = __HAL_TIM_GET_COUNTER(&htim4);
-	if(freq_old == cnt)
-		return;
-
-	//printf("---------------------------------\r\n");
-	//printf("cnt = %d\r\n",cnt);
-
-	if(__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4))
-		pot_diff = -1;
-	else
-		pot_diff = +1;
-
-	//printf("pot_diff = %d\r\n",pot_diff);
-
 	// Update public volume
 	if(pot_diff < 0)
 	{
@@ -262,14 +240,55 @@ static void rotary_check_freq_enc(void)
 
 	// Save band info to eeprom
 	save_band_info();
+}
+
+static void rotary_check_front_enc(void)
+{
+	ushort 	cnt;
+	int		pot_diff = 0;
+
+	// No update on invalid local copy of the frequency
+	if(tsu.band[tsu.curr_band].active_vfo == 0)
+	{
+		if(tsu.band[tsu.curr_band].vfo_a == 0xFFFFFFFF)
+			return;
+	}
+	else
+	{
+		if(tsu.band[tsu.curr_band].vfo_b == 0xFFFFFFFF)
+			return;
+	}
+
+	// No update on invalid local copy of the vfo step
+	if(tsu.band[tsu.curr_band].step == 0xFFFFFFFF)
+		return;
+
+	cnt = __HAL_TIM_GET_COUNTER(&htim4);
+	if(freq_old == cnt)
+		return;
+
+	//printf("---------------------------------\r\n");
+	//printf("cnt = %d\r\n",cnt);
+
+	if(__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4))
+		pot_diff = -1;
+	else
+		pot_diff = +1;
+
+	//printf("pot_diff = %d\r\n",pot_diff);
+
+	// Do not update publics while in Menu(or other non desktop modes, where UI is not painted and processed)
+	if(ui_s.cur_state == MODE_DESKTOP)
+		rotary_update_freq_publics(pot_diff);
 
 	// Digital debounce - not working!
 	//OsDelayMs(20);
 
+	// Flag preventing calling too often
 	freq_old = cnt;
 }
 
-uchar rotary_audio_enc_init(void)
+uchar rotary_side_enc_init(void)
 {
 //#ifdef CHIP_F7
 
@@ -325,7 +344,7 @@ uchar rotary_audio_enc_init(void)
   return 0;
 }
 
-uchar rotary_freq_enc_init(void)
+uchar rotary_front_enc_init(void)
 {
 //#ifdef CHIP_F7
 
@@ -384,10 +403,12 @@ uchar rotary_freq_enc_init(void)
 // call from main() on startup
 void rotary_driver_hw_init(void)
 {
-	rotary_audio_enc_init();
-	rotary_freq_enc_init();
+	// Encoders
+	rotary_side_enc_init();
+	rotary_front_enc_init();
 
-	rotary_init_audio_encoder_switch_pin();
+	// Push buttons
+	rotary_init_side_encoder_switch_pin();
 }
 
 //*----------------------------------------------------------------------------
@@ -400,8 +421,12 @@ void rotary_driver_hw_init(void)
 //*----------------------------------------------------------------------------
 static void rotary_worker(void)
 {
-	rotary_check_audio_enc();
-	rotary_check_freq_enc();
+	// Encoders
+	rotary_check_side_enc();
+	rotary_check_front_enc();
+
+	// Push buttons
+	rotary_check_side_encoder_switch();
 }
 
 //*----------------------------------------------------------------------------
@@ -427,7 +452,6 @@ void rotary_driver(void const * argument)
 rotary_driver_loop:
 
 	rotary_worker();
-	rotary_check_audio_encoder_switch();
 	
 	// Driver sleep period
 	OsDelayMs(50);

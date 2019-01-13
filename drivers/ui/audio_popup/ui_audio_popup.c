@@ -20,7 +20,7 @@
 // click-able, aka Windows Mobile 2001, instead slide-able
 // and responsive to gentle touch and slide ;(
 //
-// Also not glued to DSP functionality or encoder value yet
+// Also not glued to DSP functionality yet
 //
 // emWin resources are properly released on exit, so Desktop
 // can repaint normally
@@ -29,6 +29,8 @@
 //       will mess around with formatting of this pop up
 
 #include "mchf_pro_board.h"
+
+#include "ui_audio_popup.h"
 
 #include "gui.h"
 #include "dialog.h"
@@ -39,21 +41,23 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
   { FRAMEWIN_CreateIndirect, "Side Encoder Options", 	0,       			150,  	90, 	500, 	300, 	FRAMEWIN_CF_ACTIVE	 		},
   //
   { TEXT_CreateIndirect,     "Audio Gain" ,  			0,                	5,		30,  	70,  	20, 	TEXT_CF_LEFT 				},
-  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT0,   	5,  	50,  	70,  	20, 	0, 						3 	},
+  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT0,   	5,  	50,  	40,  	20, 	EDIT_CI_DISABELD,		3 	},
   { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER0,		80, 	30, 	400,  	40 									},
   //
   { TEXT_CreateIndirect,     "RF Gain", 				0,              	5,  	100,  	70,  	20, 	TEXT_CF_LEFT 				},
-  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT1,   	5,  	120,  	70,  	20, 	0, 						3 	},
+  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT1,   	5,  	120,  	40,  	20, 	EDIT_CI_DISABELD,		3 	},
   { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER1,  	80, 	100, 	400,  	40 									},
   //
   { TEXT_CreateIndirect,     "CW Keyer",		  		0,           		5,  	170,  	70,  	20, 	TEXT_CF_LEFT 				},
-  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT2,   	5,  	190,  	70,  	20, 	0, 						3 	},
+  { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT2,   	5,  	190,  	40,  	20, 	EDIT_CI_DISABELD,		3 	},
   { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER2,  	80, 	170, 	400,  	40 									},
 };
 
 WM_HWIN hWin = 0;
 
-static U8 _aColorSep[3] = {0, 127, 255};  // Red, green and blue components
+//static U8 _aColorSep[3] = {0, 127, 255};  // Red, green and blue components
+
+struct SLIDER_STATE	ss;
 
 // Sliders/Edits handler
 static void _OnValueChanged(WM_HWIN hDlg, int Id)
@@ -65,6 +69,7 @@ static void _OnValueChanged(WM_HWIN hDlg, int Id)
 
   Index = 0;
   v     = 0;
+
   if ((Id >= GUI_ID_SLIDER0) && (Id <= GUI_ID_SLIDER2))
   {
     Index = Id - GUI_ID_SLIDER0;
@@ -85,7 +90,8 @@ static void _OnValueChanged(WM_HWIN hDlg, int Id)
     v = EDIT_GetValue(hEdit);
     SLIDER_SetValue(hSlider, v);
   }
-  _aColorSep[Index] = v;
+  //_aColorSep[Index] = v;
+  ss.values[Index] = v;
   //
   // At last invalidate dialog client window
   //
@@ -124,14 +130,19 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     		for (i = 0; i < 3; i++)
     		{
     			hItem = WM_GetDialogItem(hDlg, GUI_ID_EDIT0 + i);
-    			EDIT_SetDecMode(hItem, _aColorSep[i],   0, 255, 0, 0);
+    			EDIT_SetDecMode(hItem, ss.values[i],   0, ss.ranges[i], 0, 0);
 
     			hItem = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0 + i);
-    			SLIDER_SetRange(hItem, 0, 255);
-    			SLIDER_SetValue(hItem, _aColorSep[i]);
+    			SLIDER_SetRange(hItem, 0, ss.ranges[i]);
+    			SLIDER_SetValue(hItem,ss.values[i]);
 
     			// ToDo: Make them all beautiful..
     		}
+
+    		// Set selected
+    		hItem = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0);
+    		WM_SetFocus(hItem);
+
     		break;
     	}
 
@@ -208,6 +219,14 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 
 void ui_audio_popup_create(void)
 {
+	ss.active_id = 0;
+	ss.values[0] = 0;
+	ss.values[1] = 0;
+	ss.values[2] = 0;
+	ss.ranges[0] = 17;
+	ss.ranges[1] = 50;
+	ss.ranges[2] = 60;
+
 	WM_SetCallback(WM_HBKWIN, &_cbBkWindow);
 	hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 }
