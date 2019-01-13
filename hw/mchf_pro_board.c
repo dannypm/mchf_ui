@@ -39,7 +39,6 @@
 #include "api_driver.h"
 #include "rotary_driver.h"
 #include "keypad_driver.h"
-#include "keypad_led_driver.h"
 #include "net_driver.h"
 
 extern void ItmInitAsm(void);
@@ -649,9 +648,6 @@ void mchf_pro_board_sensitive_hw_init(void)
 	#ifdef CONTEXT_DRIVER_KEYPAD
 	keypad_driver_init();
 	#endif
-	//
-	// Keypad LED driver GPIO
-	keypad_led_driver_init();
 	//
 	// Net driver
 	#ifdef CONTEXT_NET

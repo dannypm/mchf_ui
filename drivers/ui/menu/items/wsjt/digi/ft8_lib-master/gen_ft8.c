@@ -14,7 +14,7 @@
 
 #include "gen_ft8.h"
 
-float signal_p[100];	//elements_c];
+//float signal_p[100];	//elements_c];
 
 // Convert a sequence of symbols (tones) into a sinewave of continuous phase (FSK).
 // Symbol 0 gets encoded as a sine of frequency f0, the others are spaced in increasing

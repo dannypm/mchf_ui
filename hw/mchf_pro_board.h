@@ -212,7 +212,6 @@
 #define CONTEXT_DRIVER_UI
 #define CONTEXT_DRIVER_KEYPAD
 #define CONTEXT_DRIVER_DIGITIZER
-//#define CONTEXT_DRIVER_KEYPAD_LED
 #define CONTEXT_DRIVER_API
 #define CONTEXT_ROTARY
 // - not ported to F7 yet :(
@@ -220,7 +219,6 @@
 #define CONTEXT_SD					// ToDo: Make possible full disable of this driver!
 //#define CONTEXT_NET
 #endif
-//#define CONTEXT_DRIVER_SIGNAL
 // -----------------------------------------------------------------------------
 //
 //#define H7_200MHZ

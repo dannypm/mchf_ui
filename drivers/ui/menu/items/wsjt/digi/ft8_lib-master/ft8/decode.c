@@ -14,16 +14,15 @@
 
 static float max2(float a, float b);
 static float max4(float a, float b, float c, float d);
-//static void heapify_down(Candidate *heap, int heap_size);
-//static void heapify_up(Candidate *heap, int heap_size);
-static void decode_symbol(const uint8_t *power, const uint8_t *code_map, int bit_idx, float *log174);
-static void decode_multi_symbols(const uint8_t *power, int num_bins, int n_syms, const uint8_t *code_map, int bit_idx, float *log174);
-
-#if 0
+static void heapify_down(Candidate *heap, int heap_size);
+static void heapify_up(Candidate *heap, int heap_size);
+static void decode_symbol(uint8_t *power, uint8_t *code_map, int bit_idx, float *log174);
+static void decode_multi_symbols(uint8_t *power, int num_bins, int n_syms, uint8_t *code_map, int bit_idx, float *log174);
 
 // Localize top N candidates in frequency and time according to their sync strength (looking at Costas symbols)
 // We treat and organize the candidate list as a min-heap (empty initially).
-int find_sync(const uint8_t *power, int num_blocks, int num_bins, const uint8_t *sync_map, int num_candidates, Candidate *heap) {
+int find_sync(uint8_t *power, int num_blocks, int num_bins, uint8_t *sync_map, int num_candidates, Candidate *heap)
+{
     int heap_size = 0;
 
     // Here we allow time offsets that exceed signal boundaries, as long as we still have all data bits.
@@ -90,8 +89,9 @@ int find_sync(const uint8_t *power, int num_blocks, int num_bins, const uint8_t 
 
 // Compute log likelihood log(p(1) / p(0)) of 174 message bits 
 // for later use in soft-decision LDPC decoding
-void extract_likelihood(const uint8_t *power, int num_bins, const Candidate & cand, const uint8_t *code_map, float *log174) {
-    int offset = (cand.time_offset * 4 + cand.time_sub * 2 + cand.freq_sub) * num_bins + cand.freq_offset;
+void extract_likelihood(const uint8_t *power, int num_bins, Candidate *cand, const uint8_t *code_map, float *log174)
+{
+    int offset = (cand->time_offset * 4 + cand->time_sub * 2 + cand->freq_sub) * num_bins + cand->freq_offset;
 
     // Go over FSK tones and skip Costas sync symbols
     const int n_syms = 1;
@@ -102,7 +102,7 @@ void extract_likelihood(const uint8_t *power, int num_bins, const Candidate & ca
         int bit_idx = 3 * k;
 
         // Pointer to 8 bins of the current symbol
-        const uint8_t *ps = power + (offset + sym_idx * 4 * num_bins);
+        uint8_t *ps = power + (offset + sym_idx * 4 * num_bins);
 
         decode_symbol(ps, code_map, bit_idx, log174);
     }
@@ -124,7 +124,6 @@ void extract_likelihood(const uint8_t *power, int num_bins, const Candidate & ca
         log174[i] *= norm_factor;
     }
 }
-#endif
 
 static float max2(float a, float b) {
     return (a >= b) ? a : b;
@@ -134,7 +133,6 @@ static float max4(float a, float b, float c, float d) {
     return max2(max2(a, b), max2(c, d));
 }
 
-#if 0
 static void heapify_down(Candidate *heap, int heap_size) {
     // heapify from the root down
     int current = 0;
@@ -159,9 +157,7 @@ static void heapify_down(Candidate *heap, int heap_size) {
         current = largest;
     }
 }
-#endif
 
-#if 0
 static void heapify_up(Candidate *heap, int heap_size) {
     // heapify from the last node up
     int current = heap_size - 1;
@@ -177,10 +173,10 @@ static void heapify_up(Candidate *heap, int heap_size) {
         current = parent;
     }
 }
-#endif
 
 // Compute unnormalized log likelihood log(p(1) / p(0)) of 3 message bits (1 FSK symbol)
-static void decode_symbol(const uint8_t *power, const uint8_t *code_map, int bit_idx, float *log174) {
+static void decode_symbol(uint8_t *power, uint8_t *code_map, int bit_idx, float *log174)
+{
     // Cleaned up code for the simple case of n_syms==1
     float s2[8];
 
@@ -194,7 +190,8 @@ static void decode_symbol(const uint8_t *power, const uint8_t *code_map, int bit
 }
 
 // Compute unnormalized log likelihood log(p(1) / p(0)) of bits corresponding to several FSK symbols at once
-static void decode_multi_symbols(const uint8_t *power, int num_bins, int n_syms, const uint8_t *code_map, int bit_idx, float *log174) {
+static void decode_multi_symbols(uint8_t *power, int num_bins, int n_syms, uint8_t *code_map, int bit_idx, float *log174)
+{
     // The following section implements what seems to be multiple-symbol decode at one go,
     // corresponding to WSJT-X's ft8b.f90. Experimentally found not to be any better than 
     // 1-symbol decode.

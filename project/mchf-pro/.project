@@ -126,16 +126,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/keypad/keypad_driver.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/keypad_led/keypad_led_driver.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/keypad_led/keypad_led_driver.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/keypad_led/keypad_led_driver.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/keypad_led/keypad_led_driver.h</locationURI>
-		</link>
-		<link>
 			<name>drivers/net/net_driver.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/net/net_driver.c</locationURI>
@@ -164,16 +154,6 @@
 			<name>drivers/sd/sd_driver.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/sd/sd_driver.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/signal_gen/signal_e.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/signal_gen/signal_e.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/signal_gen/signal_e.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/signal_gen/signal_e.h</locationURI>
 		</link>
 		<link>
 			<name>drivers/ui/ui_driver.c</name>

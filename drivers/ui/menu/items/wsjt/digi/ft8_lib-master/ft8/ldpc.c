@@ -1,5 +1,13 @@
+// ******************************************
+//
+// ft8_lib by Karlis Goba, YL3JG
+// https://github.com/kgoba/ft8_lib
+//
+// ******************************************
 
-#if 0
+#include "mchf_pro_board.h"
+
+#if 1
 
 //
 // LDPC decoder for FT8.
@@ -12,10 +20,10 @@
 // codeword[i] = log ( P(x=0) / P(x=1) )
 //
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <math.h>
-#include <stdlib.h>
-#include "constants.h"
+//#include <stdlib.h>
+#include "ft8_constants.h"
 
 int ldpc_check(uint8_t codeword[]);
 float fast_tanh(float x);

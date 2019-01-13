@@ -18,11 +18,10 @@
 #include "mchf_pro_board.h"
 
 #include "ui_driver.h"
-
-#include "signal_e.h"
+//
 #include "touch_driver.h"
 #include "k_rtc.h"
-
+//
 #include "gui.h"
 #include "dialog.h"
 #include "ST_GUI_Addons.h"

@@ -39,8 +39,6 @@
 // Drivers
 #include "ui_driver.h"
 #include "keypad_driver.h"
-#include "keypad_led_driver.h"
-#include "signal_e.h"
 #include "touch_driver.h"
 #include "api_driver.h"
 #include "rotary_driver.h"
@@ -535,11 +533,6 @@ static void transceiver_load_eep_values(void)
 //*----------------------------------------------------------------------------
 static void threads_launcher(void)
 {
-	// Create signal generator
-	#ifdef CONTEXT_DRIVER_SIGNAL
-	osThreadDef(signal_task_m, 		signal_task, 						osPriorityNormal, 		0, 	256);
-	osThreadCreate (osThread(signal_task_m), NULL);
-	#endif
 	// Create API driver
 	#ifdef CONTEXT_DRIVER_API
 	osThreadDef(api_driver_task_m, 	api_driver_task, 					osPriorityNormal, 		0, 	256);
@@ -560,11 +553,6 @@ static void threads_launcher(void)
 	#ifdef CONTEXT_DRIVER_KEYPAD
 	osThreadDef(keypad_task_driver_m, 		keypad_driver_task, 		osPriorityNormal, 		0, 	256);
 	osThreadCreate (osThread(keypad_task_driver_m), NULL);
-	#endif
-	// Create keypad LED driver
-	#ifdef CONTEXT_DRIVER_KEYPAD_LED
-	osThreadDef(keypad_led_driver_m, 	keypad_led_driver,	 			osPriorityLow, 			0, 	256);
-	osThreadCreate (osThread(keypad_led_driver_m), NULL);
 	#endif
 	// Create rotary encoders driver
 	#ifdef CONTEXT_ROTARY
