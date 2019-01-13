@@ -176,16 +176,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/signal_gen/signal_e.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/ui_audio_popup.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_audio_popup.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/ui_audio_popup.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_audio_popup.h</locationURI>
-		</link>
-		<link>
 			<name>drivers/ui/ui_driver.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_driver.c</locationURI>
@@ -194,6 +184,11 @@
 			<name>drivers/ui/ui_driver.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_driver.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/ui_startup.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_startup.c</locationURI>
 		</link>
 		<link>
 			<name>hw/lcd/gui_conf.c</name>
@@ -281,14 +276,19 @@
 			<locationURI>PARENT-5-PROJECT_LOC/middleware/STemWin_Addons/ST_GUI_Addons.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/ui_controls_layout.h</name>
+			<name>drivers/ui/audio_popup/ui_audio_popup.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/ui_controls_layout.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/audio_popup/ui_audio_popup.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/ui_startup.c</name>
+			<name>drivers/ui/audio_popup/ui_audio_popup.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/ui_startup.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/audio_popup/ui_audio_popup.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/desktop/ui_controls_layout.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/ui_controls_layout.h</locationURI>
 		</link>
 		<link>
 			<name>drivers/ui/menu/k_menu.c</name>
@@ -896,174 +896,179 @@
 			<locationURI>PARENT-2-PROJECT_LOC/middleware/STemWin/inc/WM_Intern.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/band/ui_controls_band.c</name>
+			<name>drivers/ui/desktop/band/ui_controls_band.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/band/ui_controls_band.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/band/ui_controls_band.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/band/ui_controls_band.h</name>
+			<name>drivers/ui/desktop/band/ui_controls_band.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/band/ui_controls_band.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/band/ui_controls_band.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/clock/ui_controls_clock.c</name>
+			<name>drivers/ui/desktop/clock/ui_controls_clock.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/clock/ui_controls_clock.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/clock/ui_controls_clock.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/clock/ui_controls_clock.h</name>
+			<name>drivers/ui/desktop/clock/ui_controls_clock.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/clock/ui_controls_clock.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/clock/ui_controls_clock.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/cpu_stat/ui_controls_cpu_stat.c</name>
+			<name>drivers/ui/desktop/cpu_stat/ui_controls_cpu_stat.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/cpu_stat/ui_controls_cpu_stat.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/cpu_stat/ui_controls_cpu_stat.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/cpu_stat/ui_controls_cpu_stat.h</name>
+			<name>drivers/ui/desktop/cpu_stat/ui_controls_cpu_stat.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/cpu_stat/ui_controls_cpu_stat.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/cpu_stat/ui_controls_cpu_stat.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/demod/ui_controls_demod.c</name>
+			<name>drivers/ui/desktop/demod/ui_controls_demod.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/demod/ui_controls_demod.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/demod/ui_controls_demod.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/demod/ui_controls_demod.h</name>
+			<name>drivers/ui/desktop/demod/ui_controls_demod.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/demod/ui_controls_demod.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/demod/ui_controls_demod.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/dsp_stat/ui_controls_dsp_stat.c</name>
+			<name>drivers/ui/desktop/dsp_stat/ui_controls_dsp_stat.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/dsp_stat/ui_controls_dsp_stat.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/dsp_stat/ui_controls_dsp_stat.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/dsp_stat/ui_controls_dsp_stat.h</name>
+			<name>drivers/ui/desktop/dsp_stat/ui_controls_dsp_stat.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/dsp_stat/ui_controls_dsp_stat.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/dsp_stat/ui_controls_dsp_stat.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/filter/ui_controls_filter.c</name>
+			<name>drivers/ui/desktop/filter/ui_controls_filter.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/filter/ui_controls_filter.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/filter/ui_controls_filter.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/filter/ui_controls_filter.h</name>
+			<name>drivers/ui/desktop/filter/ui_controls_filter.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/filter/ui_controls_filter.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/filter/ui_controls_filter.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/freq/ui_controls_frequency.c</name>
+			<name>drivers/ui/desktop/freq/ui_controls_frequency.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/freq/ui_controls_frequency.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/freq/ui_controls_frequency.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/freq/ui_controls_frequency.h</name>
+			<name>drivers/ui/desktop/freq/ui_controls_frequency.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/freq/ui_controls_frequency.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/freq/ui_controls_frequency.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/keyer/ui_controls_keyer.c</name>
+			<name>drivers/ui/desktop/keyer/keyer_image.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/keyer/ui_controls_keyer.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/keyer/keyer_image.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/keyer/ui_controls_keyer.h</name>
+			<name>drivers/ui/desktop/keyer/ui_controls_keyer.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/keyer/ui_controls_keyer.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/keyer/ui_controls_keyer.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/rx_tx/ui_controls_rx_tx.c</name>
+			<name>drivers/ui/desktop/keyer/ui_controls_keyer.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/rx_tx/ui_controls_rx_tx.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/keyer/ui_controls_keyer.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/rx_tx/ui_controls_rx_tx.h</name>
+			<name>drivers/ui/desktop/rx_tx/ui_controls_rx_tx.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/rx_tx/ui_controls_rx_tx.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/rx_tx/ui_controls_rx_tx.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/sd_icon/sd_small.c</name>
+			<name>drivers/ui/desktop/rx_tx/ui_controls_rx_tx.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/sd_icon/sd_small.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/rx_tx/ui_controls_rx_tx.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/sd_icon/ui_controls_sd_icon.c</name>
+			<name>drivers/ui/desktop/sd_icon/sd_small.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/sd_icon/ui_controls_sd_icon.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/sd_icon/sd_small.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/sd_icon/ui_controls_sd_icon.h</name>
+			<name>drivers/ui/desktop/sd_icon/ui_controls_sd_icon.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/sd_icon/ui_controls_sd_icon.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/sd_icon/ui_controls_sd_icon.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/smeter/needle.c</name>
+			<name>drivers/ui/desktop/sd_icon/ui_controls_sd_icon.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/smeter/needle.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/sd_icon/ui_controls_sd_icon.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/smeter/needle1.c</name>
+			<name>drivers/ui/desktop/smeter/needle.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/smeter/needle1.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/smeter/needle.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/smeter/scale.c</name>
+			<name>drivers/ui/desktop/smeter/needle1.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/smeter/scale.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/smeter/needle1.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/smeter/scale1.c</name>
+			<name>drivers/ui/desktop/smeter/scale.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/smeter/scale1.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/smeter/scale.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/smeter/ui_controls_smeter.c</name>
+			<name>drivers/ui/desktop/smeter/scale1.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/smeter/ui_controls_smeter.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/smeter/scale1.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/smeter/ui_controls_smeter.h</name>
+			<name>drivers/ui/desktop/smeter/ui_controls_smeter.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/smeter/ui_controls_smeter.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/smeter/ui_controls_smeter.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/spectrum/ui_controls_spectrum.c</name>
+			<name>drivers/ui/desktop/smeter/ui_controls_smeter.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/spectrum/ui_controls_spectrum.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/smeter/ui_controls_smeter.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/spectrum/ui_controls_spectrum.h</name>
+			<name>drivers/ui/desktop/spectrum/ui_controls_spectrum.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/spectrum/ui_controls_spectrum.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/spectrum/ui_controls_spectrum.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/vfo_step/ui_controls_vfo_step.c</name>
+			<name>drivers/ui/desktop/spectrum/ui_controls_spectrum.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/vfo_step/ui_controls_vfo_step.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/spectrum/ui_controls_spectrum.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/vfo_step/ui_controls_vfo_step.h</name>
+			<name>drivers/ui/desktop/vfo_step/ui_controls_vfo_step.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/vfo_step/ui_controls_vfo_step.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/vfo_step/ui_controls_vfo_step.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/volume/techrubio.c</name>
+			<name>drivers/ui/desktop/vfo_step/ui_controls_vfo_step.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/volume/techrubio.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/vfo_step/ui_controls_vfo_step.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/volume/ui_controls_volume.c</name>
+			<name>drivers/ui/desktop/volume/techrubio.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/volume/ui_controls_volume.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/volume/techrubio.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/controls/volume/ui_controls_volume.h</name>
+			<name>drivers/ui/desktop/volume/ui_controls_volume.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/controls/volume/ui_controls_volume.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/volume/ui_controls_volume.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/desktop/volume/ui_controls_volume.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/volume/ui_controls_volume.h</locationURI>
 		</link>
 		<link>
 			<name>drivers/ui/digi/ft8_lib-master/decode_ft8.c</name>

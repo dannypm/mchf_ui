@@ -18,39 +18,41 @@
 #include "mchf_pro_board.h"
 
 #include "ui_driver.h"
-#include "ui_controls_layout.h"
 
-// Desktop Controls
-#include "ui_controls_spectrum.h"
-#include "ui_controls_smeter.h"
-#include "ui_controls_frequency.h"
-#include "ui_controls_volume.h"
-#include "ui_controls_clock.h"
-#include "ui_controls_band.h"
-#include "ui_controls_keyer.h"
-#include "ui_controls_filter.h"
-#include "ui_controls_vfo_step.h"
-#include "ui_controls_rx_tx.h"
-#include "ui_controls_demod.h"
-#include "ui_controls_cpu_stat.h"
-#include "ui_controls_dsp_stat.h"
-#include "C:\Projects\mcHFx\firmware\mchf_ui\drivers\ui\controls\sd_icon\ui_controls_sd_icon.h"
-#include "ui_audio_popup.h"
-
-// Emulated signal
 #include "signal_e.h"
-
 #include "touch_driver.h"
-#include "k_module.h"
 #include "k_rtc.h"
-//#include "C:\Projects\mcHFx\firmware\ui\hw\watchdog\watchdog.h"
 
 #include "gui.h"
 #include "dialog.h"
 #include "ST_GUI_Addons.h"
 
+// -----------------------------------------------------------------------------------------------
+// Desktop Mode
+#include "desktop\ui_controls_layout.h"
+#include "desktop\spectrum\ui_controls_spectrum.h"
+#include "desktop\smeter\ui_controls_smeter.h"
+#include "desktop\freq\ui_controls_frequency.h"
+#include "desktop\volume\ui_controls_volume.h"
+#include "desktop\clock\ui_controls_clock.h"
+#include "desktop\band\ui_controls_band.h"
+#include "desktop\keyer\ui_controls_keyer.h"
+#include "desktop\filter\ui_controls_filter.h"
+#include "desktop\vfo_step\ui_controls_vfo_step.h"
+#include "desktop\rx_tx\ui_controls_rx_tx.h"
+#include "desktop\demod\ui_controls_demod.h"
+#include "desktop\cpu_stat\ui_controls_cpu_stat.h"
+#include "desktop\dsp_stat\ui_controls_dsp_stat.h"
+#include "desktop\sd_icon\ui_controls_sd_icon.h"
+// -----------------------------------------------------------------------------------------------
+// Audio PopUp Mode
+#include "audio_popup\ui_audio_popup.h"
+// -----------------------------------------------------------------------------------------------
+// Menu Mode
+#include "k_module.h"
+// -----------------------------------------------------------------------------------------------
+
 // Locals only
-//static void ui_driver_emwin_528_init(void);
 static void ui_driver_change_mode(void);
 static void ui_driver_init_desktop(void);
 static void ui_driver_state_machine(void);
