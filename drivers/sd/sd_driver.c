@@ -21,7 +21,7 @@
 #include "mchf_pro_board.h"
 
 #include "sd_driver.h"
-#include "k_storage.h"
+#include "menu\items\file_b\browser\k_storage.h"
 
 #if 0
 // --

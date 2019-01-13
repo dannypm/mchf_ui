@@ -45,11 +45,24 @@
 #include "desktop\dsp_stat\ui_controls_dsp_stat.h"
 #include "desktop\sd_icon\ui_controls_sd_icon.h"
 // -----------------------------------------------------------------------------------------------
-// Audio PopUp Mode
+// Audio Popup Mode
 #include "audio_popup\ui_audio_popup.h"
 // -----------------------------------------------------------------------------------------------
 // Menu Mode
-#include "k_module.h"
+#include "menu\k_module.h"
+#include "menu\ui_menu.h"
+// Menu items
+extern K_ModuleItem_Typedef  	dsp_s;				// Standard DSP Menu
+extern K_ModuleItem_Typedef  	dsp_e;				// Extended DSP Menu
+extern K_ModuleItem_Typedef  	user_i;				// User Interface
+extern K_ModuleItem_Typedef  	file_b;				// File Browser
+extern K_ModuleItem_Typedef  	clock;				// Clock Settings
+extern K_ModuleItem_Typedef  	reset;				// Factory Reset
+extern K_ModuleItem_Typedef  	wsjt;				// WSJT-X Tools
+extern K_ModuleItem_Typedef  	info;				// System Information
+// -----------------------------------------------------------------------------------------------
+// Splash Screen
+#include "splash\ui_startup.h"
 // -----------------------------------------------------------------------------------------------
 
 // Locals only
@@ -63,26 +76,10 @@ static void ui_driver_update_dsp_info(void);
 // UI driver public state
 struct	UI_DRIVER_STATE			ui_s;
 
-// Touch data
-GUI_PID_STATE 	TS_State;
-
-// Public radio state
-//extern struct	TRANSCEIVER_STATE_UI	tsu;
-
-// Touch driver state - needed here at all ?
+// Touch data - emWin
+GUI_PID_STATE 					TS_State;
+// Touch driver state - our driver
 extern struct TD 				t_d;
-
-// ---------------------------------------------------
-// Menu items
-extern K_ModuleItem_Typedef  	settings1_board;
-extern K_ModuleItem_Typedef  	settings2_board;
-extern K_ModuleItem_Typedef  	settings3_board;
-extern K_ModuleItem_Typedef  	file_browser;
-extern K_ModuleItem_Typedef  	clock_info;
-extern K_ModuleItem_Typedef  	factory_board;
-extern K_ModuleItem_Typedef  	wsjt_menu;
-extern K_ModuleItem_Typedef  	about_board;
-// ---------------------------------------------------
 
 //*----------------------------------------------------------------------------
 //* Function Name       : ui_driver_emwin_528_init
@@ -148,10 +145,10 @@ static void ui_driver_change_mode(void)
 			GUI_Clear();
 
 			// Set General Graphical properties
-			k_SetGuiProfile();
+			ui_set_gui_profile();
 
 			// Show the main menu
-			k_InitMenu();
+			ui_init_menu();
 
 			// Initial paint
 			GUI_Exec();
@@ -187,7 +184,7 @@ static void ui_driver_change_mode(void)
 			printf("Entering Desktop mode...\r\n");
 
 			// Destroy any Window Manager items
-			destroy_menu();
+			ui_destroy_menu();
 			ui_audio_popup_destroy();
 
 			// Clear screen
@@ -260,7 +257,7 @@ void ui_driver_task(void const * argument)
 	ui_driver_emwin_528_init();
 
 	// Show Startup screen(on layer 1)
-	k_StartUp();
+	ui_startup();
 
 	// Prepare Desktop screen, while hidden
 	GUI_SelectLayer(0);
@@ -272,14 +269,14 @@ void ui_driver_task(void const * argument)
 
 	// Menu items
 	k_ModuleInit();
-	k_ModuleAdd(&settings1_board);
-	k_ModuleAdd(&settings2_board);
-	k_ModuleAdd(&settings3_board);
-	k_ModuleAdd(&clock_info);
-	k_ModuleAdd(&file_browser);
-	k_ModuleAdd(&factory_board);
-	k_ModuleAdd(&wsjt_menu);
-	k_ModuleAdd(&about_board);
+	k_ModuleAdd(&dsp_s);				// Standard DSP Menu
+	k_ModuleAdd(&dsp_e);				// Extended DSP Menu
+	k_ModuleAdd(&user_i);				// User Interface
+	k_ModuleAdd(&clock);				// Clock Settings
+	k_ModuleAdd(&file_b);				// File Browser
+	k_ModuleAdd(&reset);				// Factory Reset
+	k_ModuleAdd(&wsjt);					// WSJT-X Tools
+	k_ModuleAdd(&info);					// System Information
 
 	// Show desktop(on layer 0)
 	GUI_SetLayerVisEx (1, 0);
@@ -311,7 +308,7 @@ ui_driver_loop:
 			GUI_Exec();
 
 			// If main menu needs constant refresh
-			k_PeriodicProcesses();
+			ui_periodic_processes();
 
 			// 25 Hz refresh
 			OsDelayMs(40);

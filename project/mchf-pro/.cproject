@@ -135,13 +135,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="fr.ac6.managedbuild.config.gnu.cross.exe.debug.405185049.611149511" name="k_menu.c" rcbsApplicability="disable" resourcePath="drivers/ui/menu/k_menu.c" toolsToInvoke="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1078530181.677759669">
-						<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1078530181.677759669" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1078530181">
-							<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1161152078" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
-							<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.808491032" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
-							<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.912993359" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-						</tool>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="Middlewares/STemWin/OS/GUI_X_FreeRTOS.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
@@ -189,8 +182,6 @@
 									<listOptionValue builtIn="false" value="../../../drivers/rotary"/>
 									<listOptionValue builtIn="false" value="../../../drivers/sd"/>
 									<listOptionValue builtIn="false" value="../../../drivers/net"/>
-									<listOptionValue builtIn="false" value="../../../drivers/ui/menu"/>
-									<listOptionValue builtIn="false" value="../../../drivers/ui/menu/items"/>
 									<listOptionValue builtIn="false" value="../../../hw/cmsis/Device/ST/STM32F7xx/Include"/>
 									<listOptionValue builtIn="false" value="../../../hw/cmsis/Device/ST/STM32H7xx/Include"/>
 									<listOptionValue builtIn="false" value="../../../hw/hal/STM32F7xx_HAL_Driver/Inc"/>
@@ -370,20 +361,6 @@
 								<additionalInput kind="additionalinputdependency" paths=""/>
 							</inputType>
 							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.1010378719" name="Resource Custom Build Step Output Type"/>
-						</tool>
-					</fileInfo>
-					<fileInfo id="fr.ac6.managedbuild.config.gnu.cross.exe.debug.405185049.1875471198.drivers/ui/menu/k_menu.c" name="k_menu.c" rcbsApplicability="disable" resourcePath="drivers/ui/menu/k_menu.c" toolsToInvoke="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.336376769">
-						<tool errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.336376769" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.927430934">
-							<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1779807158" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
-							<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.1222559764" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
-							<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.332100343" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-						</tool>
-					</fileInfo>
-					<fileInfo id="fr.ac6.managedbuild.config.gnu.cross.exe.debug.405185049.1875471198.700715200" name="settings3.c" rcbsApplicability="disable" resourcePath="drivers/ui/menu/items/settings3.c" toolsToInvoke="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1541520091.33674629">
-						<tool errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1541520091.33674629" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1541520091">
-							<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1551018359" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
-							<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.475789716" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
-							<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.805211627" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 						</tool>
 					</fileInfo>
 					<sourceEntries>
