@@ -41,6 +41,8 @@ Builder Type (external or internal), second tab - Behaviour 'Enable parallel bui
 ______________________________________________________________
 All mcHF downloads here: http://www.m0nka.co.uk/?page_id=5269
 
+The radio in action: https://www.youtube.com/watch?v=uaPRkPgszMI
+
 --------------------------------------------------------------
 Krassi Atanassov, M0NKA
 mcHF project, 2012 - 2019
