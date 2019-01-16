@@ -44,6 +44,7 @@ All mcHF downloads here: http://www.m0nka.co.uk/?page_id=5269
 The radio in action: 
 
 Center/Fixed mode    - https://www.youtube.com/watch?v=uaPRkPgszMI
+
 Side Encoder options - https://youtu.be/uU0ZkxqHu8A 
 
 --------------------------------------------------------------
