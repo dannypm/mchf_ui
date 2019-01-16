@@ -41,7 +41,10 @@ Builder Type (external or internal), second tab - Behaviour 'Enable parallel bui
 ______________________________________________________________
 All mcHF downloads here: http://www.m0nka.co.uk/?page_id=5269
 
-The radio in action: https://www.youtube.com/watch?v=uaPRkPgszMI
+The radio in action: 
+
+Center/Fixed mode    - https://www.youtube.com/watch?v=uaPRkPgszMI
+Side Encoder options - https://youtu.be/uU0ZkxqHu8A 
 
 --------------------------------------------------------------
 Krassi Atanassov, M0NKA
