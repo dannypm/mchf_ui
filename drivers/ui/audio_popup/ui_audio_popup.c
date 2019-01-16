@@ -32,6 +32,9 @@
 
 #include "ui_audio_popup.h"
 
+// DSP write request proxy
+#include "dsp_eep\hw_dsp_eep.h"
+
 #include "gui.h"
 #include "dialog.h"
 #include "ST_GUI_Addons.h"
@@ -70,6 +73,20 @@ static void _OnValueChanged(WM_HWIN hDlg, int Id)
   Index = 0;
   v     = 0;
 
+  	  // Update DSP with screen slider value (in turn controlled by the rotary driver via keypad message(left/right))
+    //
+    // ToDo: sync with Desktop mode (band publics in local eeprom, etc),on load and on exit values..
+    //
+  	if(Id == GUI_ID_SLIDER0)
+	{
+  		hSlider = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0 + Index);
+  		v = SLIDER_GetValue(hSlider);
+
+  		// Post to DSP
+  		hw_dsp_eep_update_audio_gain(v);
+	}
+
+  	// Example stuff, remove...
   if ((Id >= GUI_ID_SLIDER0) && (Id <= GUI_ID_SLIDER2))
   {
     Index = Id - GUI_ID_SLIDER0;

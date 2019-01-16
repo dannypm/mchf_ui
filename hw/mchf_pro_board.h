@@ -367,6 +367,13 @@ struct TRANSCEIVER_STATE_UI {
 
 	uchar	update_nco_dsp_req;
 
+	// DSP public structure update flags
+	uchar	update_dsp_eep_req;
+	//
+	ushort	update_dsp_eep_offset;
+	uchar	update_dsp_eep_size;
+	ulong	update_dsp_eep_value;
+
 	// Always align last member!
 
 } TRANSCEIVER_STATE_UI;

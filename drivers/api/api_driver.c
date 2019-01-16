@@ -657,6 +657,33 @@ static void api_ui_send_fast_cmd(void)
 		return;
 	}
 #endif
+#if 1
+	// Write into DSP eeprom structure
+	if(tsu.update_dsp_eep_req)
+	{
+		ushort offset = 0, size = 0;
+
+		printf("update DSP eep request process..\r\n");
+
+		aTxBuffer[0x00] = (API_WRITE_EEP >>   8);
+		aTxBuffer[0x01] = (API_WRITE_EEP & 0xFF);
+		// Offset
+		aTxBuffer[0x02] = tsu.update_dsp_eep_offset >> 8;
+		aTxBuffer[0x03] = tsu.update_dsp_eep_offset;
+		// size
+		aTxBuffer[0x04] = tsu.update_dsp_eep_size;
+		// value
+		aTxBuffer[0x05] = tsu.update_dsp_eep_value >> 24;
+		aTxBuffer[0x06] = tsu.update_dsp_eep_value >> 16;
+		aTxBuffer[0x07] = tsu.update_dsp_eep_value >>  8;
+		aTxBuffer[0x08] = tsu.update_dsp_eep_value;
+		// Send
+		api_ui_send_spi();
+		//  Reset flag
+		tsu.update_dsp_eep_req = 0;
+		return;
+	}
+#endif
 }
 
 // CS pin is also used to enter bootloader mode,

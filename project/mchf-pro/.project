@@ -166,6 +166,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_driver.h</locationURI>
 		</link>
 		<link>
+			<name>hw/dsp_eep/hw_dsp_eep.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw/dsp_eep/hw_dsp_eep.c</locationURI>
+		</link>
+		<link>
+			<name>hw/dsp_eep/hw_dsp_eep.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw/dsp_eep/hw_dsp_eep.h</locationURI>
+		</link>
+		<link>
 			<name>hw/lcd/gui_conf.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw/lcd/gui_conf.c</locationURI>

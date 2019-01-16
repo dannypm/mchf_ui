@@ -30,6 +30,8 @@
 
 #define API_ENABLE_POST					0x0009
 
+#define API_WRITE_EEP					0x000A
+
 #define API_TRANSFER_SIZE				300
 //#define API_NO_UPDATE					0xFF
 
