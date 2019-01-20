@@ -15,15 +15,15 @@
 **          third party drivers specifies otherwise. Thank you!                    **
 ************************************************************************************/
 
-// Who can call here ? Use critical section ?
-//
-
 #include "mchf_pro_board.h"
 
 #include "hw_dsp_eep.h"
 
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
+
+// Implement if those functions will be called from more than one task...
+//SemaphoreHandle_t xSemaphore = NULL;
 
 void hw_dsp_eep_update_audio_gain(int value)
 {
@@ -104,6 +104,30 @@ void hw_dsp_eep_update_rit(short value)
 	tsu.update_dsp_eep_offset 	= (ushort)abs_addr;
 	tsu.update_dsp_eep_size 	= sizeof(temp_ts.rit_value);
 	tsu.update_dsp_eep_value 	= temp_ts.rit_value;
+
+	// Post request
+	tsu.update_dsp_eep_req = 1;
+}
+
+void hw_dsp_eep_set_agc_mode(uchar value)
+{
+	struct DspTransceiverState 	temp_ts;	// just temp copy in stack
+	ulong 						abs_addr;
+
+	// There is old request waiting processing, do not overwrite!
+	if(tsu.update_dsp_eep_req)
+		return;
+
+	// Set value locally
+	temp_ts.agc_mode = value;
+
+	// Get absolute offset in structure
+	abs_addr = (ulong)&(temp_ts.agc_mode) - (ulong)&(temp_ts.samp_rate);
+
+	// Fill data in public request
+	tsu.update_dsp_eep_offset 	= (ushort)abs_addr;
+	tsu.update_dsp_eep_size 	= sizeof(temp_ts.agc_mode);
+	tsu.update_dsp_eep_value 	= temp_ts.agc_mode;
 
 	// Post request
 	tsu.update_dsp_eep_req = 1;

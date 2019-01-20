@@ -18,6 +18,14 @@
 #ifndef __HW_DSP_EEP_H
 #define __HW_DSP_EEP_H
 
+#define	AGC_SLOW			0		// Mode setting for slow AGC
+#define	AGC_MED				1		// Mode setting for medium AGC
+#define	AGC_FAST			2		// Mode setting for fast AGC
+#define	AGC_CUSTOM			3		// Mode setting for custom AGC
+#define	AGC_OFF				4		// Mode setting for AGC off
+#define	AGC_MAX_MODE		4		// Maximum for mode setting for AGC
+#define	AGC_DEFAULT			AGC_MED	// Default!
+
 // Transceiver state public structure
 typedef struct DspTransceiverState
 {
@@ -318,5 +326,6 @@ typedef struct DspTransceiverState
 void hw_dsp_eep_update_audio_gain(int value);
 void hw_dsp_eep_update_rf_gain(int value);
 void hw_dsp_eep_update_rit(short value);
+void hw_dsp_eep_set_agc_mode(uchar value);
 
 #endif
