@@ -22,16 +22,52 @@
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
 
-// Implement if those functions will be called from more than one task...
-//SemaphoreHandle_t xSemaphore = NULL;
+//*----------------------------------------------------------------------------
+//* Function Name       : hw_dsp_eep_wait_lock
+//* Object              : wait for API driver process
+//* Input Parameters    :
+//* Output Parameters   : this func might not be thread safe, check!!!
+//* Functions called    :
+//*----------------------------------------------------------------------------
+uchar hw_dsp_eep_wait_lock(void)
+{
+	ushort wait = 0;
 
+	// Skip wait, API driver probably ready for request
+	if(tsu.update_dsp_eep_req == 0)
+		return 0;
+
+	// Wait API driver
+	while((tsu.update_dsp_eep_req) && (wait < 50))
+	{
+		printf("waiting lock release...\r\n");
+
+		wait++;
+		OsDelayMs(5);
+
+		// If process complete, return ok
+		if(tsu.update_dsp_eep_req == 0)
+			return 0;
+	}
+
+	// No luck in given timeout
+	return 1;
+}
+
+//*----------------------------------------------------------------------------
+//* Function Name       : hw_dsp_eep_update_audio_gain
+//* Object              :
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 void hw_dsp_eep_update_audio_gain(int value)
 {
 	struct DspTransceiverState 	temp_ts;	// just temp copy in stack
 	ulong 						abs_addr;
 
-	// There is old request waiting processing, do not overwrite!
-	if(tsu.update_dsp_eep_req)
+	// Check for lock
+	if(hw_dsp_eep_wait_lock())
 		return;
 
 	// Set value locally
@@ -54,14 +90,20 @@ void hw_dsp_eep_update_audio_gain(int value)
 	tsu.update_dsp_eep_req = 1;
 }
 
-// Needs AGC off + call of re-calc routine in ui driver(DSP code)
+//*----------------------------------------------------------------------------
+//* Function Name       : hw_dsp_eep_update_rf_gain
+//* Object              : Needs AGC off + call of re-calc routine in ui driver(DSP code) ?
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 void hw_dsp_eep_update_rf_gain(int value)
 {
 	struct DspTransceiverState 	temp_ts;	// just temp copy in stack
 	ulong 						abs_addr;
 
-	// There is old request waiting processing, do not overwrite!
-	if(tsu.update_dsp_eep_req)
+	// Check for lock
+	if(hw_dsp_eep_wait_lock())
 		return;
 
 	// Set value locally
@@ -75,23 +117,24 @@ void hw_dsp_eep_update_rf_gain(int value)
 	tsu.update_dsp_eep_size 	= sizeof(temp_ts.rf_gain);
 	tsu.update_dsp_eep_value 	= temp_ts.rf_gain;
 
-	//printf("Update RF Gain in DSP:\r\n");
-	//printf("addr in struct:%d\r\n",	tsu.update_dsp_eep_offset );
-	//printf("var size:%d\r\n",		tsu.update_dsp_eep_size);
-	//printf("value:%d\r\n",			tsu.update_dsp_eep_value);
-
 	// Post request
 	tsu.update_dsp_eep_req = 1;
 }
 
-// not tested!
+//*----------------------------------------------------------------------------
+//* Function Name       : hw_dsp_eep_update_rit
+//* Object              : not tested!
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 void hw_dsp_eep_update_rit(short value)
 {
 	struct DspTransceiverState 	temp_ts;	// just temp copy in stack
 	ulong 						abs_addr;
 
-	// There is old request waiting processing, do not overwrite!
-	if(tsu.update_dsp_eep_req)
+	// Check for lock
+	if(hw_dsp_eep_wait_lock())
 		return;
 
 	// Set value locally
@@ -109,13 +152,20 @@ void hw_dsp_eep_update_rit(short value)
 	tsu.update_dsp_eep_req = 1;
 }
 
+//*----------------------------------------------------------------------------
+//* Function Name       : hw_dsp_eep_set_agc_mode
+//* Object              :
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 void hw_dsp_eep_set_agc_mode(uchar value)
 {
 	struct DspTransceiverState 	temp_ts;	// just temp copy in stack
 	ulong 						abs_addr;
 
-	// There is old request waiting processing, do not overwrite!
-	if(tsu.update_dsp_eep_req)
+	// Check for lock
+	if(hw_dsp_eep_wait_lock())
 		return;
 
 	// Set value locally

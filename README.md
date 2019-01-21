@@ -45,7 +45,7 @@ The radio in action:
 
 Center/Fixed mode    - https://www.youtube.com/watch?v=uaPRkPgszMI
 
-Side Encoder options - https://youtu.be/uU0ZkxqHu8A 
+Side Encoder options - https://youtu.be/0MX4TGASykA 
 
 --------------------------------------------------------------
 Krassi Atanassov, M0NKA

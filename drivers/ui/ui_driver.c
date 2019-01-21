@@ -207,6 +207,13 @@ static void ui_driver_change_mode(void)
 	ui_s.lock_requests = 0;
 }
 
+//*----------------------------------------------------------------------------
+//* Function Name       :
+//* Object              :
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 static void ui_driver_init_desktop(void)
 {
 	ui_controls_clock_init();
@@ -332,11 +339,15 @@ ui_driver_loop:
 	goto ui_driver_loop;
 }
 
-//----------------------------------------------------------------
-//----------------------------------------------------------------
+//*----------------------------------------------------------------------------
+//* Function Name       :
+//* Object              :
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 // All ui call that take too long should call here to release
 // control to functions that need real time reaction
-//
 void ui_callback_one(void)
 {
 	//--printf("callback1\r\n");
@@ -350,7 +361,14 @@ void ui_callback_one(void)
 	//ui_driver_change_screen_demod_mode();
 	//ui_controls_band_refresh();
 }
-//
+
+//*----------------------------------------------------------------------------
+//* Function Name       :
+//* Object              :
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 void ui_callback_two(void)
 {
 	//--printf("callback2\r\n");
@@ -362,8 +380,6 @@ void ui_callback_two(void)
 	//ui_driver_change_screen_demod_mode();
 	//ui_controls_band_refresh();
 }
-//----------------------------------------------------------------
-//----------------------------------------------------------------
 
 //*----------------------------------------------------------------------------
 //* Function Name       : ui_driver_state_machine

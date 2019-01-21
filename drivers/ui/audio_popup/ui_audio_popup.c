@@ -20,13 +20,11 @@
 // click-able, aka Windows Mobile 2001, instead slide-able
 // and responsive to gentle touch and slide ;(
 //
-// Also not glued to DSP functionality yet
-//
 // emWin resources are properly released on exit, so Desktop
 // can repaint normally
 //
-// ToDo: Set controls default values(skin) as the Menu mode
-//       will mess around with formatting of this pop up
+// ToDo: Rename files/folder to side_encoder_menu
+//
 
 #include "mchf_pro_board.h"
 
@@ -51,31 +49,36 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
   // -----------------------------------------------------------------------------------------------------------------------------
   //						name						id					x		y		xsize	ysize	?		?		?
   // -----------------------------------------------------------------------------------------------------------------------------
-  { FRAMEWIN_CreateIndirect, "Side Encoder Options", 	0,       			50,  	90, 	680, 	260, 	FRAMEWIN_CF_ACTIVE	 		},
-  //
+  { FRAMEWIN_CreateIndirect, "Side Encoder Options", 	0,       			80,  	110, 	640, 	260, 	FRAMEWIN_CF_ACTIVE	 		},
+  // First slider
   { TEXT_CreateIndirect,     "Audio Gain" ,  			0,                	5,		5,  	100,  	20, 	TEXT_CF_LEFT 				},
   { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT0,   	5,  	30,  	40,  	40, 	EDIT_CI_DISABELD,		3 	},
   { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER0,		60, 	30, 	400,  	40 									},
-  //
+  // Second slider
   { TEXT_CreateIndirect,     "RF Gain", 				0,              	5,  	80,  	100,  	20, 	TEXT_CF_LEFT 				},
   { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT1,   	5,  	105,  	40,  	40, 	EDIT_CI_DISABELD,		3 	},
   { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER1,  	60, 	105, 	400,  	40 									},
-  //
+  // Third slider
   { TEXT_CreateIndirect,     "CW Keyer",		  		0,           		5,  	155,  	100,  	20, 	TEXT_CF_LEFT 				},
   { EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT2,   	5,  	180,  	40,  	40, 	EDIT_CI_DISABELD,		3 	},
   { SLIDER_CreateIndirect,   NULL,     					GUI_ID_SLIDER2,  	60, 	180, 	400,  	40 									},
-  // Check boxes
-  { CHECKBOX_CreateIndirect,"Checkbox", 				ID_CHECKBOX_0, 		480,  	190,	200, 	30, 	0, 				0x0, 	0 	},
   // List box
-  { TEXT_CreateIndirect, 	"AGC Modes",	 			ID_TEXT_LIST_2,		480,	10,		180, 	20,  	0, 				0x0,	0 	},
-  { LISTBOX_CreateIndirect, "Listbox", 					ID_LISTBOX_2, 		480, 	28, 	180, 	150, 	0, 				0x0, 	0 	},
+  { TEXT_CreateIndirect, 	"AGC Modes",	 			ID_TEXT_LIST_2,		480,	10,		140, 	20,  	0, 				0x0,	0 	},
+  { LISTBOX_CreateIndirect, "Listbox", 					ID_LISTBOX_2, 		480, 	28, 	140, 	192, 	0, 				0x0, 	0 	},
 };
 
 WM_HWIN hWin = 0;
 
 struct SLIDER_STATE	ss;
 
-static void _OnValueChangedA(WM_MESSAGE *pMsg, int Id,int NCode)
+//*----------------------------------------------------------------------------
+//* Function Name       : _cbControl
+//* Object              : Control related events(touch, change value, etc)
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
+static void _cbControl(WM_MESSAGE *pMsg, int Id,int NCode)
 {
 	WM_HWIN hItem;
 	WM_HWIN hSlider;
@@ -87,59 +90,12 @@ static void _OnValueChangedA(WM_MESSAGE *pMsg, int Id,int NCode)
 
 	switch(Id)
 	{
-		// AGC On/Off checkbox
-		case ID_CHECKBOX_0:
-		{
-			hItem = WM_GetDialogItem(pMsg->hWin, ID_CHECKBOX_0);
-
-			// Set DSP mode
-			if(!CHECKBOX_GetState(hItem))
-			{
-				hw_dsp_eep_set_agc_mode(AGC_OFF);
-
-				// RF gain gets focus
-				hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER1);
-				WM_SetFocus(hItem);
-			}
-			else
-			{
-				hItem = WM_GetDialogItem(pMsg->hWin, ID_LISTBOX_2);
-				sel = LISTBOX_GetSel(hItem);
-				if(sel != LISTBOX_ALL_ITEMS)
-				{
-					LISTBOX_GetItemText(hItem,sel,buf,sizeof(buf));
-					//printf("lb0 text=%s\r\n",buf);
-
-					switch(buf[0])
-					{
-						case 'S':
-							hw_dsp_eep_set_agc_mode(AGC_SLOW);
-							break;
-						case 'F':
-							hw_dsp_eep_set_agc_mode(AGC_FAST);
-							break;
-						case 'C':
-							hw_dsp_eep_set_agc_mode(AGC_CUSTOM);
-							break;
-						default:
-							hw_dsp_eep_set_agc_mode(AGC_MED);
-							break;
-					}
-				}
-				else
-					hw_dsp_eep_set_agc_mode(AGC_MED);
-
-				// Audio gain gets focus
-				hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER0);
-				WM_SetFocus(hItem);
-			}
-
-			break;
-		}
-
 		// Audio gain slider
 		case GUI_ID_SLIDER0:
 		{
+			if(NCode != WM_NOTIFICATION_VALUE_CHANGED)
+				break;
+
 			hSlider = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER0);
 			hEdit   = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT0);
 
@@ -167,6 +123,9 @@ static void _OnValueChangedA(WM_MESSAGE *pMsg, int Id,int NCode)
 		// RF gain slider
 		case GUI_ID_SLIDER1:
 		{
+			if(NCode != WM_NOTIFICATION_VALUE_CHANGED)
+				break;
+
 			hSlider = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER1);
 			hEdit   = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT1);
 
@@ -187,47 +146,76 @@ static void _OnValueChangedA(WM_MESSAGE *pMsg, int Id,int NCode)
 
 		case ID_LISTBOX_2:
 		{
+			if(NCode != WM_NOTIFICATION_SEL_CHANGED)
+				break;
 
 			hItem = WM_GetDialogItem(pMsg->hWin, ID_LISTBOX_2);
 			sel = LISTBOX_GetSel(hItem);
 			if(sel != LISTBOX_ALL_ITEMS)
 			{
 				LISTBOX_GetItemText(hItem,sel,buf,sizeof(buf));
-				//printf("lb0 text=%s\r\n",buf);
+				//--printf("list item=%s\r\n",buf);
 
 				switch(buf[0])
 				{
+					case 'O':
+					{
+						printf("-- agc off --\r\n");
+
+						// Limit RF gain to prevent loud hiss
+						hw_dsp_eep_update_rf_gain(20);
+
+						hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER1);	// rf gain slider handle
+						SLIDER_SetValue(hItem,20);								// reflect new RF gain value on screen
+						WM_SetFocus(hItem);										// give focus to slider
+
+						// AGC off
+						hw_dsp_eep_set_agc_mode(AGC_OFF);
+						goto finished;
+					}
 					case 'S':
+						printf("-- agc slow --\r\n");
 						hw_dsp_eep_set_agc_mode(AGC_SLOW);
 						break;
 					case 'F':
+						printf("-- agc fast --\r\n");
 						hw_dsp_eep_set_agc_mode(AGC_FAST);
 						break;
 					case 'C':
+						printf("-- agc custom --\r\n");
 						hw_dsp_eep_set_agc_mode(AGC_CUSTOM);
 						break;
 					default:
+						printf("-- agc medium --\r\n");
 						hw_dsp_eep_set_agc_mode(AGC_MED);
 						break;
 					}
-				}
-				else
-					hw_dsp_eep_set_agc_mode(AGC_MED);
-
-				// Audio gain gets focus
-				hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER0);
-				WM_SetFocus(hItem);
-
-				break;
 			}
+			else
+				hw_dsp_eep_set_agc_mode(AGC_MED);
+
+			// Audio gain gets focus
+			hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER0);
+			WM_SetFocus(hItem);
+
+			break;
+		}
 
 		default:
 			break;
 	}
+
+finished:
 	WM_InvalidateWindow(WM_GetClientWindow(pMsg->hWin));
 }
 
-// Foreground window handler
+//*----------------------------------------------------------------------------
+//* Function Name       : _cbBkWindow
+//* Object              : Foreground window handler
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 static void _cbBkWindow(WM_MESSAGE* pMsg)
 {
 	switch (pMsg->MsgId)
@@ -239,7 +227,13 @@ static void _cbBkWindow(WM_MESSAGE* pMsg)
 	}
 }
 
-// Dialog handler
+//*----------------------------------------------------------------------------
+//* Function Name       : _cbCallback
+//* Object              : Dialog handler
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 static void _cbCallback(WM_MESSAGE * pMsg)
 {
 	WM_HWIN 			hDlg;
@@ -268,17 +262,12 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
     			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
 
-    			// Fix scroll
+    			// Fix scroll - can we make those not ugly ??
+    			//
     			hItem = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0 + i);
     			SLIDER_SetRange(hItem, 0, ss.ranges[i]);
     			SLIDER_SetValue(hItem,ss.values[i]);
     		}
-
-    		// Init Checkbox
-    		hItem = WM_GetDialogItem(pMsg->hWin, ID_CHECKBOX_0);
-    		CHECKBOX_SetFont(hItem,&GUI_FontAvantGarde16);
-    		CHECKBOX_SetText(hItem, "AGC ON");
-    		CHECKBOX_SetState(hItem, 1);
 
     		// Init Listbox
     		hItem = WM_GetDialogItem(pMsg->hWin, ID_TEXT_LIST_2);
@@ -289,20 +278,22 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     		hItem = WM_GetDialogItem(pMsg->hWin, ID_LISTBOX_2);
     		LISTBOX_SetFont(hItem, &GUI_FontAvantGarde32);
     		LISTBOX_SetTextColor(hItem,LISTBOX_CI_UNSEL,GUI_STCOLOR_LIGHTBLUE);
-    		LISTBOX_AddString(hItem, "MEDIUM");
+    		LISTBOX_AddString(hItem, "OFF");
     		LISTBOX_AddString(hItem, "SLOW");
+    		LISTBOX_AddString(hItem, "MEDIUM");
     		LISTBOX_AddString(hItem, "FAST");
     		LISTBOX_AddString(hItem, "CUSTOM");
-    		hScrollV = SCROLLBAR_CreateAttached(hItem, SCROLLBAR_CF_VERTICAL);
-    		//--SCROLLBAR_SetValue(hItem,2);
+    		LISTBOX_SetSel(hItem,2);
 
-    		// Set selected
+    		// Set focus on audio slider at first paint
     		hItem = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0);
     		WM_SetFocus(hItem);
 
     		break;
     	}
 
+    	// ToDo: Implement proper keypad handling to allow to control
+    	//       only from the keyboard, in case we have a faulty touch screen
     	case WM_KEY:
     	{
     		switch (((WM_KEY_INFO*)(pMsg->Data.p))->Key)
@@ -317,55 +308,12 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     		break;
     	}
 
-    	/*case WM_TOUCH_CHILD:
-    	{
-    		Id = WM_GetId(pMsg->hWinSrc);      // Id of widget
-    		switch (Id)
-    		{
-    			case GUI_ID_TEXT0:
-    			case GUI_ID_TEXT1:
-    			case GUI_ID_TEXT2:
-    				pState = (GUI_PID_STATE *)((WM_MESSAGE *)pMsg->Data.p)->Data.p;
-    				if (pState)
-    				{
-    					if (pState->Pressed)
-    					{
-    						WM_HWIN hRadio = WM_GetDialogItem(hDlg, GUI_ID_RADIO0);
-    						RADIO_SetValue(hRadio, Id - GUI_ID_TEXT0);    	// Use the text beside the radio button to
-    																		// set the value of the radio button
-    					}
-    				}
-    				break;
-    		}
-    		break;
-    	}*/
-
     	case WM_NOTIFY_PARENT:
     	{
     		Id    = WM_GetId(pMsg->hWinSrc);      // Id of widget
     		NCode = pMsg->Data.v;                 // Notification code
-    		switch (NCode)
-    		{
-    			case WM_NOTIFICATION_RELEASED:      // React only if released
-    			{
-    				switch (Id)
-    				{
-    					case GUI_ID_OK:
-    						GUI_EndDialog(hDlg, 0);
-    						break;
-    					case GUI_ID_CANCEL:
-    						GUI_EndDialog(hDlg, 1);
-    						break;
-    				}
-    				break;
-    			}
 
-    			case WM_NOTIFICATION_VALUE_CHANGED:
-    				_OnValueChangedA(pMsg, Id,NCode);
-    				break;
-    			default:
-    				break;
-    		}
+    		_cbControl(pMsg, Id,NCode);
     		break;
     	}
 
@@ -374,6 +322,13 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 	}
 }
 
+//*----------------------------------------------------------------------------
+//* Function Name       : ui_audio_popup_set_profile
+//* Object              :
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 static void ui_audio_popup_set_profile(void)
 {
 	BUTTON_SetDefaultSkin(BUTTON_SKIN_FLEX);
@@ -438,6 +393,13 @@ static void ui_audio_popup_set_profile(void)
   	SLIDER_SetDefaultTickColor (GUI_STCOLOR_LIGHTBLUE);
 }
 
+//*----------------------------------------------------------------------------
+//* Function Name       : ui_audio_popup_create
+//* Object              :
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 void ui_audio_popup_create(void)
 {
 	ss.active_id = 0;
@@ -457,6 +419,13 @@ void ui_audio_popup_create(void)
 	hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 }
 
+//*----------------------------------------------------------------------------
+//* Function Name       : ui_audio_popup_destroy
+//* Object              :
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
 void ui_audio_popup_destroy(void)
 {
 	//WM_SetCallback		(WM_HBKWIN, 0);
