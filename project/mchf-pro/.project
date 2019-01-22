@@ -261,16 +261,6 @@
 			<locationURI>PARENT-5-PROJECT_LOC/middleware/STemWin_Addons/ST_GUI_Addons.h</locationURI>
 		</link>
 		<link>
-			<name>drivers/ui/audio_popup/ui_audio_popup.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/audio_popup/ui_audio_popup.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/audio_popup/ui_audio_popup.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/audio_popup/ui_audio_popup.h</locationURI>
-		</link>
-		<link>
 			<name>drivers/ui/desktop/ui_controls_layout.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/ui_controls_layout.h</locationURI>
@@ -294,6 +284,16 @@
 			<name>drivers/ui/menu/ui_menu.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/ui_menu.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/side_enc_menu/ui_side_enc_menu.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/side_enc_menu/ui_side_enc_menu.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/side_enc_menu/ui_side_enc_menu.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/side_enc_menu/ui_side_enc_menu.h</locationURI>
 		</link>
 		<link>
 			<name>drivers/ui/splash/ui_startup.c</name>

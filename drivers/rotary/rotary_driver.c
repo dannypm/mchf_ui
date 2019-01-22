@@ -77,17 +77,17 @@ static void rotary_check_side_encoder_switch(void)
 	{
 		while(!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13));
 
-		printf("encoder clicked\r\n");
+		//printf("side encoder clicked\r\n");
 
 		// Toggle UI driver state(only enter from desktop)
 		if(ui_s.req_state == MODE_DESKTOP)
 		{
-			ui_s.req_state = MODE_AUDIO_POPUP;
+			ui_s.req_state = MODE_SIDE_ENC_MENU;
 			return;
 		}
 
 		// Do not return from Menu mode
-		if(ui_s.req_state == MODE_AUDIO_POPUP)
+		if(ui_s.req_state == MODE_SIDE_ENC_MENU)
 			ui_s.req_state = MODE_DESKTOP;
 	}
 }
@@ -113,7 +113,7 @@ static void rotary_update_audio_publics(int pot_diff)
 	//
 }
 
-static void rotary_update_popup_menu_publics(int pot_diff)
+static void rotary_update_side_enc_menu_publics(int pot_diff)
 {
 	if(pot_diff > 0)
 	{
@@ -150,8 +150,8 @@ static void rotary_check_side_enc(void)
 	if(ui_s.cur_state == MODE_DESKTOP)
 		rotary_update_audio_publics(pot_diff);
 
-	if(ui_s.cur_state == MODE_AUDIO_POPUP)
-		rotary_update_popup_menu_publics(pot_diff);
+	if(ui_s.cur_state == MODE_SIDE_ENC_MENU)
+		rotary_update_side_enc_menu_publics(pot_diff);
 
 	// Flag preventing calling too often
 	audio_old = cnt;

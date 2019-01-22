@@ -44,8 +44,8 @@
 #include "desktop\dsp_stat\ui_controls_dsp_stat.h"
 #include "desktop\sd_icon\ui_controls_sd_icon.h"
 // -----------------------------------------------------------------------------------------------
-// Audio Popup Mode
-#include "audio_popup\ui_audio_popup.h"
+// Side Encoder Options Menu
+#include "side_enc_menu\ui_side_enc_menu.h"
 // -----------------------------------------------------------------------------------------------
 // Menu Mode
 #include "menu\k_module.h"
@@ -155,10 +155,10 @@ static void ui_driver_change_mode(void)
 			break;
 		}
 
-		// Switch to audio popup mode
-		case MODE_AUDIO_POPUP:
+		// Switch to side encoder options mode
+		case MODE_SIDE_ENC_MENU:
 		{
-			printf("Entering Audio popup mode...\r\n");
+			printf("Entering Side encoder options mode...\r\n");
 
 			// Destroy desktop controls
 			ui_controls_smeter_quit();
@@ -169,7 +169,7 @@ static void ui_driver_change_mode(void)
 			GUI_Clear();
 
 			// Show popup
-			ui_audio_popup_create();
+			ui_side_enc_menu_create();
 
 			// Initial paint
 			GUI_Exec();
@@ -184,7 +184,7 @@ static void ui_driver_change_mode(void)
 
 			// Destroy any Window Manager items
 			ui_destroy_menu();
-			ui_audio_popup_destroy();
+			ui_side_enc_menu_destroy();
 
 			// Clear screen
 			GUI_SetBkColor(GUI_BLACK);
@@ -321,12 +321,13 @@ ui_driver_loop:
 			break;
 		}
 
-		case MODE_AUDIO_POPUP:
+		case MODE_SIDE_ENC_MENU:
 		{
 			// Repaint Menu controls
 			GUI_Exec();
 
-			// Can't be bothered with fast repaint, unless on screen slider and multitouch
+			// Can't be bothered with fast repaint, unless on screen sliders and multitouch
+			// ToDo: check the above!
 			OsDelayMs(100);
 			break;
 		}
@@ -438,7 +439,7 @@ static void ui_driver_touch_router(void)
 	//   emWin doesn't like being accessed from separate threads
 	//   and we don't want critical sections on touch events!
 	//
-	if((ui_s.cur_state == MODE_MENU)||(ui_s.cur_state == MODE_AUDIO_POPUP))
+	if((ui_s.cur_state == MODE_MENU)||(ui_s.cur_state == MODE_SIDE_ENC_MENU))
 	{
 		// Process pending from digitizer driver
 		if((t_d.pending) && (!TS_State.Pressed))
