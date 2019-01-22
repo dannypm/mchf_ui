@@ -19,6 +19,7 @@
 
 #include "rotary_driver.h"
 #include "api_driver.h"
+#include "desktop\smeter\ui_controls_smeter.h"
 
 #include "gui.h"
 #include "dialog.h"
@@ -52,8 +53,14 @@ ushort freq_old = 0;
 
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
-
 extern struct	UI_DRIVER_STATE			ui_s;
+extern struct 	S_METER					sm;
+
+// ---------------------------------
+// Block s-meter refresh exports
+//extern uchar	rotary_block;
+//extern ushort	rotary_timer;
+// ---------------------------------
 
 #ifdef USE_SIDE_ENC_FOR_S_METER
 extern ulong s_met_pos;
@@ -159,6 +166,10 @@ static void rotary_check_side_enc(void)
 
 static void rotary_update_freq_publics(int pot_diff)
 {
+	// Block s-meter refresh
+	sm.rotary_timer 	= 0;
+	sm.rotary_block	= 1;
+
 	// Update public volume
 	if(pot_diff < 0)
 	{

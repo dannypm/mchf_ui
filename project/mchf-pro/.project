@@ -896,6 +896,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/middleware/STemWin/inc/WM_Intern.h</locationURI>
 		</link>
 		<link>
+			<name>drivers/ui/desktop/agc/ui_controls_agc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/agc/ui_controls_agc.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/desktop/agc/ui_controls_agc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/agc/ui_controls_agc.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/desktop/band/ui_controls_band.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/band/ui_controls_band.c</locationURI>

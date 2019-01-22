@@ -174,51 +174,15 @@
 #define M_FREQ1_Y					136
 //
 // ----------------------------------------------------------------------------
-// CPU Load control
-//
-#define CPU_L_X						360
-#define CPU_L_Y						1
-//
-// ----------------------------------------------------------------------------
-// DSP alive control
-#define DSP_POS_X					480
-#define DSP_POS_Y					1
-//
-// ----------------------------------------------------------------------------
 // Digitizer state control
 //
 #define DIGITIZER_X					600
 #define DIGITIZER_Y					2
 //
 // ----------------------------------------------------------------------------
-// Speaker control
-#define SPEAKER_X					738
-#define SPEAKER_Y					1
-#define SPEAKER_SIZE_X				62
-#define SPEAKER_SIZE_Y				50
-//
-// ----------------------------------------------------------------------------
-// Clock control
-#define CLOCK_X						620
-#define CLOCK_Y						2
-//
-// ----------------------------------------------------------------------------
-// SD Card control
-#define SD_CARD_X					690
-#define SD_CARD_Y					1
-//
-// ----------------------------------------------------------------------------
 // Band control
 #define BAND_X						696
 #define BAND_Y						95
-//
-// ----------------------------------------------------------------------------
-// Filter
-#define FILTER_X					356
-#define FILTER_Y					60
-//
-#define FILTER_SIZE_X				438
-#define FILTER_SIZE_Y				24
 //
 // ----------------------------------------------------------------------------
 // Step
@@ -239,6 +203,101 @@
 #define DECODER_MODE_Y				95
 //
 // ----------------------------------------------------------------------------
+// AGC control
+#define AGC_X						473
+#define AGC_Y						95
+//
+// ----------------------------------------------------------------------------
 
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// Desktop layouts - for now via conditional flags
+// ToDo: implement as const struct array declaration, to allow dynamic loading
+//
+//#define DESKTOP_LAYOUT_1
+#define DESKTOP_LAYOUT_2
+
+#ifdef DESKTOP_LAYOUT_1
+// ----------------------------------------------------------------------------
+// CPU Load control
+//
+#define CPU_L_X						360
+#define CPU_L_Y						1
+//
+// ----------------------------------------------------------------------------
+// DSP alive control
+#define DSP_POS_X					480
+#define DSP_POS_Y					1
+//
+// ----------------------------------------------------------------------------
+// Clock control
+#define CLOCK_X						620
+#define CLOCK_Y						2
+//
+// ----------------------------------------------------------------------------
+// SD Card control
+#define SD_CARD_X					690
+#define SD_CARD_Y					1
+//
+// ----------------------------------------------------------------------------
+// Speaker control
+#define SPEAKER_X					738
+#define SPEAKER_Y					1
+//
+#define SPEAKER_SIZE_X				62
+#define SPEAKER_SIZE_Y				50
+//
+// ----------------------------------------------------------------------------
+// Filter
+#define FILTER_X					356
+#define FILTER_Y					60
+//
+#define FILTER_SIZE_X				438
+#define FILTER_SIZE_Y				24
+//
+// ----------------------------------------------------------------------------
+#endif
+#ifdef DESKTOP_LAYOUT_2
+// ----------------------------------------------------------------------------
+// CPU Load control
+//
+#define CPU_L_X						360
+#define CPU_L_Y						35
+//
+// ----------------------------------------------------------------------------
+// DSP alive control
+#define DSP_POS_X					480
+#define DSP_POS_Y					35
+//
+// ----------------------------------------------------------------------------
+// Clock control
+#define CLOCK_X						620
+#define CLOCK_Y						36
+//
+// ----------------------------------------------------------------------------
+// SD Card control
+#define SD_CARD_X					690
+#define SD_CARD_Y					35
+//
+// ----------------------------------------------------------------------------
+// Speaker control
+#define SPEAKER_X					738
+#define SPEAKER_Y					35
+//
+#define SPEAKER_SIZE_X				62
+#define SPEAKER_SIZE_Y				50
+//
+// ----------------------------------------------------------------------------
+// Filter
+#define FILTER_X					360
+#define FILTER_Y					1
+//
+#define FILTER_SIZE_X				438
+#define FILTER_SIZE_Y				24
+//
+// ----------------------------------------------------------------------------
+#endif
 
 #endif

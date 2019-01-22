@@ -19,6 +19,24 @@
 
 #include "GUI.h"
 
+#define SMETER_EXPAND_VALUE		2
+
+// S-meter public
+struct S_METER {
+
+	int 	pub_value;
+	int 	old_value;
+	int 	skip;
+	int 	init_done;
+	uchar	smet_disabled;		// disabled from UI menu(var in eeprom)
+	ulong 	repaints;
+	uchar 	use_bmp;
+	uchar	is_peak;
+	uchar	rotary_block;		// s-meter refresh request from rotary driver (while moving dial)
+	ushort	rotary_timer;		// how long to block refresh for
+
+} S_METER;
+
 #define countof(Obj) 			(sizeof(Obj) / sizeof(Obj[0]))
 #define DEG2RAD      			(3.1415926f / 180)
 

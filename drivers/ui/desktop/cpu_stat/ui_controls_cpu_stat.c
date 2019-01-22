@@ -24,9 +24,9 @@
 #include "ui_controls_cpu_stat.h"
 #include "desktop\ui_controls_layout.h"
 
-long 	skip_cpu = 0;	// use this to skip print too often, but calculate average usage
-ulong 	cpu_aver = 0;	// accumulator
-ulong	cpu_cnt = 0;	// count var
+long 	skip_cpu = 0;		// use this to skip print too often, but calculate average usage
+ulong 	cpu_aver = 0;		// accumulator
+ulong	cpu_cnt = 0;		// count var
 uchar 	uc_keep_alive = 0;
 uchar 	uc_keep_flag  = 0;
 
@@ -115,13 +115,14 @@ static void ui_controls_cpu_stat_show_cpu_load(void)
 //*----------------------------------------------------------------------------
 void ui_controls_cpu_stat_init(void)
 {
-	char   	buff[100];
-
+	// Moved to s-meter
+	// --
+	//char   	buff[100];
 	// Debug print CPU firmware version
-	GUI_SetColor(GUI_GRAY);
-	GUI_SetFont(&GUI_Font8x16_1);
-	sprintf(buff,"CPU v: %d.%d.%d.%d",MCHFX_VER_MAJOR,MCHFX_VER_MINOR,MCHFX_VER_RELEASE,MCHFX_VER_BUILD);
-	GUI_DispStringAt(buff,360,40);
+	//GUI_SetColor(GUI_GRAY);
+	//GUI_SetFont(&GUI_Font8x16_1);
+	//sprintf(buff,"CPU v: %d.%d.%d.%d",MCHFX_VER_MAJOR,MCHFX_VER_MINOR,MCHFX_VER_RELEASE,MCHFX_VER_BUILD);
+	//GUI_DispStringAt(buff,360,40);
 
 	// This ok as init ?
 	ui_controls_cpu_stat_show_cpu_load();
@@ -151,7 +152,7 @@ void ui_controls_cpu_stat_quit(void)
 //*----------------------------------------------------------------------------
 void ui_controls_cpu_stat_touch(void)
 {
-
+	//
 }
 
 //*----------------------------------------------------------------------------

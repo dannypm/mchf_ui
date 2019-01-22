@@ -14,24 +14,14 @@
 **          non-commercial use only. All source files under GPL-3.0, unless        **
 **          third party drivers specifies otherwise. Thank you!                    **
 ************************************************************************************/
-#ifndef __UI_DRIVER_H
-#define __UI_DRIVER_H
+#ifndef UI_CONTROLS_AGC_H
+#define UI_CONTROLS_AGC_H
 
-// Disable individual controls
-#define 	SPECTRUM_WATERFALL
-#define 	VFO_BOTH
+// Exports
+void ui_controls_agc_init(void);
+void ui_controls_agc_quit(void);
 
-#define		DESKTOP_SMETER			0
-#define		DESKTOP_SPECTRUM		1
-#define		DESKTOP_WATERFALL		2
-
-// Debug print, temp here
-//void print_text(char *text);
-//void print_int(char *text, int value);
-//void print_hex_array(uchar *data,uchar size);
-
-void ui_driver_emwin_528_init(void);
-
-void ui_driver_task(void const * argument);
+void ui_controls_agc_touch(void);
+void ui_controls_agc_refresh(void);
 
 #endif

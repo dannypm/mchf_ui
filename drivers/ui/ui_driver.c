@@ -43,6 +43,7 @@
 #include "desktop\cpu_stat\ui_controls_cpu_stat.h"
 #include "desktop\dsp_stat\ui_controls_dsp_stat.h"
 #include "desktop\sd_icon\ui_controls_sd_icon.h"
+#include "desktop\agc\ui_controls_agc.h"
 // -----------------------------------------------------------------------------------------------
 // Side Encoder Options Menu
 #include "side_enc_menu\ui_side_enc_menu.h"
@@ -237,6 +238,7 @@ static void ui_driver_init_desktop(void)
 	ui_controls_cpu_stat_init();
 	ui_controls_dsp_stat_init();
 	ui_controls_sd_icon_init();
+	ui_controls_agc_init();
 
 	if(*(uchar *)(EEP_BASE + EEP_KEYER_ON))
 		ui_controls_keyer_init();
@@ -414,6 +416,7 @@ static void ui_driver_state_machine(void)
 	ui_controls_vfo_step_refresh();
 	ui_controls_clock_refresh();
 	ui_controls_sd_icon_refresh();
+	ui_controls_agc_refresh();
 
 	// test
 	ui_driver_update_dsp_info();

@@ -18,7 +18,7 @@
 #include "mchf_types.h"
 #include "mchf_pro_board.h"
 
-#include "ui_driver.h"
+//#include "ui_driver.h"
 #include "ui_controls_smeter.h"
 #include "desktop\ui_controls_layout.h"
 
@@ -26,28 +26,39 @@
 
 // Externally declared s-meter bmp
 extern GUI_CONST_STORAGE GUI_BITMAP bmscale;
-
+// --
 extern struct 		UI_SW	ui_sw;
+// Public radio state
+extern struct	TRANSCEIVER_STATE_UI	tsu;
 
+#if 0
 // -------------------------
 // S-meter publics
 int 	pub_value 		= 0;
 int 	old_value 		= 0;
 int 	skip 			= 0;
 int 	init_done		= 0;
-uchar	smet_disabled 	= 0;
+uchar	smet_disabled 	= 0;		// disabled from UI menu(var in eeprom)
 ulong 	repaints 		= 0;
 uchar 	use_bmp 		= 1;
 uchar	is_peak			= 0;
+uchar	rotary_block	= 0;		// s-meter refresh request from rotary driver (while moving dial)
+ushort	rotary_timer	= 0;		// how long to block refresh for
 // -------------------------
+#endif
 
 // Object for banding memory device
-GUI_AUTODEV AutoDev;
+GUI_AUTODEV 	AutoDev;
+//
+// S-meter publics
+struct S_METER	sm;
 
 #ifdef USE_SIDE_ENC_FOR_S_METER
 ulong s_met_pos 	= 180;
 ulong s_met_pos_loc = 180;
 #endif
+
+static void ui_controls_smeter_draw_via_rotate(uchar pos);
 
 //*----------------------------------------------------------------------------
 //* Function Name       : ui_controls_get_angle
@@ -68,6 +79,42 @@ ulong s_met_pos_loc = 180;
   }
   return 225;
 }*/
+
+//*----------------------------------------------------------------------------
+//* Function Name       : ui_controls_smeter_block_on
+//* Object              : Handle rotary block timer here
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
+static void ui_controls_smeter_block_on(void)
+{
+	int test_value = (sm.old_value*SMETER_EXPAND_VALUE)/2;
+
+	// Nothing to process
+	if(!sm.rotary_block)
+		return;
+
+	//--printf("-- s-meter block on --\r\n");
+
+	// Reset needle (graciously) when block is on
+	if(test_value > 10)
+	{
+		test_value -= 10;
+		ui_controls_smeter_draw_via_rotate(test_value - sm.rotary_timer);
+
+		sm.old_value = test_value;
+	}
+
+	// Update timer
+	(sm.rotary_timer)++;
+	if(sm.rotary_timer == 5)
+	{
+		// Reset block flag and timer
+		sm.rotary_timer 	= 0;
+		sm.rotary_block	= 0;
+	}
+}
 
 #ifndef USE_SPRITE
 //*----------------------------------------------------------------------------
@@ -95,7 +142,7 @@ static void ui_controls_draw_needle(void * p)
 						(S_METER_X + bmscale.XSize -  3),
 						(S_METER_Y + bmscale.YSize + 25));
 
-		if(use_bmp) GUI_DrawBitmap(&bmscale, S_METER_X, S_METER_Y);
+		if(sm.use_bmp) GUI_DrawBitmap(&bmscale, S_METER_X, S_METER_Y);
 	}
 
 	#ifdef S_USE_SHADOW
@@ -179,27 +226,40 @@ static void ui_controls_draw_needle(void * p)
 		// Debug only
 		GUI_SetColor(GUI_BLUE);
 		GUI_SetFont(&GUI_Font8x16_1);
-		sprintf(buf,"R=%d",repaints);
-		GUI_DispStringAt(buf,S_METER_X + 5,	S_METER_Y + 5);
-		#endif
-
-		#if 0
-		// Debug only
-		GUI_SetColor(GUI_BLUE);
-		GUI_SetFont(&GUI_Font8x16_1);
 		sprintf(buf,"P=%d",pParam->pos);
 		GUI_DispStringAt(buf,S_METER_X + 312,S_METER_Y + 5);
 		#endif
 
-		// PEAK/AVER indicator
+		// --------------------------------------------------------------------------------------------------
 		GUI_SetAlpha(168);
-		GUI_SetColor(GUI_BLUE);
+		// PEAK/AVER indicator
+		GUI_SetColor(GUI_DARKBLUE);
 		GUI_SetFont(&GUI_Font8x16_1);
-		if(is_peak)
-			GUI_DispStringAt("PEAK",S_METER_X + 312,S_METER_Y + bmscale.YSize - 18);
+		if(sm.is_peak)
+			GUI_DispStringAt("PEAK",S_METER_X + 312,S_METER_Y + 5);
 		else
-			GUI_DispStringAt("AVER",S_METER_X + 312,S_METER_Y + bmscale.YSize - 18);
+			GUI_DispStringAt("AVER",S_METER_X + 312,S_METER_Y + 5);
+		// Debug print CPU firmware version
+		//GUI_SetColor(GUI_BLUE);
+		//GUI_SetFont(&GUI_Font8x16_1);
+		sprintf(buf,"UI:%d.%d.%d.%d",MCHFX_VER_MAJOR,MCHFX_VER_MINOR,MCHFX_VER_RELEASE,MCHFX_VER_BUILD);
+		GUI_DispStringAt(buf,S_METER_X + 5,	S_METER_Y + bmscale.YSize - 16);
+		// Debug print DSP firmware version
+		if(tsu.dsp_alive)
+		{
+			//GUI_SetColor(GUI_BLUE);
+			//GUI_SetFont(&GUI_Font8x16_1);
+			sprintf(buf,"DSP:%d.%d.%d.%d",tsu.dsp_rev1,tsu.dsp_rev2,tsu.dsp_rev3,tsu.dsp_rev4);
+			GUI_DispStringAt(buf,S_METER_X + 225,S_METER_Y + bmscale.YSize - 16);
+		}
+		// Repaint count
+		//GUI_SetColor(GUI_BLUE);
+		//GUI_SetFont(&GUI_Font8x16_1);
+		sprintf(buf,"R=%d",sm.repaints);
+		GUI_DispStringAt(buf,S_METER_X + 5,S_METER_Y + 5);
+		// -------------
 		GUI_SetAlpha(0);
+		// --------------------------------------------------------------------------------------------------
 	}
 }
 
@@ -324,6 +384,18 @@ void ui_controls_smeter_init(void)
 	int         tDiff = 0;
 	int         t0;
 
+	// Init public data
+	sm.pub_value 		= 0;
+	sm.old_value 		= 0;
+	sm.skip 			= 0;
+	sm.init_done		= 0;
+	sm.smet_disabled 	= 0;
+	sm.repaints 		= 0;
+	sm.use_bmp 			= 1;
+	sm.is_peak			= 0;
+	sm.rotary_block		= 0;
+	sm.rotary_timer		= 0;
+
 	// Enable high resolution for antialiasing
 	GUI_AA_EnableHiRes();
 	GUI_AA_SetFactor(MAG);
@@ -342,13 +414,13 @@ void ui_controls_smeter_init(void)
 	#endif
 
 	// From Eeprom
-	smet_disabled = !(*(uchar *)(EEP_BASE + EEP_AN_MET_ON));
+	sm.smet_disabled = !(*(uchar *)(EEP_BASE + EEP_AN_MET_ON));
 
 	// Debug
-	repaints = 0;
+	sm.repaints = 0;
 
 	// Ready to refresh
-	init_done = 1;
+	sm.init_done = 1;
 }
 
 //*----------------------------------------------------------------------------
@@ -365,7 +437,7 @@ void ui_controls_smeter_quit(void)
 	GUI_ClearRect(0, 70, 319, 239);
 	#endif
 
-	init_done = 0;
+	sm.init_done = 0;
 }
 
 #if 0
@@ -388,7 +460,7 @@ void ui_controls_smeter_touch(void)
 
 	//smet_disabled = !smet_disabled;
 	//use_bmp = !use_bmp;
-	is_peak = !is_peak;
+	sm.is_peak = !(sm.is_peak);
 }
 
 //*----------------------------------------------------------------------------
@@ -398,15 +470,17 @@ void ui_controls_smeter_touch(void)
 //* Output Parameters   :
 //* Functions called    :
 //*----------------------------------------------------------------------------
-#define EXPAND_VALUE		3
 void ui_controls_smeter_refresh(FAST_REFRESH *cb)
 {
 	ushort 		i,curr,diff,step,some_val,expanded,bandw,centre_freq,aver,peak;
 	uchar		is_up;
 
 	// Control ready ?
-	if((!init_done) || (smet_disabled))
+	if((!(sm.init_done)) || (sm.smet_disabled) || (sm.rotary_block))
+	{
+		ui_controls_smeter_block_on();
 		return;
+	}
 
 	#ifdef USE_SIDE_ENC_FOR_S_METER
 	if(s_met_pos != s_met_pos_loc)
@@ -418,13 +492,13 @@ void ui_controls_smeter_refresh(FAST_REFRESH *cb)
 	#endif
 
 	// Debug
-	repaints = 0;
+	sm.repaints = 0;
 
 	// Already calculated by spectrum repaint routines
 	bandw 		= (ui_sw.bandpass_end - ui_sw.bandpass_start);
 	centre_freq = (ui_sw.bandpass_end - ui_sw.bandpass_start)/2 + ui_sw.bandpass_start;
 
-	if(is_peak)
+	if(sm.is_peak)
 	{
 		// Peak point from a bandwidth
 		// midpoint is (start_element + count/2)
@@ -450,7 +524,7 @@ void ui_controls_smeter_refresh(FAST_REFRESH *cb)
 
 	#if 1
 	// Nothing change, skip repaint
-	if(old_value == curr)
+	if(sm.old_value == curr)
 		return;
 	#endif
 
@@ -474,18 +548,18 @@ void ui_controls_smeter_refresh(FAST_REFRESH *cb)
 	if(curr < 25) curr = 0;
 
 	// Expand scale
-	expanded = curr*EXPAND_VALUE;
+	expanded = curr*SMETER_EXPAND_VALUE;
 
 	// Decide needle direction, based on old value
-	if(old_value > curr)
+	if(sm.old_value > curr)
 	{
 		is_up = 0;				// needle going down
-		diff = (old_value*EXPAND_VALUE) - expanded;
+		diff = ((sm.old_value)*SMETER_EXPAND_VALUE) - expanded;
 	}
 	else
 	{
 		is_up = 1;				// needle going up
-		diff  = expanded - (old_value*EXPAND_VALUE);
+		diff  = expanded - ((sm.old_value)*SMETER_EXPAND_VALUE);
 	}
 
 	// IRL analogue meter emulation by variable step change
@@ -495,7 +569,7 @@ void ui_controls_smeter_refresh(FAST_REFRESH *cb)
 		step = S_NEEDLE_STEP_SLOW;
 
 	// Debug only
-	repaints = diff/step;
+	sm.repaints = diff/step;
 
 	#if 0
 	printf("--------------------------------------\r\n");
@@ -514,9 +588,9 @@ void ui_controls_smeter_refresh(FAST_REFRESH *cb)
 	for(i = 0; i < diff; i += step)
 	{
 		if(is_up)
-			some_val = (old_value*EXPAND_VALUE) + i;
+			some_val = ((sm.old_value)*SMETER_EXPAND_VALUE) + i;
 		else
-			some_val = (old_value*EXPAND_VALUE) - i;
+			some_val = ((sm.old_value)*SMETER_EXPAND_VALUE) - i;
 
 		// Collapse scale
 		some_val = some_val/2;
@@ -530,5 +604,5 @@ void ui_controls_smeter_refresh(FAST_REFRESH *cb)
 	}
 
 	// Save to public
-	old_value = curr;
+	sm.old_value = curr;
 }

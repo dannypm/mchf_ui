@@ -21,68 +21,10 @@
 #include "dialog.h"
 #include "ST_GUI_Addons.h"
 
-#include "ui_controls_dsp_stat.h"
+#include "ui_controls_agc.h"
 #include "desktop\ui_controls_layout.h"
 
-// Public radio state
-extern struct	TRANSCEIVER_STATE_UI	tsu;
-
-uchar dsp_control_init_done = 0;
-uchar skip_dsp_check = 0;
-
-//*----------------------------------------------------------------------------
-//* Function Name       : ui_controls_dsp_stat_print
-//* Object              :
-//* Input Parameters    :
-//* Output Parameters   :
-//* Functions called    :
-//*----------------------------------------------------------------------------
-static void ui_controls_dsp_stat_print(void)
-{
-	char   	buff[100];
-
-	skip_dsp_check++;
-	if(skip_dsp_check < 4)
-		return;
-
-	skip_dsp_check = 0;
-
-	if(!dsp_control_init_done)
-	{
-		// Destroy control
-		GUI_SetColor(GUI_BLACK);
-		GUI_FillRect(			DSP_POS_X,		DSP_POS_Y,	DSP_POS_X + 80,	DSP_POS_Y + 14		 );
-
-		// Create frame
-		GUI_SetColor(GUI_BLUE);
-		GUI_DrawRoundedRect(	DSP_POS_X,		DSP_POS_Y,	DSP_POS_X + 80,	DSP_POS_Y + 14,		2);
-		GUI_FillRect(			DSP_POS_X + 35,	DSP_POS_Y,	DSP_POS_X + 90,	DSP_POS_Y + 14		 );
-
-		dsp_control_init_done = 1;
-	}
-
-	if(!tsu.dsp_alive)
-		GUI_SetColor(GUI_GRAY);
-	else
-		GUI_SetColor(GUI_WHITE);
-
-	// Print text
-	GUI_SetFont(&GUI_Font8x16_1);
-	GUI_DispStringAt("DSP",	DSP_POS_X + 52,	DSP_POS_Y + 1);
-
-	// No blinking
-	if(!tsu.dsp_alive)
-		return;
-
-	// Create blinker
-	if(tsu.dsp_blinker)
-		GUI_SetColor(GUI_RED);
-	else
-		GUI_SetColor(GUI_BLACK);
-
-	GUI_FillRoundedRect(	DSP_POS_X + 7,	DSP_POS_Y + 4,	DSP_POS_X + 26,	DSP_POS_Y + 10,		2);
-}
-
+// ToDo: fully implement control...
 
 //*----------------------------------------------------------------------------
 //* Function Name       :
@@ -92,21 +34,22 @@ static void ui_controls_dsp_stat_print(void)
 //* Notes    			:
 //* Context    			: CONTEXT_DRIVER_UI
 //*----------------------------------------------------------------------------
-void ui_controls_dsp_stat_init(void)
+void ui_controls_agc_init(void)
 {
-	// Moved to s-meter control
-	//char   	buff[100];
-	//if(tsu.dsp_alive)
-	//{
-		// Debug print DSP firmware version
-	//	GUI_SetColor(GUI_GRAY);
-	//	GUI_SetFont(&GUI_Font8x16_1);
-	//	sprintf(buff,"DSP v: %d.%d.%d.%d",tsu.dsp_rev1,tsu.dsp_rev2,tsu.dsp_rev3,tsu.dsp_rev4);
-	//	GUI_DispStringAt(buff,520,40);
-	//}
+	GUI_SetColor(GUI_GRAY);
+	GUI_FillRoundedRect((AGC_X + 0),(AGC_Y + 0),(AGC_X + 102),(AGC_Y + 19),2);
+	GUI_SetFont(&GUI_Font20_1);
+	GUI_SetColor(GUI_WHITE);
+	GUI_DispStringAt("AGC",(AGC_X + 2),(AGC_Y + 0));
+	GUI_SetColor(GUI_WHITE);
+	GUI_FillRoundedRect((AGC_X + 43),(AGC_Y + 2),(AGC_X + 100),(AGC_Y + 17),2);
+	GUI_SetColor(GUI_GRAY);
 
-	dsp_control_init_done = 0;
-	ui_controls_dsp_stat_print();
+	//GUI_DispStringAt("OFF",(AGC_X + 51),(AGC_Y + 0));
+	GUI_DispStringAt("SLOW",(AGC_X + 45),(AGC_Y + 0));
+	//GUI_DispStringAt("MID",(AGC_X + 51),(AGC_Y + 0));
+	//GUI_DispStringAt("FAST",(AGC_X + 51),(AGC_Y + 0));
+	//GUI_DispStringAt("CUST",(AGC_X + 51),(AGC_Y + 0));
 }
 
 //*----------------------------------------------------------------------------
@@ -117,7 +60,7 @@ void ui_controls_dsp_stat_init(void)
 //* Notes    			:
 //* Context    			: CONTEXT_DRIVER_UI
 //*----------------------------------------------------------------------------
-void ui_controls_dsp_stat_quit(void)
+void ui_controls_agc_quit(void)
 {
 
 }
@@ -130,7 +73,7 @@ void ui_controls_dsp_stat_quit(void)
 //* Notes    			:
 //* Context    			: CONTEXT_DRIVER_UI
 //*----------------------------------------------------------------------------
-void ui_controls_dsp_stat_touch(void)
+void ui_controls_agc_touch(void)
 {
 
 }
@@ -143,7 +86,7 @@ void ui_controls_dsp_stat_touch(void)
 //* Notes    			:
 //* Context    			: CONTEXT_DRIVER_UI
 //*----------------------------------------------------------------------------
-void ui_controls_dsp_stat_refresh(void)
+void ui_controls_agc_refresh(void)
 {
-	ui_controls_dsp_stat_print();
+
 }
