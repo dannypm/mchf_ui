@@ -21,6 +21,7 @@
 //
 #include "touch_driver.h"
 #include "k_rtc.h"
+#include "dsp_eep\hw_dsp_eep.h"
 //
 #include "gui.h"
 #include "dialog.h"
@@ -80,6 +81,9 @@ struct	UI_DRIVER_STATE			ui_s;
 GUI_PID_STATE 					TS_State;
 // Touch driver state - our driver
 extern struct TD 				t_d;
+
+// Public radio state
+extern struct	TRANSCEIVER_STATE_UI	tsu;
 
 //*----------------------------------------------------------------------------
 //* Function Name       : ui_driver_emwin_528_init
@@ -271,6 +275,11 @@ void ui_driver_task(void const * argument)
 	GUI_SelectLayer(0);
 	GUI_SetBkColor(GUI_BLACK);
 	GUI_Clear();
+
+	// Set AGC, don't care what is the DSP state, just set it here
+	tsu.agc_state 	= READ_EEPROM(EEP_AGC_STATE);
+	tsu.rf_gain		= 50;
+	hw_dsp_eep_set_agc_mode(tsu.agc_state);
 
 	// Init controls
 	ui_driver_init_desktop();

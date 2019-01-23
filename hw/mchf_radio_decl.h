@@ -120,6 +120,7 @@ enum	{
 #define	EEP_SW_SMOOTH				0x005
 #define	EEP_AN_MET_ON				0x006
 #define	EEP_KEYER_ON				0x007
+#define	EEP_AGC_STATE				0x008
 //
 #define	EEP_BANDS					0xE10		// pos 3600, band info, 400 bytes
 

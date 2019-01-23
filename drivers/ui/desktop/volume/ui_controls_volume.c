@@ -167,6 +167,8 @@ void ui_controls_volume_touch(void)
 	ui_controls_volume_init();
 
 	mute_debounce = 3;
+
+	tsu.audio_mute_flag = mute_flag;
 }
 
 //*----------------------------------------------------------------------------

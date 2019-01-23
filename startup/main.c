@@ -314,6 +314,9 @@ static void transceiver_state_init(void)
 	tsu.update_filter_dsp_req	= 0;
 	tsu.update_nco_dsp_req		= 0;
 
+	// Mute off
+	tsu.audio_mute_flag = 0;
+
 	// needed ?
 	// Band info structures init with default values
 	// need re-load from eeprom

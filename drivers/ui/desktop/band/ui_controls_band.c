@@ -26,10 +26,14 @@
 
 #include "desktop\freq\ui_controls_frequency.h"
 
-uchar loc_band = 0;
+uchar loc_band;
 
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
+
+// ToDo: this control kinda sucks, it needs serious re-write!
+//
+
 
 //*----------------------------------------------------------------------------
 //* Function Name       :
@@ -41,6 +45,8 @@ extern struct	TRANSCEIVER_STATE_UI	tsu;
 //*----------------------------------------------------------------------------
 void ui_controls_band_init(void)
 {
+	loc_band = 55;
+
 	GUI_SetColor(GUI_GRAY);
 	GUI_FillRoundedRect((BAND_X + 0),(BAND_Y + 0),(BAND_X + 102),(BAND_Y + 19),2);
 	GUI_SetFont(&GUI_Font20_1);
@@ -48,8 +54,10 @@ void ui_controls_band_init(void)
 	GUI_DispStringAt("Band",(BAND_X + 4),(BAND_Y + 0));
 	GUI_SetColor(GUI_WHITE);
 	GUI_FillRoundedRect((BAND_X + 50),(BAND_Y + 2),(BAND_X + 100),(BAND_Y + 17),2);
-	GUI_SetColor(GUI_GRAY);
-	GUI_DispStringAt("40m",(BAND_X + 58),(BAND_Y + 0));
+	//GUI_SetColor(GUI_GRAY);
+	//GUI_DispStringAt("40m",(BAND_X + 58),(BAND_Y + 0));
+
+	ui_controls_band_refresh();
 }
 
 //*----------------------------------------------------------------------------

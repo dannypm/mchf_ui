@@ -94,6 +94,10 @@ static void _cbControl(WM_MESSAGE *pMsg, int Id,int NCode)
 			if(NCode != WM_NOTIFICATION_VALUE_CHANGED)
 				break;
 
+			// Audio mute on, ignore events
+			if(tsu.audio_mute_flag)
+				break;
+
 			hSlider = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER0);
 			hEdit   = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT0);
 
@@ -133,8 +137,10 @@ static void _cbControl(WM_MESSAGE *pMsg, int Id,int NCode)
 			// Update Edit box
 			EDIT_SetValue(hEdit, v);
 
+			tsu.rf_gain = v;
+
 			// Post to DSP
-			hw_dsp_eep_update_rf_gain(v);
+			hw_dsp_eep_update_rf_gain(tsu.rf_gain);
 
 			// Update publics - needed ?
 			ss.values[1] = v;
@@ -158,39 +164,45 @@ static void _cbControl(WM_MESSAGE *pMsg, int Id,int NCode)
 				{
 					case 'O':
 					{
-						printf("-- agc off --\r\n");
-
 						// Limit RF gain to prevent loud hiss
-						hw_dsp_eep_update_rf_gain(20);
+						tsu.rf_gain = 20;
+						hw_dsp_eep_update_rf_gain(tsu.rf_gain);
 
 						hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER1);	// rf gain slider handle
 						SLIDER_SetValue(hItem,20);								// reflect new RF gain value on screen
 						WM_SetFocus(hItem);										// give focus to slider
 
 						// AGC off
-						hw_dsp_eep_set_agc_mode(AGC_OFF);
+						tsu.agc_state = AGC_OFF;
+						hw_dsp_eep_set_agc_mode(tsu.agc_state);
+
+						// Save
+						WRITE_EEPROM(EEP_AGC_STATE,tsu.agc_state);
+
 						goto finished;
 					}
 					case 'S':
-						printf("-- agc slow --\r\n");
-						hw_dsp_eep_set_agc_mode(AGC_SLOW);
+						tsu.agc_state = AGC_SLOW;
 						break;
 					case 'F':
-						printf("-- agc fast --\r\n");
-						hw_dsp_eep_set_agc_mode(AGC_FAST);
+						tsu.agc_state = AGC_FAST;
 						break;
 					case 'C':
-						printf("-- agc custom --\r\n");
-						hw_dsp_eep_set_agc_mode(AGC_CUSTOM);
+						tsu.agc_state = AGC_CUSTOM;
 						break;
 					default:
-						printf("-- agc medium --\r\n");
-						hw_dsp_eep_set_agc_mode(AGC_MED);
+						tsu.agc_state = AGC_MED;
 						break;
 					}
 			}
 			else
-				hw_dsp_eep_set_agc_mode(AGC_MED);
+				tsu.agc_state = AGC_MED;
+
+			// Update DSP value
+			hw_dsp_eep_set_agc_mode(tsu.agc_state);
+
+			// Save
+			WRITE_EEPROM(EEP_AGC_STATE,tsu.agc_state);
 
 			// Audio gain gets focus
 			hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_SLIDER0);
@@ -261,7 +273,6 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
 
     			// Fix scroll - can we make those not ugly ??
-    			//
     			hItem = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0 + i);
     			SLIDER_SetRange(hItem, 0, ss.ranges[i]);
     			SLIDER_SetValue(hItem,ss.values[i]);
@@ -276,12 +287,12 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     		hItem = WM_GetDialogItem(pMsg->hWin, ID_LISTBOX_2);
     		LISTBOX_SetFont(hItem, &GUI_FontAvantGarde32);
     		LISTBOX_SetTextColor(hItem,LISTBOX_CI_UNSEL,GUI_STCOLOR_LIGHTBLUE);
-    		LISTBOX_AddString(hItem, "OFF");
     		LISTBOX_AddString(hItem, "SLOW");
     		LISTBOX_AddString(hItem, "MEDIUM");
     		LISTBOX_AddString(hItem, "FAST");
     		LISTBOX_AddString(hItem, "CUSTOM");
-    		LISTBOX_SetSel(hItem,2);
+    		LISTBOX_AddString(hItem, "OFF");
+    		LISTBOX_SetSel(hItem,tsu.agc_state);
 
     		// Set focus on audio slider at first paint
     		hItem = WM_GetDialogItem(hDlg, GUI_ID_SLIDER0);
@@ -405,7 +416,7 @@ void ui_side_enc_menu_create(void)
 	ss.values[0] = tsu.band[tsu.curr_band].volume;
 	ss.ranges[0] = 17;
 	// RF gain
-	ss.values[1] = 50;
+	ss.values[1] = tsu.rf_gain;
 	ss.ranges[1] = 50;
 	// Keyer speed
 	ss.values[2] = 18;

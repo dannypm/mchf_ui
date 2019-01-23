@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				70
+#define	MCHFX_VER_BUILD				71
 //
 // -----------------------------------------------------------------------------
 //
@@ -337,20 +337,14 @@ struct TRANSCEIVER_STATE_UI {
 	// --
 	// -----------------------------
 	// Local status
-	//uchar 	audio_volume;
-	//uchar 	demod_mode;
+	uchar	agc_state;
+	uchar	rf_gain;
+	// --
+	uchar 	audio_mute_flag;
+	// ---
 	uchar 	curr_band;
-	//uchar 	curr_filter;
 	// --
 	ulong	step;
-	// --
-	//ulong	vfo_a;
-	// --
-	//ulong	vfo_b;
-	// --
-	//short 	nco_freq;
-	//uchar	fixed_mode;
-	//uchar   active_vfo;			// A, B
 	// --
 	uchar	cw_tx_state;		// 0 - idle, 1 - on, 2 - release
 	uchar	cw_iamb_type;
