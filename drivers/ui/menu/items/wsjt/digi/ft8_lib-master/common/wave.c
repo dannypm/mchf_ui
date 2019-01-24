@@ -17,9 +17,9 @@
 //#include <stdint.h>
 
 // Save signal in floating point format (-1 .. +1) as a WAVE file using 16-bit signed integers.
-void save_wav(const float *signal, int num_samples, int sample_rate, const char *path)
+void save_wav(float *signal, int num_samples, int sample_rate, char *path)
 {
-    char subChunk1ID[4] = {'f', 'm', 't', ' '};
+	char subChunk1ID[4] = {'f', 'm', 't', ' '};
     uint32_t subChunk1Size = 16;    // 16 for PCM
     uint16_t audioFormat = 1;       // PCM = 1
     uint16_t numChannels = 1;
@@ -38,7 +38,19 @@ void save_wav(const float *signal, int num_samples, int sample_rate, const char 
     uint32_t chunkSize = 4 + (8 + subChunk1Size) + (8 + subChunk2Size);
     char format[4] = {'W', 'A', 'V', 'E'};
 
+#if 0
     int16_t *raw_data = (int16_t *)pvPortMalloc(num_samples * blockAlign);
+
+    printf("save_wav ram usage=%d bytes\r\n",num_samples * blockAlign);
+
+    if(raw_data == NULL)
+    {
+    	printf("malloc ret=%08x bytes\r\n",raw_data);
+    	printf("Allocator can give that much, exit!\r\n");
+    	return;
+    }
+
+
 
     for (int i = 0; i < num_samples; i++)
     {
@@ -47,17 +59,15 @@ void save_wav(const float *signal, int num_samples, int sample_rate, const char 
         else if (x < -1.0) x = -1.0;
         raw_data[i] = (int)(0.5 + (x * 32767.0));
     }
-
+#endif
+#if 1
     //FILE *f = fopen(path, "wb");
-    if(f_open(&f,path,FA_WRITE|FA_CREATE_NEW))
+    if(f_open(&f,path, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
     {
-    	vPortFree(raw_data);
+    	//vPortFree(raw_data);
+    	printf("error create file, exit!\r\n");
     	return;
     }
-
-    // ToDo: test file creation and enable write...
-    //		 also crashes the OS
-
 
     // NOTE: works only on little-endian architecture
     //fwrite(chunkID, sizeof(chunkID), 1, f);
@@ -100,15 +110,37 @@ void save_wav(const float *signal, int num_samples, int sample_rate, const char 
     f_write(&f,&subChunk2Size, sizeof(subChunk2Size), &written);
 
     //fwrite(raw_data, blockAlign, num_samples, f);
-    f_write(&f,raw_data, blockAlign, &written);		// (blockAlign * num_samples) ??
+    //f_write(&f,raw_data, blockAlign, &written);		// (blockAlign * num_samples) ??
+
+    // full size (num_samples) crashes the OS
+    for (int i = 0; i < num_samples; i++)
+    {
+            float x = signal[i];
+
+            if (x > 1.0)
+            	x = 1.0;
+            else
+            {
+            	if (x < -1.0)
+            		x = -1.0;
+            }
+
+            //raw_data[i] = (int)(0.5 + (x * 32767.0));
+            int16_t raw_data = (int)(0.5 + (x * 32767.0));
+
+            f_write(&f,&raw_data, sizeof(raw_data), &written);
+    }
 
     f_close(&f);
 
-    vPortFree(raw_data);
+    printf("-- file saved --\r\n");
+
+    //vPortFree(raw_data);
+#endif
 }
 
 // Load signal in floating point format (-1 .. +1) as a WAVE file using 16-bit signed integers.
-int load_wav(float *signal, int *num_samples, int *sample_rate, const char *path)
+int load_wav(float *signal, int *num_samples, int *sample_rate, char *path)
 {
 #if 0
     char subChunk1ID[4];    // = {'f', 'm', 't', ' '};

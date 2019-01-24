@@ -244,19 +244,61 @@ void mchf_pro_board_mpu_config(void)
    MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
    HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
-   // OS heap - 0x38000000 - 0x3800FFFF 	64k		SRAM4
-   /* MPU_InitStruct.Enable           = MPU_REGION_ENABLE;
-    MPU_InitStruct.BaseAddress      = 0x38000000;
-    MPU_InitStruct.Size             = MPU_REGION_SIZE_64KB;
-    MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-    MPU_InitStruct.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
-    MPU_InitStruct.IsCacheable      = MPU_ACCESS_CACHEABLE;
-    MPU_InitStruct.IsShareable      = MPU_ACCESS_NOT_SHAREABLE;
-    MPU_InitStruct.Number           = MPU_REGION_NUMBER2;				// table entry
-    MPU_InitStruct.TypeExtField     = MPU_TEX_LEVEL0;
-    MPU_InitStruct.SubRegionDisable = 0x00;
-    MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
-    HAL_MPU_ConfigRegion(&MPU_InitStruct); */
+   // 0x30000000 - 0x3001FFFF 	128k	SRAM1
+   MPU_InitStruct.Enable           = MPU_REGION_ENABLE;
+   MPU_InitStruct.BaseAddress      = 0x30000000;
+   MPU_InitStruct.Size             = MPU_REGION_SIZE_128KB;
+   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+   MPU_InitStruct.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
+   MPU_InitStruct.IsCacheable      = MPU_ACCESS_CACHEABLE;
+   MPU_InitStruct.IsShareable      = MPU_ACCESS_NOT_SHAREABLE;
+   MPU_InitStruct.Number           = MPU_REGION_NUMBER2;				// table entry
+   MPU_InitStruct.TypeExtField     = MPU_TEX_LEVEL0;
+   MPU_InitStruct.SubRegionDisable = 0x00;
+   MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
+   HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+   // 0x30020000 - 0x3003FFFF 	256k	SRAM2
+   MPU_InitStruct.Enable           = MPU_REGION_ENABLE;
+   MPU_InitStruct.BaseAddress      = 0x30020000;
+   MPU_InitStruct.Size             = MPU_REGION_SIZE_256KB;
+   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+   MPU_InitStruct.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
+   MPU_InitStruct.IsCacheable      = MPU_ACCESS_CACHEABLE;
+   MPU_InitStruct.IsShareable      = MPU_ACCESS_NOT_SHAREABLE;
+   MPU_InitStruct.Number           = MPU_REGION_NUMBER3;				// table entry
+   MPU_InitStruct.TypeExtField     = MPU_TEX_LEVEL0;
+   MPU_InitStruct.SubRegionDisable = 0x00;
+   MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
+   HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+   // 0x30040000 - 0x30047FFF 	288k	SRAM3
+   MPU_InitStruct.Enable           = MPU_REGION_ENABLE;
+   MPU_InitStruct.BaseAddress      = 0x30040000;
+   MPU_InitStruct.Size             = MPU_REGION_SIZE_512KB;
+   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+   MPU_InitStruct.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
+   MPU_InitStruct.IsCacheable      = MPU_ACCESS_CACHEABLE;
+   MPU_InitStruct.IsShareable      = MPU_ACCESS_NOT_SHAREABLE;
+   MPU_InitStruct.Number           = MPU_REGION_NUMBER4;				// table entry
+   MPU_InitStruct.TypeExtField     = MPU_TEX_LEVEL0;
+   MPU_InitStruct.SubRegionDisable = 0x00;
+   MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
+   HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+   // 0x38000000 - 0x3800FFFF 	64k		SRAM4
+   MPU_InitStruct.Enable           = MPU_REGION_ENABLE;
+   MPU_InitStruct.BaseAddress      = 0x38000000;
+   MPU_InitStruct.Size             = MPU_REGION_SIZE_64KB;
+   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+   MPU_InitStruct.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
+   MPU_InitStruct.IsCacheable      = MPU_ACCESS_CACHEABLE;
+   MPU_InitStruct.IsShareable      = MPU_ACCESS_NOT_SHAREABLE;
+   MPU_InitStruct.Number           = MPU_REGION_NUMBER5;				// table entry
+   MPU_InitStruct.TypeExtField     = MPU_TEX_LEVEL0;
+   MPU_InitStruct.SubRegionDisable = 0x00;
+   MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
+   HAL_MPU_ConfigRegion(&MPU_InitStruct);
 #endif
 
   // Enable the MPU

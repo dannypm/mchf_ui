@@ -14,8 +14,6 @@
 
 #include "gen_ft8.h"
 
-//float signal_p[100];	//elements_c];
-
 // Convert a sequence of symbols (tones) into a sinewave of continuous phase (FSK).
 // Symbol 0 gets encoded as a sine of frequency f0, the others are spaced in increasing
 // fashion.
@@ -117,11 +115,28 @@ int main(int argc, char **argv) {
 
 #endif
 
+// ToDo: Fix limited RAM issue
+//
 void encode_ft8_message(char *msg)
 {
-	//const char *message;// = argv[1];
-    //const char *wav_path;// = argv[2];
+	const int sample_rate = 12000;
+	const float symbol_rate = 6.25f;
+	const int num_samples = (int)(0.5f + FT8_NN / symbol_rate * sample_rate);
+	const int num_silence = (15 * sample_rate - num_samples) / 2;
 
+	//float signal[num_silence + num_samples + num_silence];
+	//
+	// can use stack, or AXI RAM, so will try one of the free memories (but needs clock enabled on H7 and MPU mapping maybe)
+	//
+	//				0x30000000 - 0x3001FFFF 	128k	SRAM1
+	//				0x30020000 - 0x3003FFFF 	256k	SRAM2
+	//				0x30040000 - 0x30047FFF 	288k	SRAM3
+	//
+	float *signal = (float *)0x30000000;
+
+	printf("encode_ft8_message ram usage=%d bytes\r\n",(num_silence + num_samples + num_silence)*4);
+
+#if 1
     // First, pack the text data into binary message
 	uint8_t packed[10];
 
@@ -153,11 +168,12 @@ void encode_ft8_message(char *msg)
 	printf("\r\n");
 
 	// Third, convert the FSK tones into an audio signal
-	for (int i = 0; i < num_silence + num_samples + num_silence; i++)
+	for (int i = 0; i < (num_silence + num_samples + num_silence)/4; i++)
 	{
-	  //  signal[i] = 0;
+	    //signal[i] = 0;
 	}
 
-	//synth_fsk(tones, FT8_NN, 1000, symbol_rate, symbol_rate, sample_rate, signal_p + num_silence);
-	//save_wav(signal_p, num_silence + num_samples + num_silence, sample_rate, "C:\\sample.wave");
+	//synth_fsk(tones, FT8_NN, 1000, symbol_rate, symbol_rate, sample_rate, signal + num_silence);
+	save_wav(signal, (num_silence + num_samples + num_silence)/4, sample_rate, "sample.wav");
+#endif
 }
