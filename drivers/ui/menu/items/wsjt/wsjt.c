@@ -78,7 +78,7 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 				case WM_NOTIFICATION_RELEASED:
 					//GUI_MessageBox("Encode button clicked.","Information",GUI_MB_OK);
 
-					encode_ft8_message("CQ CA0LL GG77");
+					encode_ft8_message("CQ M0NKA IO92");
 					break;
 			}
 			break;

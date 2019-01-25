@@ -557,7 +557,8 @@ void LCD_X_Config(void)
     layer_prop[0].address = LCD_LAYER0_FRAME_BUFFER;
     
 #if (GUI_NUM_LAYERS > 1)    
-    layer_prop[1].address = LCD_LAYER1_FRAME_BUFFER; 
+    layer_prop[1].address = LCD_LAYER1_FRAME_BUFFER;
+    //printf("layer one addr = %08x\r\n",LCD_LAYER1_FRAME_BUFFER);
 #endif
        
    /* Setting up VRam address and LCD_LL functions for CopyBuffer-, CopyRect- and FillRect operations */
