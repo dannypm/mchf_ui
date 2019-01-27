@@ -78,61 +78,116 @@ void save_wav(float *signal, int num_samples, int sample_rate, char *path)
 // Load signal in floating point format (-1 .. +1) as a WAVE file using 16-bit signed integers.
 int load_wav(float *signal, int *num_samples, int *sample_rate, char *path)
 {
-#if 0
-    char subChunk1ID[4];    // = {'f', 'm', 't', ' '};
-    uint32_t subChunk1Size; // = 16;    // 16 for PCM
-    uint16_t audioFormat;   // = 1;     // PCM = 1
-    uint16_t numChannels;   // = 1;
-    uint16_t bitsPerSample; // = 16;
-    uint32_t sampleRate;
-    uint16_t blockAlign;    // = numChannels * bitsPerSample / 8;
-    uint32_t byteRate;      // = sampleRate * blockAlign;
+    char 		subChunk1ID[4];    // = {'f', 'm', 't', ' '};
+    uint32_t 	subChunk1Size; // = 16;    // 16 for PCM
+    uint16_t 	audioFormat;   // = 1;     // PCM = 1
+    uint16_t 	numChannels;   // = 1;
+    uint16_t 	bitsPerSample; // = 16;
+    uint32_t 	sampleRate;
+    uint16_t 	blockAlign;    // = numChannels * bitsPerSample / 8;
+    uint32_t 	byteRate;      // = sampleRate * blockAlign;
 
-    char subChunk2ID[4];    // = {'d', 'a', 't', 'a'};
-    uint32_t subChunk2Size; // = num_samples * blockAlign;
+    char 		subChunk2ID[4];    // = {'d', 'a', 't', 'a'};
+    uint32_t 	subChunk2Size; // = num_samples * blockAlign;
 
-    char chunkID[4];        // = {'R', 'I', 'F', 'F'};
-    uint32_t chunkSize;     // = 4 + (8 + subChunk1Size) + (8 + subChunk2Size);
-    char format[4];         // = {'W', 'A', 'V', 'E'};
+    char 		chunkID[4];        // = {'R', 'I', 'F', 'F'};
+    uint32_t 	chunkSize;     // = 4 + (8 + subChunk1Size) + (8 + subChunk2Size);
+    char 		format[4];         // = {'W', 'A', 'V', 'E'};
 
-    FILE *f = fopen(path, "rb");
+    FIL 		f;
+    uint 		bytes_read;
+
+    //FILE *f = fopen(path, "rb");
+    if(f_open(&f,path, FA_OPEN_EXISTING | FA_READ) != FR_OK)
+    {
+        printf("error open file!\r\n");
+        return -1;
+    }
 
     // NOTE: works only on little-endian architecture
-    fread((void *)chunkID, sizeof(chunkID), 1, f);
-    fread((void *)&chunkSize, sizeof(chunkSize), 1, f);
-    fread((void *)format, sizeof(format), 1, f);
+    //fread((void *)chunkID, sizeof(chunkID), 1, f);
+    f_read(&f,(void *)chunkID,sizeof(chunkID),&bytes_read);
 
-    fread((void *)subChunk1ID, sizeof(subChunk1ID), 1, f);
-    fread((void *)&subChunk1Size, sizeof(subChunk1Size), 1, f);
-    if (subChunk1Size != 16) return -1;
+    //fread((void *)&chunkSize, sizeof(chunkSize), 1, f);
+    f_read(&f,(void *)&chunkSize,sizeof(chunkSize),&bytes_read);
 
-    fread((void *)&audioFormat, sizeof(audioFormat), 1, f);
-    fread((void *)&numChannels, sizeof(numChannels), 1, f);
-    fread((void *)&sampleRate, sizeof(sampleRate), 1, f);
-    fread((void *)&byteRate, sizeof(byteRate), 1, f);
-    fread((void *)&blockAlign, sizeof(blockAlign), 1, f);
-    fread((void *)&bitsPerSample, sizeof(bitsPerSample), 1, f);
+    //fread((void *)format, sizeof(format), 1, f);
+    f_read(&f,(void *)format,sizeof(format),&bytes_read);
 
-    if (audioFormat != 1 || numChannels != 1 || bitsPerSample != 16) return -1;
+    //fread((void *)subChunk1ID, sizeof(subChunk1ID), 1, f);
+    f_read(&f,(void *)subChunk1ID,sizeof(subChunk1ID),&bytes_read);
 
-    fread((void *)subChunk2ID, sizeof(subChunk2ID), 1, f);
-    fread((void *)&subChunk2Size, sizeof(subChunk2Size), 1, f);
+    //fread((void *)&subChunk1Size, sizeof(subChunk1Size), 1, f);
+    f_read(&f,(void *)&subChunk1Size,sizeof(subChunk1Size),&bytes_read);
 
-    if (subChunk2Size / blockAlign > num_samples) return -2;
+    printf("subChunk1Size %d \r\n",subChunk1Size);
+
+    if (subChunk1Size != 16)
+    	return -1;
+
+    //fread((void *)&audioFormat, sizeof(audioFormat), 1, f);
+    f_read(&f,(void *)&audioFormat,sizeof(audioFormat),&bytes_read);
+
+    //fread((void *)&numChannels, sizeof(numChannels), 1, f);
+    f_read(&f,(void *)&numChannels,sizeof(numChannels),&bytes_read);
+
+    //fread((void *)&sampleRate, sizeof(sampleRate), 1, f);
+    f_read(&f,(void *)&sampleRate,sizeof(sampleRate),&bytes_read);
+
+    //fread((void *)&byteRate, sizeof(byteRate), 1, f);
+    f_read(&f,(void *)&byteRate,sizeof(byteRate),&bytes_read);
+
+    //fread((void *)&blockAlign, sizeof(blockAlign), 1, f);
+    f_read(&f,(void *)&blockAlign,sizeof(blockAlign),&bytes_read);
+
+    //fread((void *)&bitsPerSample, sizeof(bitsPerSample), 1, f);
+    f_read(&f,(void *)&bitsPerSample,sizeof(bitsPerSample),&bytes_read);
+
+    if (audioFormat != 1 || numChannels != 1 || bitsPerSample != 16)
+    	return -1;
+
+    //fread((void *)subChunk2ID, sizeof(subChunk2ID), 1, f);
+    f_read(&f,(void *)subChunk2ID,sizeof(subChunk2ID),&bytes_read);
+
+    //fread((void *)&subChunk2Size, sizeof(subChunk2Size), 1, f);
+    f_read(&f,(void *)&subChunk2Size,sizeof(subChunk2Size),&bytes_read);
+
+    printf("subChunk2Size %d \r\n",subChunk2Size);
+    printf("blockAlign %d \r\n",blockAlign);
+
+    if (subChunk2Size / blockAlign > *num_samples)
+    	return -2;
     
-    num_samples = subChunk2Size / blockAlign;
-    sample_rate = sampleRate;
+    *num_samples = subChunk2Size / blockAlign;
+    *sample_rate = sampleRate;
 
+    printf("num_samples %d \r\n",*num_samples);
+    printf("sample_rate %d \r\n",*sample_rate);
+
+    // Original, probably fast, but lots of extra RAM needed
+	#if 0
     int16_t *raw_data = (int16_t *)malloc(num_samples * blockAlign);
-
     fread((void *)raw_data, blockAlign, num_samples, f);
     for (int i = 0; i < num_samples; i++) {
         signal[i] = raw_data[i] / 32768.0f;
     }
-    
     free(raw_data);
+    //fclose(f);
+	#endif
 
-    fclose(f);
-#endif
+    printf("reading file...\r\n");
+
+    // Super slow, but no memory use
+    for (int i = 0; i < *num_samples; i++)
+    {
+    	int16_t raw_data;
+
+    	f_read(&f,(void *)&raw_data,sizeof(raw_data),&bytes_read);
+    	signal[i] = raw_data/32768.0f;
+    }
+
+    f_close(&f);
+    printf("-- file read ok --\r\n");
+
     return 0;
 }

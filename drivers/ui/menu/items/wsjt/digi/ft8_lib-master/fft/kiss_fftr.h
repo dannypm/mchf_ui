@@ -6,12 +6,13 @@
  *  See COPYING file for more information.
  */
 
-#ifndef KISS_FTR_H
-#define KISS_FTR_H
+#ifndef __KISS_FTR_H
+#define __KISS_FTR_H
 
-#if 0
+#if 1
 
 #include "kiss_fft.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -112,10 +112,10 @@ static void SD_Init(void)
 
 	if(isInitialized == 0)
 	{
-		printf("sd card init...\r\n");
+		//printf("sd card init...\r\n");
 
 		sd_init_res = BSP_SD_Init();
-		printf("sd card init result: %d\r\n",sd_init_res);
+		//printf("sd card init result: %d\r\n",sd_init_res);
 
 		if(sd_init_res == MSD_OK)
 			isInitialized = 1;
@@ -165,7 +165,7 @@ void k_StorageInit(void)
   }
 #endif
 #if 1
-	printf("sd driver init\r\n");
+	//printf("sd driver init\r\n");
 
 	StorageStatus[USB_DISK_UNIT] = 0;
 	StorageStatus[MSD_DISK_UNIT] = 0;
@@ -176,7 +176,7 @@ void k_StorageInit(void)
 	// Link driver and start state machine
 	if(FATFS_LinkDriver(&SD_Driver, SDPath) == 0)
 	{
-		printf("sd driver fatfs link ok\r\n");
+		//printf("sd driver fatfs link ok\r\n");
 		//printf("drive name: %s\r\n",SDPath);
 
 		// Create Storage Message Queue
@@ -243,8 +243,8 @@ void StorageThread(void)
 		{
 			case CARD_STATUS_CHANGED:
 			{
-				printf("----------------------------------------------------\r\n");
-				printf("sd card status changed\r\n");
+				//printf("----------------------------------------------------\r\n");
+				//printf("sd card status changed\r\n");
 
 				if (BSP_SD_IsDetected())
 					osMessagePut ( ConnectionEvent, CARD_CONNECTED, osWaitForever);
@@ -256,7 +256,7 @@ void StorageThread(void)
 
 			case CARD_CONNECTED:
 			{
-				printf("sd card connected\r\n");
+				//printf("sd card connected\r\n");
 
 				SD_Init();
 				//FS_FileOperations();
@@ -270,7 +270,7 @@ void StorageThread(void)
 
 			case CARD_DISCONNECTED:
 			{
-				printf("sd card disconnected\r\n");
+				//printf("sd card disconnected\r\n");
 
 				BSP_SD_DeInit();
 

@@ -46,13 +46,17 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 	{ BUTTON_CreateIndirect, 	"Back",			 			ID_BUTTON_EXIT, 	670, 	375, 	120, 	45, 	0, 		0x0, 	0 },
 	//
 	{ BUTTON_CreateIndirect, 	"Encode",		 			ID_BUTTON_ENCODE,	670, 	40, 	120, 	45, 	0, 		0x0, 	0 },
+	{ EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT0,   	20,  	45,  	400,  	40, 	EDIT_CI_ENABELD,0 },
 	{ BUTTON_CreateIndirect, 	"Decode",		 			ID_BUTTON_DECODE,	670, 	120, 	120, 	45, 	0, 		0x0, 	0 },
+	{ EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT1,   	20,  	125,  	400,  	40, 	EDIT_CI_ENABELD,0 },
 
 };
 
 static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 {
 	WM_HWIN hItem;
+	char 	buf[40];
+	uchar 	i;
 
 	switch(Id)
 	{
@@ -76,10 +80,19 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 			switch(NCode)
 			{
 				case WM_NOTIFICATION_RELEASED:
-					//GUI_MessageBox("Encode button clicked.","Information",GUI_MB_OK);
+				{
+					for(i = 0; i < 40; i++)
+						buf[i] = 0;
 
-					encode_ft8_message("CQ M0NKA IO92");
+					hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT0);
+					EDIT_GetText(hItem,buf,40);
+
+					// Encode and save
+					encode_ft8_message(buf);
+
+					GUI_MessageBox("Message encoded and saved to card!","Information",GUI_MB_OK);
 					break;
+				}
 			}
 			break;
 		}
@@ -91,10 +104,17 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 			switch(NCode)
 			{
 				case WM_NOTIFICATION_RELEASED:
-					//GUI_MessageBox("Decode button clicked.","Information",GUI_MB_OK);
+				{
+					for(i = 0; i < 40; i++)
+						buf[i] = 0;
 
-					decode_ft8_message(NULL);
+					// Decode
+					decode_ft8_message(buf);
+
+					hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT1);
+					EDIT_SetText(hItem,buf);
 					break;
+				}
 			}
 			break;
 		}
@@ -114,7 +134,23 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 	{
 		case WM_INIT_DIALOG:
 		{
-			//..
+			// Encode input edit
+			hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT0);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_LEFT|TEXT_CF_VCENTER);
+			EDIT_SetMaxLen(hItem,40);
+			EDIT_SetText(hItem,"CQ M0NKA IO92");
+
+			// Decode result edit
+			hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT1);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_LEFT|TEXT_CF_VCENTER);
+			EDIT_SetMaxLen(hItem,40);
+
 			break;
 		}
 

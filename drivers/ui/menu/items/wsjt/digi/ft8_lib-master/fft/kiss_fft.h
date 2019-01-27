@@ -6,15 +6,17 @@
  *  See COPYING file for more information.
  */
 
-#ifndef KISS_FFT_H
-#define KISS_FFT_H
+#ifndef __KISS_FFT_H
+#define __KISS_FFT_H
 
-#if 0
+#if 1
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
+#include "mchf_pro_board.h"
+
+//#include <stdlib.h>
+//#include <stdio.h>
+//#include <math.h>
+//#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,8 +41,8 @@ extern "C" {
 #define KISS_FFT_MALLOC(nbytes) _mm_malloc(nbytes,16)
 #define KISS_FFT_FREE _mm_free
 #else	
-#define KISS_FFT_MALLOC malloc
-#define KISS_FFT_FREE free
+#define KISS_FFT_MALLOC pvPortMalloc //malloc
+#define KISS_FFT_FREE    vPortFree	 //free
 #endif	
 
 

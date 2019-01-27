@@ -244,10 +244,10 @@ uint8_t BSP_SD_IsDetected(void)
   if(HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_3))
   {
 	  status = SD_NOT_PRESENT;
-	  printf("SD_NOT_PRESENT\r\n");
+	  //printf("SD_NOT_PRESENT\r\n");
   }
-  else
-	  printf("SD_PRESENT\r\n");
+  //else
+	  //printf("SD_PRESENT\r\n");
 
   return status;
 }

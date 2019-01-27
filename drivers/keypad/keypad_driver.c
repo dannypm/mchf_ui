@@ -709,9 +709,9 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 //*----------------------------------------------------------------------------
 static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 {
-	//#ifdef KEYPAD_ALLOW_DEBUG
+	#ifdef KEYPAD_ALLOW_DEBUG
 	printf("x=%d,y=%d,hold=%d\r\n",x,y,hold);
-	//#endif
+	#endif
 
 	// SSB - USB/LSB
 	if((x == 1) && (y == 1))
@@ -1174,7 +1174,7 @@ static void keypad_scan_a(void)
 			}
 		}
 
-		printf("is hold\r\n");
+		//printf("is hold\r\n");
 
 		// End scan
 		scan_off();

@@ -6,7 +6,7 @@
  *  See COPYING file for more information.
  */
 
-#if 0
+#if 1
 
 #include "_kiss_fft_guts.h"
 /* The guts header contains all the multiplication and addition macros that are defined for

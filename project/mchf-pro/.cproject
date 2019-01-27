@@ -222,12 +222,13 @@
 									<listOptionValue builtIn="false" value=":STM32H743I_EVAL_STemWin_Addons_GCC.a"/>
 									<listOptionValue builtIn="false" value=":STemWin540_CM7_OS_GCC_ot.a"/>
 									<listOptionValue builtIn="false" value="arm_cortexM7lfsp_math"/>
+									<listOptionValue builtIn="false" value="m"/>
 								</option>
 								<option id="gnu.c.link.option.paths.1996495532" name="Library search path (-L)" superClass="gnu.c.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="../../../libs"/>
 								</option>
 								<option id="gnu.c.link.option.ldflags.33787076" name="Linker flags" superClass="gnu.c.link.option.ldflags" useByScannerDiscovery="false" value="-specs=nosys.specs -specs=nano.specs" valueType="string"/>
-								<option id="fr.ac6.managedbuild.tool.gnu.cross.c.linker.libmath.1219276207" name="Use C math library (-lm)" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.linker.libmath" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="fr.ac6.managedbuild.tool.gnu.cross.c.linker.libmath.1219276207" name="Use C math library (-lm)" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.linker.libmath" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.883902926" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

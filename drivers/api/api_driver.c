@@ -663,7 +663,7 @@ static void api_ui_send_fast_cmd(void)
 	{
 		ushort offset = 0, size = 0;
 
-		printf("update DSP eep request process..\r\n");
+		//printf("update DSP eep request process..\r\n");
 
 		aTxBuffer[0x00] = (API_WRITE_EEP >>   8);
 		aTxBuffer[0x01] = (API_WRITE_EEP & 0xFF);
