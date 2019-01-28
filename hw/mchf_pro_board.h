@@ -334,6 +334,8 @@ struct TRANSCEIVER_STATE_UI {
 	uchar 	dsp_filter;
 	uchar   dsp_band;
 	uchar 	dsp_demod;
+
+	uchar	pcb_rev;
 	// --
 	// -----------------------------
 	// Local status

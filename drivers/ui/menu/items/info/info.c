@@ -32,6 +32,9 @@ extern struct	CM7_CORE_DETAILS	ccd;
 
 static void Startup(WM_HWIN hWin, uint16_t xpos, uint16_t ypos);
 
+// Public radio state
+extern struct	TRANSCEIVER_STATE_UI	tsu;
+
 extern GUI_CONST_STORAGE GUI_BITMAP bmgeneralinfoA;
 
 const GUI_BITMAP * info_anim[] = {
@@ -63,6 +66,8 @@ K_ModuleItem_Typedef  info =
 #define ID_TEXT_UI_CPU_ID          	(GUI_ID_USER + 0x0A)
 #define ID_TEXT_UI_FLS_SZ          	(GUI_ID_USER + 0x0B)
 
+#define ID_TEXT_LO_PCB_V           	(GUI_ID_USER + 0x0C)
+
 static const GUI_WIDGET_CREATE_INFO _aDialog[] = 
 {
 	// -----------------------------------------------------------------------------------------------------------------------------
@@ -83,6 +88,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 	{ TEXT_CreateIndirect, 		"Digi.Vers", 				ID_TEXT_UI_TS_V,	10,		114,	360,	20,		0,		0x0,	0 },
 	{ TEXT_CreateIndirect, 		"Cpu.ID",	 				ID_TEXT_UI_CPU_ID,	10,		130,	360,	20,		0,		0x0,	0 },
 	{ TEXT_CreateIndirect, 		"Flash.Size", 				ID_TEXT_UI_FLS_SZ,	10,		146,	360,	20,		0,		0x0,	0 },
+	// Logic board entries
+	{ TEXT_CreateIndirect, 		"Logic.PCB", 				ID_TEXT_LO_PCB_V,	420,	 50,	360,	20,		0,		0x0,	0 },
 };
 
 #define	TEXT_1					"Device ID:"
@@ -92,6 +99,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 #define	TEXT_5					"Digitizer:"
 #define	TEXT_6					"Unique ID:"
 #define	TEXT_7					"FlashSize:"
+
+#define	TEXT_8					"Logic PCB:"
 
 static void about_print_fw_vers(WM_HWIN hItem)
 {
@@ -225,6 +234,25 @@ static void about_print_fw_fls_sz(WM_HWIN hItem)
     TEXT_SetText(hItem,fw_id);
 }
 
+static void about_print_pcb_rev(WM_HWIN hItem)
+{
+	char fw_id[200];
+	char *p = fw_id;
+
+	EnterCriticalSection();
+    memset(fw_id,0,sizeof(fw_id));
+    strcpy(p,TEXT_8);
+    p += strlen(TEXT_8);
+    strcpy(p," ");
+    p++;
+    sprintf(p,"rev 0.%d",tsu.pcb_rev);
+    ExitCriticalSection();
+
+    p = fw_id;
+
+    TEXT_SetText(hItem,fw_id);
+}
+
 static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 {
 	WM_HWIN hItem;
@@ -306,6 +334,12 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 			TEXT_SetFont(hItem,&GUI_Font8x16_1);
 			TEXT_SetTextColor(hItem, GUI_BLACK);
 			about_print_fw_fls_sz(hItem);
+
+			// Print firmware info
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_TEXT_LO_PCB_V);
+			TEXT_SetFont(hItem,&GUI_Font8x16_1);
+			TEXT_SetTextColor(hItem, GUI_BLACK);
+			about_print_pcb_rev(hItem);
 
 			break;
 		}

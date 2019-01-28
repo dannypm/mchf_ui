@@ -455,6 +455,8 @@ static void api_ui_process_broadcast(void)
 	tsu.dsp_nco_freq |= aRxBuffer[0x12] <<  0;
 	//printf("dsp_nco_freq %d\r\n",tsu.dsp_nco_freq);
 
+	tsu.pcb_rev = aRxBuffer[0x13];
+
 	// Copy FFT
 	for(i = 0; i < 256; i++)
 		ui_sw.fft_dsp[i] = aRxBuffer[i + 0x28];
