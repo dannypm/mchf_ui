@@ -100,7 +100,14 @@ LoopCopyDataInit:
 /* Zero fill the bss segment. */  
 FillZerobss:
   movs  r3, #0
-  str  r3, [r2], #4
+
+  	// OK AXI RAM doesn't need extra clock to be enabled,
+  	// but what about if using D2/D3 domain RAM for the
+  	// data sections that gets cleared here ?
+  	// Should we starts the clocks before STR instr, instead
+  	// in main() ?
+  	// ToDo: Check this!!!
+	str  r3, [r2], #4
     
 LoopFillZerobss:
   ldr  r3, = _ebss

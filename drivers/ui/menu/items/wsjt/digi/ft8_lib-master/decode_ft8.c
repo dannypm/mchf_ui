@@ -58,63 +58,75 @@ float blackman_i(int i, int N)
 }
 
 // Compute FFT magnitudes (log power) for each timeslot in the signal
+//
+float   		ep_window[15360];
+kiss_fft_scalar ep_timedata[15360];
+kiss_fft_cpx    ep_freqdata[15361];
+float           ep_mag_db[7681];
+//
 void extract_power(float *signal, int num_blocks, int num_bins, uint8_t *power)
 {
-    const int 	block_size = 2 * num_bins;      // Average over 2 bins per FSK tone
-    const int 	nfft = 2 * block_size;          // We take FFT of two blocks, advancing by one
-    const float fft_norm = 2.0f / nfft;
-    float   	window[nfft];
+    const int 		block_size = 2 * num_bins;      // Average over 2 bins per FSK tone
+    const int 		nfft = 2 * block_size;          // We take FFT of two blocks, advancing by one
+    const float 	fft_norm = 2.0f / nfft;
+    // Stack usage									   bytes
+    //float   		ep_window[nfft];				// 15360
+    size_t  		fft_work_size;					// 4
+    //kiss_fft_scalar ep_timedata[nfft];			// 15360
+    //kiss_fft_cpx    ep_freqdata[nfft/2 + 1];		// 15361
+    //float           ep_mag_db[nfft/2 + 1];		// 7681
+    int 			offset = 0;						// 4
+    float 			max_mag = -100.0f;				// 4
+    float 			mag2;							// 4
+    float	 		db1;							// 4
+    float 			db2;							// 4
+    float 			db;								// 4
+    int 			scaled;							// 4
+    int				i,j,time_sub,freq_sub;			// 16
+    // End of stack usage							   53810 total
+
+    //printf("extract_power->in\r\n");
 
     for (int i = 0; i < nfft; ++i)
-        window[i] = blackman_i(i, nfft);
-
-    size_t  fft_work_size;
+    	ep_window[i] = blackman_i(i, nfft);
 
     kiss_fftr_alloc(nfft, 0, 0, &fft_work_size);
 
-    printf("nfft ram usage: %d bytes\r\n", nfft);
-    printf("FFT work area = %d bytes\r\n", fft_work_size);
+    //printf("nfft ram usage: %d bytes\r\n", nfft);
+    //printf("FFT work area = %d bytes\r\n", fft_work_size);
 
     void        *fft_work = pvPortMalloc(fft_work_size);
     kiss_fftr_cfg fft_cfg = kiss_fftr_alloc(nfft, 0, fft_work, &fft_work_size);
 
-    printf("main loop...\r\n");
-
-#if 1
-
-    int offset = 0;
-    float max_mag = -100.0f;
-    for (int i = 0; i < num_blocks; ++i)
+    for (i = 0; i < num_blocks; ++i)
     {
         // Loop over two possible time offsets (0 and block_size/2)
-        for (int time_sub = 0; time_sub <= block_size/2; time_sub += block_size/2)
+        for (time_sub = 0; time_sub <= block_size/2; time_sub += block_size/2)
         {
-            kiss_fft_scalar timedata[nfft];
-            kiss_fft_cpx    freqdata[nfft/2 + 1];
-            float           mag_db[nfft/2 + 1];
-
             // Extract windowed signal block
-            for (int j = 0; j < nfft; ++j) {
-                timedata[j] = window[j] * signal[(i * block_size) + (j + time_sub)];
-            }
+            for (j = 0; j < nfft; ++j)
+            	ep_timedata[j] = ep_window[j] * signal[(i * block_size) + (j + time_sub)];
 
-            kiss_fftr(fft_cfg, timedata, freqdata);
+            kiss_fftr(fft_cfg, ep_timedata, ep_freqdata);
 
             // Compute log magnitude in decibels
-            for (int j = 0; j < nfft/2 + 1; ++j) {
-                float mag2 = (freqdata[j].i * freqdata[j].i + freqdata[j].r * freqdata[j].r);
-                mag_db[j] = 10.0f * log10f(1E-10f + mag2 * fft_norm * fft_norm);
+            for (j = 0; j < nfft/2 + 1; ++j)
+            {
+                mag2 = (ep_freqdata[j].i * ep_freqdata[j].i + ep_freqdata[j].r * ep_freqdata[j].r);
+                ep_mag_db[j] = 10.0f * log10f(1E-10f + mag2 * fft_norm * fft_norm);
             }
 
             // Loop over two possible frequency bin offsets (for averaging)
-            for (int freq_sub = 0; freq_sub < 2; ++freq_sub) {                
-                for (int j = 0; j < num_bins; ++j) {
-                    float db1 = mag_db[j * 2 + freq_sub];
-                    float db2 = mag_db[j * 2 + freq_sub + 1];
-                    float db = (db1 + db2) / 2;
+            for (freq_sub = 0; freq_sub < 2; ++freq_sub)
+            {
+                for (j = 0; j < num_bins; ++j)
+                {
+                    db1 = ep_mag_db[j * 2 + freq_sub];
+                    db2 = ep_mag_db[j * 2 + freq_sub + 1];
+                    db = (db1 + db2) / 2;
 
                     // Scale decibels to unsigned 8-bit range and clamp the value
-                    int scaled = (int)(2 * (db + 120));
+                    scaled = (int)(2 * (db + 120));
                     power[offset] = (scaled < 0) ? 0 : ((scaled > 255) ? 255 : scaled);
                     ++offset;
 
@@ -122,12 +134,11 @@ void extract_power(float *signal, int num_blocks, int num_bins, uint8_t *power)
                 }
             }
         }
-        printf(".\r\n");
     }
 
     //LOG(LOG_INFO, "Max magnitude: %.1f dB\n", max_mag);
     vPortFree(fft_work);
-#endif
+    //printf("extract_power->out\r\n");
 }
 
 void normalize_signal(float *signal, int num_samples)
@@ -307,10 +318,13 @@ void decode_ft8_message(char *msg)
 	//	return;
 	//}
 	//				0x30000000 - 0x3001FFFF 	128k	SRAM1
-	//				0x30020000 - 0x3003FFFF 	256k	SRAM2
-	//				0x30040000 - 0x30047FFF 	288k	SRAM3
+	//				0x30020000 - 0x3003FFFF 	128k	SRAM2
+	//				0x30040000 - 0x30047FFF 	 32k	SRAM3
 	//
-	uint8_t *power = (uint8_t *)0x30000000;
+	//uint8_t *power = (uint8_t *)0x30000000; - apparently wrong decl in linker script, this are is too small for this
+	//
+	//
+	uint8_t *power = (uint8_t *)(0xc0277000 + num_samples);
 
 	printf("power ram usage: %d bytes\r\n", num_blocks * 4 * num_bins);
 
@@ -322,9 +336,9 @@ void decode_ft8_message(char *msg)
 
 	printf("candidate_list ram usage: %d bytes\r\n", kMax_candidates * sizeof(Candidate));
 
-	//printf("find_sync...\r\n");
-	//int num_candidates = find_sync(power, num_blocks, num_bins, (uchar *)kCostas_map, kMax_candidates, candidate_list);
-	//printf("find_sync...done\r\n");
+	// OS crash here...
+	int num_candidates = find_sync(power, num_blocks, num_bins, (uchar *)kCostas_map, kMax_candidates, candidate_list);
+	printf("find_sync...done\r\n");
 
 	// TODO: sort the candidates by strongest sync first?
 	//...

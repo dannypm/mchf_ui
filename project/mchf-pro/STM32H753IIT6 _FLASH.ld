@@ -5,17 +5,17 @@
 **  File        : LinkerScript.ld
 **
 **  Abstract    : Linker script for STM32H753IIT6 Device with
-**                2Mb FLASH, 2Mb RAM
+**                2Mb FLASH, 1Mb RAM
 				
 				SRAM MAP:
 					
 				0x20000000 - 0x2001FFFF 	128k	DTCM
 				0x24000000 - 0x2407FFFF 	512k	AXI SRAM
 				0x30000000 - 0x3001FFFF 	128k	SRAM1
-				0x30020000 - 0x3003FFFF 	256k	SRAM2
-				0x30040000 - 0x30047FFF 	288k	SRAM3
-				0x38000000 - 0x3800FFFF 	64k		SRAM4
-				0x38800000 - 0x38800FFF 	4k		Backup SRAM
+				0x30020000 - 0x3003FFFF 	128k	SRAM2
+				0x30040000 - 0x30047FFF 	 32k	SRAM3
+				0x38000000 - 0x3800FFFF 	 64k	SRAM4
+				0x38800000 - 0x38800FFF 	  4k	Backup SRAM
 
 **  Notes       : If you plan to use any of those areas, don't forget 
 **  Notes       : to add them as MMU table entries as well!
@@ -40,8 +40,8 @@ MEMORY
 DTCM_RAM(xrw)      : ORIGIN = 0x20000000, LENGTH = 128K
 AXI_RAM (xrw)      : ORIGIN = 0x24000000, LENGTH = 512K
 RAM_D1  (xrw)      : ORIGIN = 0x30000000, LENGTH = 128K
-RAM_D2  (xrw)      : ORIGIN = 0x30020000, LENGTH = 256K
-RAM_D3  (xrw)      : ORIGIN = 0x30040000, LENGTH = 288K
+RAM_D2  (xrw)      : ORIGIN = 0x30020000, LENGTH = 128K
+RAM_D3  (xrw)      : ORIGIN = 0x30040000, LENGTH = 32K
 RAM_D4  (xrw)      : ORIGIN = 0x38000000, LENGTH = 64K
 RAM_BKP (xrw)      : ORIGIN = 0x38800000, LENGTH = 4K
 FLASH   (rx)       : ORIGIN = 0x08020000, LENGTH = 1920K
@@ -154,8 +154,6 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >AXI_RAM
-
-  
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

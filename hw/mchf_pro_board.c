@@ -258,10 +258,10 @@ void mchf_pro_board_mpu_config(void)
    MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
    HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
-   // 0x30020000 - 0x3003FFFF 	256k	SRAM2
+   // 0x30020000 - 0x3003FFFF 	128k	SRAM2
    MPU_InitStruct.Enable           = MPU_REGION_ENABLE;
    MPU_InitStruct.BaseAddress      = 0x30020000;
-   MPU_InitStruct.Size             = MPU_REGION_SIZE_256KB;
+   MPU_InitStruct.Size             = MPU_REGION_SIZE_128KB;
    MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
    MPU_InitStruct.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
    MPU_InitStruct.IsCacheable      = MPU_ACCESS_CACHEABLE;
@@ -272,10 +272,10 @@ void mchf_pro_board_mpu_config(void)
    MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
    HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
-   // 0x30040000 - 0x30047FFF 	288k	SRAM3
+   // 0x30040000 - 0x30047FFF 	32k	SRAM3
    MPU_InitStruct.Enable           = MPU_REGION_ENABLE;
    MPU_InitStruct.BaseAddress      = 0x30040000;
-   MPU_InitStruct.Size             = MPU_REGION_SIZE_512KB;
+   MPU_InitStruct.Size             = MPU_REGION_SIZE_32KB;
    MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
    MPU_InitStruct.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
    MPU_InitStruct.IsCacheable      = MPU_ACCESS_CACHEABLE;
@@ -621,6 +621,7 @@ void mchf_pro_board_swo_init(void)
 #endif
 
 	printf("--- Debug Print Session on ---\r\n");
+	printf("reason for reset: 0x%02x (0x9C - watchdog, 0x98 - software)\r\n",tsu.reset_reason);
 }
 
 //*----------------------------------------------------------------------------

@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				72
+#define	MCHFX_VER_BUILD				73
 //
 // -----------------------------------------------------------------------------
 //
@@ -263,6 +263,7 @@ struct KEYPAD_STATE {
 // -----------------------------------------------------------------------------
 // Hardware regs, read before MMU init
 struct CM7_CORE_DETAILS {
+
 	// X and Y coordinates on the wafer
 	ulong 	wafer_coord;
 	// Bits 31:8 UID[63:40]: LOT_NUM[23:0] 	- Lot number (ASCII encoded)
@@ -273,10 +274,12 @@ struct CM7_CORE_DETAILS {
 	// Flash size
 	ushort 	fls_size;
 	ushort	dummy;
+
 } CM7_CORE_DETAILS;
 //
 // Per band settings
 struct BAND_INFO {
+
 	// Frequency boundary
 	ulong 	band_start;
 	//
@@ -298,6 +301,7 @@ struct BAND_INFO {
 	uchar   active_vfo;			// A, B
 	//
 	// Align four!
+
 } BAND_INFO;
 //
 // Public structure to hold current radio state
@@ -311,7 +315,7 @@ struct TRANSCEIVER_STATE_UI {
 	uchar 	main_clk;
 	// RCC clock to use
 	uchar 	rcc_clk;
-	ushort 	dummy1;
+	ushort 	reset_reason;
 	// --
 	// -----------------------------
 	// DSP status

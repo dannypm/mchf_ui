@@ -61,8 +61,8 @@ void encode_ft8_message(char *msg)
 	// can use stack, or AXI RAM, so will try one of the free memories (but needs clock enabled on H7 and MPU mapping maybe)
 	//
 	//				0x30000000 - 0x3001FFFF 	128k	SRAM1
-	//				0x30020000 - 0x3003FFFF 	256k	SRAM2
-	//				0x30040000 - 0x30047FFF 	288k	SRAM3
+	//				0x30020000 - 0x3003FFFF 	128k	SRAM2
+	//				0x30040000 - 0x30047FFF 	 32k	SRAM3
 	//
 	//--float *signal = (float *)0x30000000; - still too small, sorry
 	//

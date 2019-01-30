@@ -88,6 +88,11 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 					EDIT_GetText(hItem,buf,40);
 
 					// Encode and save
+					//
+					// This stalls the UI repaint, so if this menu
+					// stays, need to have non blocking implementation of
+					// this call!
+					//
 					encode_ft8_message(buf);
 
 					GUI_MessageBox("Message encoded and saved to card!","Information",GUI_MB_OK);
@@ -109,6 +114,11 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 						buf[i] = 0;
 
 					// Decode
+					//
+					// This stalls the UI repaint, so if this menu
+					// stays, need to have non blocking implementation of
+					// this call!
+					//
 					decode_ft8_message(buf);
 
 					hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT1);

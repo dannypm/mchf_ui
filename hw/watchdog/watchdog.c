@@ -14,6 +14,9 @@ WWDG_HandleTypeDef   WwdgHandle;
 
 uchar	watchdog_enabled = 0;
 
+// Public radio state
+extern struct	TRANSCEIVER_STATE_UI	tsu;
+
 /**
   * @brief  Timeout calculation function.
   *         This function calculates any timeout related to
@@ -55,23 +58,35 @@ static uint32_t TimeoutCalculation(uint32_t timevalue)
 
 void watchdog_check_reset(void)
 {
-	ulong i;
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_D1RST) != RESET)
+		tsu.reset_reason = RCC_FLAG_D1RST;
 
-	// Check reset reason
-	if (__HAL_RCC_GET_FLAG(RCC_FLAG_WWDG1RST) != RESET)
-	{
-#if 0
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_SET);
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_D2RST) != RESET)
+		tsu.reset_reason = RCC_FLAG_D2RST;
 
-		for(i = 0; i < 0x5FFFFFF; i++)
-			__asm(".hword 0x46C0");
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST) != RESET)
+		tsu.reset_reason = RCC_FLAG_BORRST;
 
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_RESET);
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)
+		tsu.reset_reason = RCC_FLAG_PINRST;
 
-		for(i = 0; i < 0x5FFFFFF; i++)
-			__asm(".hword 0x46C0");
-#endif
-	}
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST) != RESET)
+		tsu.reset_reason = RCC_FLAG_PORRST;
+
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST) != RESET)
+		tsu.reset_reason = RCC_FLAG_SFTRST;
+
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_IWDG1RST) != RESET)
+		tsu.reset_reason = RCC_FLAG_IWDG1RST;
+
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_WWDG1RST) != RESET)
+		tsu.reset_reason = RCC_FLAG_WWDG1RST;
+
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_LPWR1RST) != RESET)
+		tsu.reset_reason = RCC_FLAG_LPWR1RST;
+
+	if(__HAL_RCC_GET_FLAG(RCC_FLAG_LPWR2RST) != RESET)
+		tsu.reset_reason = RCC_FLAG_LPWR2RST;
 
 	// Clear reset flags in any case
 	__HAL_RCC_CLEAR_RESET_FLAGS();
