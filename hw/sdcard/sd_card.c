@@ -270,6 +270,7 @@ uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBloc
   }
   else
   {
+	  printf("BSP_SD_ReadBlocks error!\r\n");
     return MSD_ERROR;
   }
 
@@ -292,6 +293,7 @@ uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBl
   }
   else
   {
+	  printf("BSP_SD_WriteBlocks error!\r\n");
     return MSD_ERROR;
   }
 }
@@ -312,6 +314,7 @@ uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOf
   }
   else
   {
+	  printf("BSP_SD_ReadBlocks_DMA error!\r\n");
     return MSD_ERROR;
   }
 }
@@ -332,6 +335,7 @@ uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint32_t WriteAddr, uint32_t Num
   }
   else
   {
+	  printf("BSP_SD_WriteBlocks_DMA error!\r\n");
     return MSD_ERROR;
   }
 
@@ -352,6 +356,7 @@ uint8_t BSP_SD_Erase(uint32_t StartAddr, uint32_t EndAddr)
   }
   else
   {
+	  printf("BSP_SD_Erase error!\r\n");
     return MSD_ERROR;
   }
 }

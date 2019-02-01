@@ -93,7 +93,7 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 					// stays, need to have non blocking implementation of
 					// this call!
 					//
-					encode_ft8_message(buf);
+					encode_ft8_message(buf,1);
 
 					GUI_MessageBox("Message encoded and saved to card!","Information",GUI_MB_OK);
 					break;

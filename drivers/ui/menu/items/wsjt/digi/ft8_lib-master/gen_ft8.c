@@ -49,26 +49,15 @@ void synth_fsk(	uint8_t *symbols,
     }
 }
 
-void encode_ft8_message(char *msg)
+void encode_ft8_message(char *msg,uchar save)
 {
 	const int 	sample_rate = 12000;
 	const float symbol_rate = 6.25f;
 	const int 	num_samples = (int)(0.5f + FT8_NN / symbol_rate * sample_rate);
 	const int 	num_silence = (15 * sample_rate - num_samples) / 2;
 
-	//float signal[num_silence + num_samples + num_silence]; - sorry baby, not a chance in a million years!
-	//
-	// can use stack, or AXI RAM, so will try one of the free memories (but needs clock enabled on H7 and MPU mapping maybe)
-	//
-	//				0x30000000 - 0x3001FFFF 	128k	SRAM1
-	//				0x30020000 - 0x3003FFFF 	128k	SRAM2
-	//				0x30040000 - 0x30047FFF 	 32k	SRAM3
-	//
-	//--float *signal = (float *)0x30000000; - still too small, sorry
-	//
-	// layer 1 in ext sdram, working
-	//
-	float 		*signal = (float *)0xc0277000;
+	//float 	signal[num_silence + num_samples + num_silence]; - sorry baby, not a chance in a million years!
+	float 		*ft8_signal = (float *)0xc0277000;	// layer 1 in ext sdram
 
 	uint8_t 	packed[10];
 	uint8_t 	tones[FT8_NN];          // FT8_NN = 79, lack of better name at the moment
@@ -107,11 +96,11 @@ void encode_ft8_message(char *msg)
 
 	// Clear buffer
 	for (int i = 0; i < (num_silence + num_samples + num_silence); i++)
-	    signal[i] = 0;
+		ft8_signal[i] = 0;
 
 	// Third, convert the FSK tones into an audio signal
-	synth_fsk(tones, FT8_NN, 1000, symbol_rate, symbol_rate, sample_rate, (signal + num_silence));
+	synth_fsk(tones, FT8_NN, 1000, symbol_rate, symbol_rate, sample_rate, (ft8_signal + num_silence));
 
 	// Save to card
-	save_wav(signal, (num_silence + num_samples + num_silence), sample_rate, "sample.wav");
+	if(save) save_wav(ft8_signal, (num_silence + num_samples + num_silence), sample_rate, "sample.wav");
 }

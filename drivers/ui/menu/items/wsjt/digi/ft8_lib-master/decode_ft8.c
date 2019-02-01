@@ -13,16 +13,13 @@
 #include "ft8/ft8_constants.h"
 #include "common/wave.h"
 
+// test only!
+#include "gen_ft8.h"
+
 //#include "common/debug.h"
 #include "fft/kiss_fftr.h"
 
 //#define LOG_LEVEL   LOG_INFO
-
-const int kMax_candidates 		= 100;
-const int kLDPC_iterations 		= 20;
-
-const int kMax_decoded_messages = 50;
-const int kMax_message_length 	= 20;
 
 //void usage() {
 //    fprintf(stderr, "Decode a 15-second WAV file.\n");
@@ -277,95 +274,98 @@ int main(int argc, char **argv) {
 
 #endif
 
+const float fsk_dev = 6.25f;    // tone deviation in Hz and symbol rate
+
+const int 	kMax_candidates 		= 100;
+const int 	kLDPC_iterations 		= 20;
+
+const int 	kMax_decoded_messages 	= 50;
+const int 	kMax_message_length 	= 20;
+
+// --------------------------------------
+// Static RAM usage
+char    	decoded[50][20];
+char 		message[20];
+uint8_t 	a91[12];
+float   	log174[FT8_N];
+uint8_t 	plain[FT8_N];
+// --------------------------------------
+
 void decode_ft8_message(char *msg)
 {
-	//Candidate a_test;	// ToDo: the compilier doesn't like this structure for some reason, fix first before enabling decode!
+	// --------------------------------------------------------------------------------------------------------------------------------
+	// Minimised stack use
+	int     	num_decoded = 0;
+	int 		sample_rate = 12000;
+	int 		num_samples = 15 * sample_rate;
+	int 		num_bins;
+	int 		block_size,num_blocks,num_candidates,n_errors;
+	bool 		found;
+	float 		freq_hz,time_sec;
+	Candidate 	*cand;
+	// ----------------------------------------------
+	// External and internal RAM
+	float 		*ft8_signal = (float *)0xc0277000; 					// float signal[num_samples]
+	Candidate 	*candidate_list = (Candidate *)0x30000000;			// Candidate candidate_list[kMax_candidates] - needs to be aligned!!
+	uint8_t 	*power = (uint8_t *)(0xc0277000 + num_samples*4); 	// uint8_t power[num_blocks * 4 * num_bins];
+	// --------------------------------------------------------------------------------------------------------------------------------
 
-	int sample_rate = 12000;
-	int num_samples = 15 * sample_rate;
-	//
-	//--float signal[num_samples];	// needs like 720k RAM!
-	//
-	// layer 1 in ext sdram
-	float 		*signal = (float *)0xc0277000;
-
-	int rc = load_wav(signal, &num_samples, &sample_rate, "sample.wav");
+	#if 0
+	// Get file data - not working
+	int rc = load_wav(ft8_signal, &num_samples, &sample_rate, "sample.wav");
 	if (rc < 0)
 	{
 		//printf("Cannot load file!\r\n");
 		//printf("RC = %d\n", rc);
 		return;
 	}
+	#endif
 
-	normalize_signal(signal, num_samples);
+	#if 1
+	// Use local generation, to public RAM, instead of file values - works with the decoder
+	encode_ft8_message("CQ M0NKA IO92",0);
+	#endif
 
-	const float fsk_dev = 6.25f;    // tone deviation in Hz and symbol rate
+	normalize_signal(ft8_signal, num_samples);
 
 	// Compute DSP parameters that depend on the sample rate
-	const int num_bins = (int)(sample_rate / (2 * fsk_dev));
-	const int block_size = 2 * num_bins;
-	const int num_blocks = (num_samples - (block_size/2) - block_size) / block_size;
+	num_bins = (int)(sample_rate / (2 * fsk_dev));
+	block_size = 2 * num_bins;
+	num_blocks = (num_samples - (block_size/2) - block_size) / block_size;
 
-	printf("%d blocks, %d bins\r\n", num_blocks, num_bins);
+	//printf("%d blocks, %d bins\r\n", num_blocks, num_bins);
+	//printf("power ram usage: %d bytes\r\n", num_blocks * 4 * num_bins);
 
 	// Compute FFT over the whole signal and store it
-	//uint8_t power[num_blocks * 4 * num_bins];
-	//
-	//uint8_t *power = pvPortMalloc(num_blocks * 4 * num_bins);
-	//if(power == NULL)
-	//{
-	//	printf("can't alloc mem\r\n");
-	//	return;
-	//}
-	//				0x30000000 - 0x3001FFFF 	128k	SRAM1
-	//				0x30020000 - 0x3003FFFF 	128k	SRAM2
-	//				0x30040000 - 0x30047FFF 	 32k	SRAM3
-	//
-	//uint8_t *power = (uint8_t *)0x30000000; - apparently wrong decl in linker script, this are is too small for this
-	//
-	//
-	uint8_t *power = (uint8_t *)(0xc0277000 + num_samples);
+	extract_power(ft8_signal, num_blocks, num_bins, power);
 
-	printf("power ram usage: %d bytes\r\n", num_blocks * 4 * num_bins);
-
-	extract_power(signal, num_blocks, num_bins, power);
+	//printf("candidate_list ram usage: %d bytes\r\n", kMax_candidates * sizeof(Candidate));
 
 	// Find top candidates by Costas sync score and localize them in time and frequency
-	//Candidate candidate_list[kMax_candidates];
-	Candidate *candidate_list = (Candidate *)0x30000000;	// this memory needs to be aligned!!
-
-	printf("candidate_list ram usage: %d bytes\r\n", kMax_candidates * sizeof(Candidate));
-
-	int num_candidates = find_sync(power, num_blocks, num_bins, (uchar *)kCostas_map, kMax_candidates, candidate_list);
+	num_candidates = find_sync(power, num_blocks, num_bins, (uchar *)kCostas_map, kMax_candidates, candidate_list);
 
 	printf("num_candidates: %d\r\n", num_candidates);
 
 	// TODO: sort the candidates by strongest sync first?
 	//...
 
-	// test!
-	//num_candidates = 1;
-
-
 	// Go over candidates and attempt to decode messages
-	char    decoded[kMax_decoded_messages][kMax_message_length];
-	int     num_decoded = 0;
-
 	for (int idx = 0; idx < num_candidates; ++idx)
 	{
-		Candidate cand = candidate_list[idx];
+		cand = &candidate_list[idx];
 
-		float 	freq_hz  = (cand.freq_offset + cand.freq_sub / 2.0f) * fsk_dev;
-		float 	time_sec = (cand.time_offset + cand.time_sub / 2.0f) / fsk_dev;
-		float   log174[FT8_N];
+		freq_hz  = (cand->freq_offset + cand->freq_sub / 2.0f) * fsk_dev;
+		time_sec = (cand->time_offset + cand->time_sub / 2.0f) / fsk_dev;
+		//float   log174[FT8_N];
 
-		extract_likelihood(power, num_bins, &cand, kGray_map, log174);
+		//printf("try: %d\r\n", idx);
+
+		extract_likelihood(power, num_bins, cand, kGray_map, log174);
+
+		//uint8_t plain[FT8_N];
+		n_errors = 0;
 
 		// bp_decode() produces better decodes, uses way less memory
-
-		uint8_t plain[FT8_N];
-		int     n_errors = 0;
-
 		bp_decode(log174, kLDPC_iterations, plain, &n_errors);
 		//ldpc_decode(log174, kLDPC_iterations, plain, &n_errors);
 
@@ -375,31 +375,41 @@ void decode_ft8_message(char *msg)
 			continue;
 		}
 
+		#if 0
+		printf("FSK tones: ");
+		for (int j = 0; j < FT8_NN/2; ++j)
+		{
+			printf("%02x", plain[j]);
+		}
+		printf("\r\n");
+		#endif
+
 		// Extract payload + CRC (first FT8_K bits)
-		uint8_t a91[12];
+		//uint8_t a91[12];
 		pack_bits(plain, FT8_K, a91);
 
 		// TODO: check CRC
 		//...
 
+		#if 1
 		//printf("%03d: score = %d freq = %.1f time = %.2f\n", idx, cand.score, freq_hz, time_sec);
 		//print_tones(kGray_map, log174);
-		// for (int i = 0; i < 12; ++i) {
-		//     printf("%02x ", a91[i]);
-		// }
-		// printf("\n");
-#if 1
-		char message[kMax_message_length];
+		for (int i = 0; i < 12; ++i)
+		     printf("%02x ", a91[i]);
+		printf("\r\n");
+		#endif
 
 		unpack77(a91, message);
 
 		// Check for duplicate messages (TODO: use hashing)
-		bool found = false;
+		found = false;
 
 		for (int i = 0; i < num_decoded; ++i)
 		{
 			if (0 == strcmp(decoded[i], message))
 			{
+				printf("found: %s\r\n",message);
+				strcpy(msg,message);
 				found = true;
 				break;
 			}
@@ -411,15 +421,10 @@ void decode_ft8_message(char *msg)
 			++num_decoded;
 
             // Fake WSJT-X-like output for now
-            int snr = 0;    // TODO: compute SNR
+            //int snr = 0;    // TODO: compute SNR
             //printf("000000 %3d %4.1f %4d ~  %s\n", cand.score, time_sec, (int)(freq_hz + 0.5f), message);
-            printf("%s\r\n", message);
+            //printf("%s\r\n", message);
         }
-#endif
 	}
 	printf("Decoded %d messages\r\n", num_decoded);
-
-	strcpy(msg,"nothing");
-
-	//vPortFree(power);
 }
