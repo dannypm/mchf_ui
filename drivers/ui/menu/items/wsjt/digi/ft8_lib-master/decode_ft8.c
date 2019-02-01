@@ -7,8 +7,8 @@
 
 #include "mchf_pro_board.h"
 
-//#include "ft8/unpack_v2.h"
-//#include "ft8/ldpc.h"
+#include "ft8/unpack_v2.h"
+#include "ft8/ldpc.h"
 #include "ft8/decode.h"
 #include "ft8/ft8_constants.h"
 #include "common/wave.h"
@@ -332,30 +332,34 @@ void decode_ft8_message(char *msg)
 
 	// Find top candidates by Costas sync score and localize them in time and frequency
 	//Candidate candidate_list[kMax_candidates];
-	Candidate *candidate_list = (Candidate *)(0x30000000 + num_blocks * 4 * num_bins);	// next free space in internal RAM
+	Candidate *candidate_list = (Candidate *)0x30000000;	// this memory needs to be aligned!!
 
 	printf("candidate_list ram usage: %d bytes\r\n", kMax_candidates * sizeof(Candidate));
 
-	// OS crash here...
 	int num_candidates = find_sync(power, num_blocks, num_bins, (uchar *)kCostas_map, kMax_candidates, candidate_list);
-	printf("find_sync...done\r\n");
+
+	printf("num_candidates: %d\r\n", num_candidates);
 
 	// TODO: sort the candidates by strongest sync first?
 	//...
-#if 0
+
+	// test!
+	//num_candidates = 1;
+
+
 	// Go over candidates and attempt to decode messages
 	char    decoded[kMax_decoded_messages][kMax_message_length];
 	int     num_decoded = 0;
 
 	for (int idx = 0; idx < num_candidates; ++idx)
 	{
-		Candidate &cand = candidate_list[idx];
+		Candidate cand = candidate_list[idx];
 
 		float 	freq_hz  = (cand.freq_offset + cand.freq_sub / 2.0f) * fsk_dev;
 		float 	time_sec = (cand.time_offset + cand.time_sub / 2.0f) / fsk_dev;
 		float   log174[FT8_N];
 
-//!		extract_likelihood(power, num_bins, cand, kGray_map, log174);
+		extract_likelihood(power, num_bins, &cand, kGray_map, log174);
 
 		// bp_decode() produces better decodes, uses way less memory
 
@@ -367,7 +371,7 @@ void decode_ft8_message(char *msg)
 
 		if (n_errors > 0)
 		{
-			//printf("ldpc_decode() = %d\n", n_errors);
+			//printf("ldpc_decode() = %d\r\n", n_errors);
 			continue;
 		}
 
@@ -378,14 +382,13 @@ void decode_ft8_message(char *msg)
 		// TODO: check CRC
 		//...
 
-		// printf("%03d: score = %d freq = %.1f time = %.2f\n", idx,
-		//         cand.score, freq_hz, time_sec);
-		// print_tones(kGray_map, log174);
+		//printf("%03d: score = %d freq = %.1f time = %.2f\n", idx, cand.score, freq_hz, time_sec);
+		//print_tones(kGray_map, log174);
 		// for (int i = 0; i < 12; ++i) {
 		//     printf("%02x ", a91[i]);
 		// }
 		// printf("\n");
-
+#if 1
 		char message[kMax_message_length];
 
 		unpack77(a91, message);
@@ -410,12 +413,13 @@ void decode_ft8_message(char *msg)
             // Fake WSJT-X-like output for now
             int snr = 0;    // TODO: compute SNR
             //printf("000000 %3d %4.1f %4d ~  %s\n", cand.score, time_sec, (int)(freq_hz + 0.5f), message);
+            printf("%s\r\n", message);
         }
-	}
-	//LOG(LOG_INFO, "Decoded %d messages\n", num_decoded);
 #endif
+	}
+	printf("Decoded %d messages\r\n", num_decoded);
 
-	strcpy(msg,"bla bla");
+	strcpy(msg,"nothing");
 
 	//vPortFree(power);
 }

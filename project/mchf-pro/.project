@@ -2785,5 +2785,15 @@
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/text.h</locationURI>
 		</link>
+		<link>
+			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/unpack_v2.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/unpack_v2.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/unpack_v2.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/unpack_v2.h</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>

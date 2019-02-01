@@ -1,5 +1,7 @@
 
-#if 0
+#include "mchf_pro_board.h"
+
+#if 1
 
 #include "unpack_v2.h"
 #include "text.h"
@@ -53,7 +55,7 @@ int unpack28(uint32_t n28, uint8_t ip, uint8_t i3, char *result) {
         if (n28 <= 1002) {
             // CQ_nnn with 3 digits
             strcpy(result, "CQ ");
-            int_to_dd(result + 3, n28 - 3, 3);
+            int_to_dd(result + 3, n28 - 3, 3,false);
             return 0;   // Success
         }
         if (n28 <= 532443L) {

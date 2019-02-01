@@ -1,5 +1,5 @@
-
-#if 1
+#ifndef __LPDC_H
+#define __LPDC_H
 
 //#pragma once
 
