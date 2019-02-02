@@ -503,7 +503,19 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 		}
 		else
 		{
-			// ..
+			// Maybe toggle different digi modes here ?
+			// Default - FT8
+			//
+			// Stay in USB ? Force DSP to digi mode ??
+			//
+			//
+			//tsu.band[tsu.curr_band].demod_mode = DEMOD_DIGI;
+
+			// Pass request to UI driver to change mode
+			if(ui_s.req_state == MODE_DESKTOP)
+				ui_s.req_state = MODE_DESKTOP_FT8;
+			else
+				ui_s.req_state = MODE_DESKTOP;
 		}
 
 		return;
@@ -569,7 +581,10 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 				if(ui_s.req_state == MODE_DESKTOP)
 					ui_s.req_state = MODE_MENU;
 				else
-					ui_s.req_state = MODE_DESKTOP;
+				{
+					if(ui_s.req_state == MODE_MENU)
+						ui_s.req_state = MODE_DESKTOP;
+				}
 
 				// Large debounce
 				OsDelayMs(500);
@@ -1074,12 +1089,34 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 //*----------------------------------------------------------------------------
 static void keypad_cmd_processor(uchar x,uchar y, uchar hold)
 {
-	if(ui_s.cur_state == MODE_DESKTOP)
-		keypad_cmd_processor_desktop(x,y,hold);
-	else
-		keypad_cmd_processor_menu(x,y,hold);
+	//if(ui_s.cur_state == MODE_DESKTOP)
+	//	keypad_cmd_processor_desktop(x,y,hold);
+	//else
+	//	keypad_cmd_processor_menu(x,y,hold);
 
-	//ToDo: manage other UI driver states (like Audio options popup, etc)
+	// Manage different UI driver modes
+	switch(ui_s.cur_state)
+	{
+		// Main radio desktop
+		case MODE_DESKTOP:
+			keypad_cmd_processor_desktop(x,y,hold);
+			break;
+
+		// Desktop for FT8 via Window Manager
+		case MODE_DESKTOP_FT8:
+			keypad_cmd_processor_desktop(x,y,hold);
+			break;
+
+		// Menu mode via Window Manager
+		case MODE_MENU:
+			keypad_cmd_processor_menu(x,y,hold);
+			break;
+
+		// Do we need keyboard processing in other modes ?
+		// If yes, declare and handle...
+		default:
+			break;
+	}
 }
 
 //*----------------------------------------------------------------------------

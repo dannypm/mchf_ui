@@ -65,7 +65,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
   { LISTBOX_CreateIndirect, "Listbox", 					ID_LISTBOX_2, 		480, 	28, 	140, 	192, 	0, 				0x0, 	0 	},
 };
 
-WM_HWIN hWin = 0;
+WM_HWIN hSideEncoderWin = 0;
 
 struct SLIDER_STATE	ss;
 
@@ -425,7 +425,7 @@ void ui_side_enc_menu_create(void)
 	ui_side_enc_menu_set_profile();
 
 	WM_SetCallback(WM_HBKWIN, &_cbBkWindow);
-	hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+	hSideEncoderWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 }
 
 //*----------------------------------------------------------------------------
@@ -437,7 +437,10 @@ void ui_side_enc_menu_create(void)
 //*----------------------------------------------------------------------------
 void ui_side_enc_menu_destroy(void)
 {
-	//WM_SetCallback		(WM_HBKWIN, 0);
-	//WM_InvalidateWindow	(WM_HBKWIN);
-	if(hWin) WM_DeleteWindow(hWin);
+	if(hSideEncoderWin)
+	{
+		WM_SetCallback		(WM_HBKWIN, 0);
+		WM_InvalidateWindow	(WM_HBKWIN);
+		WM_DeleteWindow(hSideEncoderWin);
+	}
 }

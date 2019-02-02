@@ -252,10 +252,15 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 
 		case WM_PAINT:
 		{
+			//
+			// ToDo: fix this implementation, repaint is just too much...
+			//
 			if(DisableAutoRefresh == 0)
 			{
 				k_GetTime(&Time);
 				k_GetDate(&Date);
+
+				printf("upd0 %d\r\n",Time.Seconds);
 
 				GUI_UpdateClock (725, 97, Time.Hours, Time.Minutes, Time.Seconds);
       
@@ -270,6 +275,8 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 			}
 			else
 			{
+				printf("upd1 %d\r\n",Time.Seconds);
+
 				hItem = WM_GetDialogItem(pMsg->hWin, ID_SPINBOX_HOUR);
 				Time.Hours = SPINBOX_GetValue(hItem);
       

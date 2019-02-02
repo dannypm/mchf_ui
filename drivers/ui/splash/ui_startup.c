@@ -92,9 +92,9 @@ void ui_startup(void)
 
 	// CPU type - ToDo: fix this, just a wild guess
 	if(ccd.wafer_coord == 0x400026)
-		GUI_DispStringAt(" - CPU seems to be STM32F7", 5,curr_y);
+		GUI_DispStringAt(" - CPU is STM32F7xxx", 5,curr_y);
 	else
-		GUI_DispStringAt(" - CPU seems to be STM32H7", 5,curr_y);
+		GUI_DispStringAt(" - CPU is STM32H7xxx", 5,curr_y);
 
 	curr_y += 24;
 

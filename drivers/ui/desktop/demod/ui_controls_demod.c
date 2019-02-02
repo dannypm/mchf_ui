@@ -62,6 +62,9 @@ static void ui_controls_demod_change_screen_demod_mode(uchar on_init)
 		case DEMOD_AM:
 			GUI_DispStringAt("AM",(DECODER_MODE_X + 10),(DECODER_MODE_Y + 1));
 			break;
+		//case DEMOD_DIGI:	- no point really, as we are going to repaint entirely different Desktop
+		//	GUI_DispStringAt("FT8",(DECODER_MODE_X + 10),(DECODER_MODE_Y + 1));
+		//	break;
 		default:
 			break;
 	}

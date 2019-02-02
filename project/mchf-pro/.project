@@ -266,6 +266,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/ui_controls_layout.h</locationURI>
 		</link>
 		<link>
+			<name>drivers/ui/desktop_ft8/ui_desktop_ft8.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop_ft8/ui_desktop_ft8.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/desktop_ft8/ui_desktop_ft8.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop_ft8/ui_desktop_ft8.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/menu/k_module.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/k_module.c</locationURI>

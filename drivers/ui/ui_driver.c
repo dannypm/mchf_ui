@@ -49,6 +49,9 @@
 // Side Encoder Options Menu
 #include "side_enc_menu\ui_side_enc_menu.h"
 // -----------------------------------------------------------------------------------------------
+// FT8 Desktop
+#include "desktop_ft8\ui_desktop_ft8.h"
+// -----------------------------------------------------------------------------------------------
 // Menu Mode
 #include "menu\k_module.h"
 #include "menu\ui_menu.h"
@@ -182,6 +185,28 @@ static void ui_driver_change_mode(void)
 			break;
 		}
 
+		// Switch to FT8 mode
+		case MODE_DESKTOP_FT8:
+		{
+			printf("Entering FT8 mode...\r\n");
+
+			// Destroy desktop controls
+			ui_controls_smeter_quit();
+			ui_controls_spectrum_quit();
+
+			// Clear screen
+			GUI_SetBkColor(GUI_BLACK);
+			GUI_Clear();
+
+			// Show popup
+			ui_desktop_ft8_create();
+
+			// Initial paint
+			GUI_Exec();
+
+			break;
+		}
+
 		// Switch to desktop mode
 		case MODE_DESKTOP:
 		{
@@ -190,6 +215,7 @@ static void ui_driver_change_mode(void)
 			// Destroy any Window Manager items
 			ui_destroy_menu();
 			ui_side_enc_menu_destroy();
+			ui_desktop_ft8_destroy();
 
 			// Clear screen
 			GUI_SetBkColor(GUI_BLACK);
@@ -309,6 +335,7 @@ ui_driver_loop:
 	// Refresh screen
 	switch(ui_s.cur_state)
 	{
+		// Default Radio desktop, custom made controls
 		case MODE_DESKTOP:
 		{
 			// Repaint Desktop controls
@@ -319,6 +346,7 @@ ui_driver_loop:
 			break;
 		}
 
+		// Menu Mode via Window Manager
 		case MODE_MENU:
 		{
 			// Repaint Menu controls
@@ -332,13 +360,24 @@ ui_driver_loop:
 			break;
 		}
 
+		// Side encoder pop up, via Window Manager
 		case MODE_SIDE_ENC_MENU:
 		{
 			// Repaint Menu controls
 			GUI_Exec();
 
-			// Can't be bothered with fast repaint, unless on screen sliders and multitouch
-			// ToDo: check the above!
+			// Enough for responsive UI
+			OsDelayMs(100);
+			break;
+		}
+
+		// Desktop in FT8 mode, using Window Manager
+		case MODE_DESKTOP_FT8:
+		{
+			// Repaint Menu controls
+			GUI_Exec();
+
+			// How fast ?
 			OsDelayMs(100);
 			break;
 		}
@@ -451,7 +490,7 @@ static void ui_driver_touch_router(void)
 	//   emWin doesn't like being accessed from separate threads
 	//   and we don't want critical sections on touch events!
 	//
-	if((ui_s.cur_state == MODE_MENU)||(ui_s.cur_state == MODE_SIDE_ENC_MENU))
+	if((ui_s.cur_state == MODE_MENU)||(ui_s.cur_state == MODE_SIDE_ENC_MENU)||(ui_s.cur_state == MODE_DESKTOP_FT8))
 	{
 		// Process pending from digitizer driver
 		if((t_d.pending) && (!TS_State.Pressed))

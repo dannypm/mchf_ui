@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				74
+#define	MCHFX_VER_BUILD				75
 //
 // -----------------------------------------------------------------------------
 //
@@ -239,6 +239,7 @@
 #define	MODE_DESKTOP			0
 #define MODE_MENU				1
 #define MODE_SIDE_ENC_MENU		2
+#define MODE_DESKTOP_FT8		3
 //
 struct UI_DRIVER_STATE {
 	// Current LCD state - Desktop or Menu
