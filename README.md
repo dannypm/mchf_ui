@@ -47,6 +47,8 @@ Center/Fixed mode    - https://www.youtube.com/watch?v=uaPRkPgszMI
 
 Side Encoder options - https://youtu.be/0MX4TGASykA 
 
+Current State of the FT8 Menu - https://pbs.twimg.com/media/DymM8oGW0AEXDCN.jpg:large
+
 --------------------------------------------------------------
 Krassi Atanassov, M0NKA
 mcHF project, 2012 - 2019
