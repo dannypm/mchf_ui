@@ -19,17 +19,11 @@
 
 #include "ui_desktop_ft8.h"
 
-// DSP write request proxy
-//#include "dsp_eep\hw_dsp_eep.h"
-
 #include "gui.h"
 #include "dialog.h"
 #include "ST_GUI_Addons.h"
 
 #include "k_rtc.h"
-
-// Public radio state
-//extern struct	TRANSCEIVER_STATE_UI	tsu;
 
 #define ID_WINDOW_0               	(GUI_ID_USER + 0x00)
 
@@ -39,6 +33,9 @@
 #define ID_LISTBOX2	        		(GUI_ID_USER + 0x04)
 
 #define ID_EDIT1	        		(GUI_ID_USER + 0x05)
+#define ID_EDIT2	        		(GUI_ID_USER + 0x06)
+#define ID_EDIT3	        		(GUI_ID_USER + 0x07)
+#define ID_EDIT4	        		(GUI_ID_USER + 0x08)
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
 {
@@ -53,11 +50,59 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
   { TEXT_CreateIndirect, 	"RxFreq.Text",				ID_TEXT_LIST2,		405,	5,		390, 	20,  	0, 		0x0,	0 },
   { LISTBOX_CreateIndirect, "RxFreq.Listbox",			ID_LISTBOX2, 		405, 	23, 	390, 	200, 	0, 		0x0, 	0 },
   // Edit boxes
-  { EDIT_CreateIndirect,     NULL,     					ID_EDIT1,   		5,  	230,  	100,  	30, 	0,		0x0,	0 },
+  { EDIT_CreateIndirect,     "time.Edit",  				ID_EDIT1,   		295,  	261,  	100,  	30, 	0,		0x0,	0 },
+  { EDIT_CreateIndirect,     "date.Edit",    			ID_EDIT2,   		295,  	230,  	100,  	30, 	0,		0x0,	0 },
+  { EDIT_CreateIndirect,     "band.Edit",    			ID_EDIT3,   		164,  	230,  	130,  	30, 	0,		0x0,	0 },
+  { EDIT_CreateIndirect,     "freq.Edit",    			ID_EDIT4,   		164,  	261,  	130,  	30, 	0,		0x0,	0 },
 };
 
-WM_HWIN 		hDesktopFT8 = 0;
-WM_HTIMER 		hTimerTime;
+WM_HWIN 			hDesktopFT8 = 0;
+WM_HTIMER 			hTimerTime;
+RTC_DateTypeDef     InitDate;
+
+//*----------------------------------------------------------------------------
+//* Function Name       : ui_desktop_show_clock
+//* Object              : refresh clock (every 1s)
+//* Input Parameters    :
+//* Output Parameters   :
+//* Functions called    :
+//*----------------------------------------------------------------------------
+static void ui_desktop_show_clock(WM_MESSAGE * pMsg, uchar is_init)
+{
+	WM_HWIN 			hEdit;
+	char 				buf[50];
+
+	RTC_DateTypeDef     Date;
+	RTC_TimeTypeDef     Time;
+
+	WM_InvalidateWindow(pMsg->hWin);
+
+	// Due to STM32, need to read both, in exact order, otherwise subsequent calls will fail
+	k_GetTime(&Time);
+	k_GetDate(&Date);
+
+	// Copy to public
+	if(is_init)
+		memcpy((void *)&InitDate,(void *)&Date,sizeof(RTC_DateTypeDef));
+
+	EnterCriticalSection();
+	sprintf(buf,"%02d:%02d:%02d",Time.Hours,Time.Minutes,Time.Seconds);
+	ExitCriticalSection();
+
+	hEdit = WM_GetDialogItem(pMsg->hWin, ID_EDIT1);
+	EDIT_SetText(hEdit, buf);
+
+	// Show date if it is worth wasting cycles on it
+	if((is_init) || (Date.Year != InitDate.Year) || (Date.Month != InitDate.Month) || (Date.Date != InitDate.Date))
+	{
+		EnterCriticalSection();
+		sprintf(buf,"%04d - %02d - %02d",(2018 + Date.Year), Date.Month, Date.Date);
+		ExitCriticalSection();
+
+		hEdit = WM_GetDialogItem(pMsg->hWin, ID_EDIT2);
+		EDIT_SetText(hEdit, buf);
+	}
+}
 
 //*----------------------------------------------------------------------------
 //* Function Name       : _cbControl
@@ -156,9 +201,6 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 	SCROLLBAR_Handle 	hScrollV;
 	int     			NCode,Id;
 
-	RTC_DateTypeDef     Date;
-	RTC_TimeTypeDef     Time;
-
 	GUI_PID_STATE * pState;
 	hDlg = pMsg->hWin;
 
@@ -170,14 +212,14 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 
 			// Init Listbox
     		hText = WM_GetDialogItem(pMsg->hWin, ID_TEXT_LIST1);
-			TEXT_SetFont(hText,&GUI_Font8x16_1);
-			TEXT_SetBkColor(hText,GUI_STCOLOR_LIGHTBLUE);
+			TEXT_SetFont(hText,&GUI_Font8x16_1);									// use proportional font
+			TEXT_SetBkColor(hText,GUI_STCOLOR_DARKBLUE);
 			TEXT_SetTextColor(hText,GUI_WHITE);
 			TEXT_SetTextAlign(hText,TEXT_CF_LEFT|TEXT_CF_VCENTER);
 			//
 			hList = WM_GetDialogItem(pMsg->hWin, ID_LISTBOX1);
-			LISTBOX_SetFont(hList, &GUI_Font8x16_1);
-			LISTBOX_SetTextColor(hList,LISTBOX_CI_UNSEL,GUI_STCOLOR_DARKBLUE);
+			LISTBOX_SetFont(hList, &GUI_Font8x16_1);								// use proportional font
+			LISTBOX_SetTextColor(hList,LISTBOX_CI_UNSEL,GUI_WHITE);
 			hScrollV = SCROLLBAR_CreateAttached(hList, SCROLLBAR_CF_VERTICAL);
 			//
 			TEXT_SetText(	  hText, "  UTC   dB   DT Freq       Message       ");
@@ -196,14 +238,14 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 
 			// Init Listbox
     		hText = WM_GetDialogItem(pMsg->hWin, ID_TEXT_LIST2);
-			TEXT_SetFont(hText,&GUI_Font8x16_1);
-			TEXT_SetBkColor(hText,GUI_STCOLOR_LIGHTBLUE);
+			TEXT_SetFont(hText,&GUI_Font8x16_1);									// use proportional font
+			TEXT_SetBkColor(hText,GUI_STCOLOR_DARKBLUE);
 			TEXT_SetTextColor(hText,GUI_WHITE);
 			TEXT_SetTextAlign(hText,TEXT_CF_LEFT|TEXT_CF_VCENTER);
 			//
 			hList = WM_GetDialogItem(pMsg->hWin, ID_LISTBOX2);
-			LISTBOX_SetFont(hList, &GUI_Font8x16_1);
-			LISTBOX_SetTextColor(hList,LISTBOX_CI_UNSEL,GUI_STCOLOR_DARKBLUE);
+			LISTBOX_SetFont(hList, &GUI_Font8x16_1);								// use proportional font
+			LISTBOX_SetTextColor(hList,LISTBOX_CI_UNSEL,GUI_WHITE);
 			hScrollV = SCROLLBAR_CreateAttached(hList, SCROLLBAR_CF_VERTICAL);
 			//
 			TEXT_SetText(	  hText, "  UTC   dB   DT Freq       Message       ");
@@ -212,41 +254,52 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 			LISTBOX_AddString(hList, "133900 -19  0.1 1199 ~  K2NRS R5DU -25"   );
 			#endif
 
+			// Time Edit box
 			hEdit = WM_GetDialogItem(hDlg, ID_EDIT1);
-			EDIT_SetFont(hEdit,&GUI_FontAvantGarde16B);
-			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
-			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_YELLOW);
 			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			// Date Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT2);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_YELLOW);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			EDIT_SetMaxLen(hEdit,16);												// default 8 char limit is not enough
+			// Band Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT3);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_GREEN);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			EDIT_SetText(hEdit,"20m");
+			// Frequency Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT4);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_GREEN);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			EDIT_SetMaxLen(hEdit,24);												// default 8 char limit is not enough
+			EDIT_SetText(hEdit,"14.074.000");
+
+			// Show clock
+			ui_desktop_show_clock(pMsg,1);
 
     		break;
     	}
 
     	case WM_PAINT:
-    	{
     		break;
-    	}
 
     	case WM_DELETE:
     		WM_DeleteTimer(hTimerTime);
     		break;
 
     	case WM_TIMER:
-    	{
-    		char buf[50];
-
-    		WM_InvalidateWindow(pMsg->hWin);
-
-    		k_GetTime(&Time);
-    		k_GetDate(&Date);
-
-    		hEdit = WM_GetDialogItem(hDlg, ID_EDIT1);
-
-    		sprintf(buf,"%02d:%02d:%02d",Time.Hours,Time.Minutes,Time.Seconds);
-    		EDIT_SetText(hEdit, buf);
-
+    		ui_desktop_show_clock(pMsg,0);
     		WM_RestartTimer(pMsg->Data.v, 1000);
     		break;
-    	}
 
 		// Process key messages
 		case WM_KEY:
@@ -288,9 +341,7 @@ static void ui_desktop_ft8_set_profile(void)
 {
 	WINDOW_SetDefaultBkColor(GUI_LIGHTGRAY);	// looks better than white background
 
-	LISTVIEW_SetDefaultGridColor(GUI_WHITE);
-	LISTVIEW_SetDefaultBkColor(LISTVIEW_CI_SEL, GUI_STCOLOR_LIGHTBLUE);
-	LISTVIEW_SetDefaultBkColor(LISTVIEW_CI_SELFOCUS, GUI_STCOLOR_LIGHTBLUE);
+	LISTBOX_SetDefaultBkColor(LISTBOX_CI_UNSEL,GUI_STCOLOR_LIGHTBLUE);
 	LISTBOX_SetDefaultScrollMode(LISTBOX_CF_AUTOSCROLLBAR_V);
 
 	TEXT_SetDefaultTextColor(GUI_STCOLOR_LIGHTBLUE);
