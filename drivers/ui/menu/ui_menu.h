@@ -17,6 +17,11 @@
 #ifndef __UI_MENU_H
 #define __UI_MENU_H
 
+#define FOOTER_EDIT_X			20
+#define FOOTER_EDIT_Y			443
+#define FOOTER_EDIT_X_SIZE		260
+#define FOOTER_EDIT_Y_SIZE		30
+
 void    ui_init_menu(void);
 void 	ui_destroy_menu(void);
 void 	ui_periodic_processes(void);

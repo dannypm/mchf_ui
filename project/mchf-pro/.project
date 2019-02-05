@@ -2606,6 +2606,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/info/info_res.c</locationURI>
 		</link>
 		<link>
+			<name>drivers/ui/menu/items/logbook/logbook.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/logbook/logbook.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/menu/items/logbook/logbook_res.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/logbook/logbook_res.c</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/menu/items/reset/reset.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/reset/reset.c</locationURI>

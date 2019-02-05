@@ -63,6 +63,7 @@ extern K_ModuleItem_Typedef  	file_b;				// File Browser
 extern K_ModuleItem_Typedef  	clock;				// Clock Settings
 extern K_ModuleItem_Typedef  	reset;				// Factory Reset
 extern K_ModuleItem_Typedef  	wsjt;				// WSJT-X Tools
+extern K_ModuleItem_Typedef  	logbook;			// Logbook
 extern K_ModuleItem_Typedef  	info;				// System Information
 // -----------------------------------------------------------------------------------------------
 // Splash Screen
@@ -319,6 +320,7 @@ void ui_driver_task(void const * argument)
 	k_ModuleAdd(&file_b);				// File Browser
 	k_ModuleAdd(&reset);				// Factory Reset
 	k_ModuleAdd(&wsjt);					// WSJT-X Tools
+	k_ModuleAdd(&logbook);				// Logbook
 	k_ModuleAdd(&info);					// System Information
 
 	// Show desktop(on layer 0)

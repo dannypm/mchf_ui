@@ -6,6 +6,7 @@
 #include "ST_GUI_Addons.h"
 
 #include "k_module.h"
+#include "ui_menu.h"
 
 // ---------------------------------------------------------
 // ST Animated control or standard emWin IconView
@@ -41,7 +42,7 @@ static void ui_menu_update_footer_text(char *text)
 	// ...
 
 	GUI_SetColor(GUI_ORANGE);
-	GUI_FillRect(20, 445,(20 + 260),(445 + 20));
+	GUI_FillRect(FOOTER_EDIT_X, FOOTER_EDIT_Y,(FOOTER_EDIT_X + FOOTER_EDIT_X_SIZE),(FOOTER_EDIT_Y + FOOTER_EDIT_Y_SIZE - 2));
 
 	TEXT_SetText(hItem,text);
 
@@ -429,16 +430,21 @@ void ui_set_gui_profile(void)
 
     WINDOW_SetDefaultBkColor(GUI_WHITE);
 
+    // ---------------------------------------------------------------------------
     LISTVIEW_SetDefaultGridColor(GUI_WHITE);
-    LISTVIEW_SetDefaultBkColor(LISTVIEW_CI_SEL, GUI_STCOLOR_LIGHTBLUE);
-    DROPDOWN_SetDefaultColor(DROPDOWN_CI_SEL, GUI_STCOLOR_LIGHTBLUE);
-    LISTVIEW_SetDefaultBkColor(LISTVIEW_CI_SELFOCUS, GUI_STCOLOR_LIGHTBLUE);
-    DROPDOWN_SetDefaultColor(DROPDOWN_CI_SELFOCUS, GUI_STCOLOR_LIGHTBLUE);
+    LISTVIEW_SetDefaultBkColor(LISTVIEW_CI_SEL, 	 	GUI_STCOLOR_LIGHTBLUE);
+    LISTVIEW_SetDefaultBkColor(LISTVIEW_CI_SELFOCUS,	GUI_STCOLOR_LIGHTBLUE);
+    LISTVIEW_SetDefaultTextColor(LISTVIEW_CI_UNSEL,		GUI_STCOLOR_DARKBLUE);
+    LISTVIEW_SetDefaultFont(&GUI_FontAvantGarde16B);
+    //
+    //--HEADER_SetDefaultBkColor(GUI_STCOLOR_LIGHTBLUE);
+    HEADER_SetDefaultTextColor(GUI_STCOLOR_LIGHTBLUE);
+    HEADER_SetDefaultFont(&GUI_FontAvantGarde16B);
+    //--HEADER_SetDefaultSTSkin();
+    // ---------------------------------------------------------------------------
 
-    HEADER_SetDefaultBkColor(GUI_STCOLOR_LIGHTBLUE);
-    HEADER_SetDefaultTextColor(GUI_WHITE);
-    HEADER_SetDefaultFont(GUI_FONT_16_1);
-    HEADER_SetDefaultSTSkin();
+    DROPDOWN_SetDefaultColor(DROPDOWN_CI_SEL, GUI_STCOLOR_LIGHTBLUE);
+    DROPDOWN_SetDefaultColor(DROPDOWN_CI_SELFOCUS, GUI_STCOLOR_LIGHTBLUE);
 
     TREEVIEW_SetDefaultFont(GUI_FONT_32B_ASCII);
 
@@ -525,7 +531,7 @@ void ui_init_menu(void)
     }
 
     // Create footer text control
-    hItem = TEXT_CreateEx(20, 445, 260, 20, WM_GetDesktopWindowEx(0), WM_CF_SHOW, TEXT_CF_LEFT, ID_MENU_NAME, "Main Menu");
+    hItem = TEXT_CreateEx(FOOTER_EDIT_X, FOOTER_EDIT_Y, FOOTER_EDIT_X_SIZE, FOOTER_EDIT_Y_SIZE, WM_GetDesktopWindowEx(0), WM_CF_SHOW, TEXT_CF_LEFT, ID_MENU_NAME, "Main Menu");
     TEXT_SetFont(hItem, &GUI_FontAvantGarde24B);
     TEXT_SetTextColor(hItem, GUI_WHITE);
 
