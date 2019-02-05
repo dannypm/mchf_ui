@@ -61,13 +61,13 @@ WM_HTIMER 			hTimerTime;
 RTC_DateTypeDef     InitDate;
 
 //*----------------------------------------------------------------------------
-//* Function Name       : ui_desktop_show_clock
+//* Function Name       : ui_desktop_ft8_show_clock
 //* Object              : refresh clock (every 1s)
 //* Input Parameters    :
 //* Output Parameters   :
 //* Functions called    :
 //*----------------------------------------------------------------------------
-static void ui_desktop_show_clock(WM_MESSAGE * pMsg, uchar is_init)
+static void ui_desktop_ft8_show_clock(WM_MESSAGE * pMsg, uchar is_init)
 {
 	WM_HWIN 			hEdit;
 	char 				buf[50];
@@ -284,7 +284,7 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 			EDIT_SetText(hEdit,"14.074.000");
 
 			// Show clock
-			ui_desktop_show_clock(pMsg,1);
+			ui_desktop_ft8_show_clock(pMsg,1);
 
     		break;
     	}
@@ -297,7 +297,7 @@ static void _cbCallback(WM_MESSAGE * pMsg)
     		break;
 
     	case WM_TIMER:
-    		ui_desktop_show_clock(pMsg,0);
+    		ui_desktop_ft8_show_clock(pMsg,0);
     		WM_RestartTimer(pMsg->Data.v, 1000);
     		break;
 
@@ -381,4 +381,7 @@ void ui_desktop_ft8_destroy(void)
 		WM_InvalidateWindow	(WM_HBKWIN);
 		WM_DeleteWindow(hDesktopFT8);
 	}
+
+	// Just a quick clean up hack
+	LISTBOX_SetDefaultBkColor(LISTBOX_CI_UNSEL,GUI_WHITE);
 }

@@ -49,6 +49,9 @@
 // Side Encoder Options Menu
 #include "side_enc_menu\ui_side_enc_menu.h"
 // -----------------------------------------------------------------------------------------------
+// Quick Log Entry Menu
+#include "quick_log_entry\ui_quick_log.h"
+// -----------------------------------------------------------------------------------------------
 // FT8 Desktop
 #include "desktop_ft8\ui_desktop_ft8.h"
 // -----------------------------------------------------------------------------------------------
@@ -208,6 +211,27 @@ static void ui_driver_change_mode(void)
 			break;
 		}
 
+		case MODE_QUICK_LOG:
+		{
+			printf("Entering Quick Log Entry mode...\r\n");
+
+			// Destroy desktop controls
+			ui_controls_smeter_quit();
+			ui_controls_spectrum_quit();
+
+			// Clear screen
+			GUI_SetBkColor(GUI_BLACK);
+			GUI_Clear();
+
+			// Show popup
+			ui_quick_log_create();
+
+			// Initial paint
+			GUI_Exec();
+
+			break;
+		}
+
 		// Switch to desktop mode
 		case MODE_DESKTOP:
 		{
@@ -217,6 +241,7 @@ static void ui_driver_change_mode(void)
 			ui_destroy_menu();
 			ui_side_enc_menu_destroy();
 			ui_desktop_ft8_destroy();
+			ui_quick_log_destroy();
 
 			// Clear screen
 			GUI_SetBkColor(GUI_BLACK);
@@ -362,24 +387,15 @@ ui_driver_loop:
 			break;
 		}
 
-		// Side encoder pop up, via Window Manager
+		// All via Window Manager
 		case MODE_SIDE_ENC_MENU:
-		{
-			// Repaint Menu controls
-			GUI_Exec();
-
-			// Enough for responsive UI
-			OsDelayMs(100);
-			break;
-		}
-
-		// Desktop in FT8 mode, using Window Manager
+		case MODE_QUICK_LOG:
 		case MODE_DESKTOP_FT8:
 		{
 			// Repaint Menu controls
 			GUI_Exec();
 
-			// How fast ?
+			// Enough for responsive UI
 			OsDelayMs(100);
 			break;
 		}

@@ -515,7 +515,10 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 			if(ui_s.req_state == MODE_DESKTOP)
 				ui_s.req_state = MODE_DESKTOP_FT8;
 			else
-				ui_s.req_state = MODE_DESKTOP;
+			{
+				if(ui_s.req_state == MODE_DESKTOP_FT8)
+					ui_s.req_state = MODE_DESKTOP;
+			}
 		}
 
 		return;
@@ -669,7 +672,14 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 		}
 		else
 		{
-			// ..
+			// Pass request to UI driver to change mode
+			if(ui_s.req_state == MODE_DESKTOP)
+				ui_s.req_state = MODE_QUICK_LOG;
+			else
+			{
+				if(ui_s.req_state == MODE_QUICK_LOG)
+					ui_s.req_state = MODE_DESKTOP;
+			}
 		}
 
 		return;
@@ -975,7 +985,10 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 				if(ui_s.req_state == MODE_DESKTOP)
 					ui_s.req_state = MODE_MENU;
 				else
-					ui_s.req_state = MODE_DESKTOP;
+				{
+					if(ui_s.req_state == MODE_MENU)
+						ui_s.req_state = MODE_DESKTOP;
+				}
 
 				// Large debounce
 				OsDelayMs(500);
@@ -1099,11 +1112,8 @@ static void keypad_cmd_processor(uchar x,uchar y, uchar hold)
 	{
 		// Main radio desktop
 		case MODE_DESKTOP:
-			keypad_cmd_processor_desktop(x,y,hold);
-			break;
-
-		// Desktop for FT8 via Window Manager
 		case MODE_DESKTOP_FT8:
+		case MODE_QUICK_LOG:
 			keypad_cmd_processor_desktop(x,y,hold);
 			break;
 
