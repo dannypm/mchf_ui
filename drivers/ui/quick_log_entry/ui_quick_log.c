@@ -44,18 +44,32 @@ extern struct	TRANSCEIVER_STATE_UI	tsu;
 #define ID_TEXT_FREQ				(GUI_ID_USER + 0x0A)
 #define ID_EDIT_FREQ        		(GUI_ID_USER + 0x0B)
 
-#define ID_TEXT_RSTR				(GUI_ID_USER + 0x0C)
-#define ID_EDIT_RSTR        		(GUI_ID_USER + 0x0D)
+#define ID_TEXT_MODE				(GUI_ID_USER + 0x0C)
+#define ID_EDIT_MODE        		(GUI_ID_USER + 0x0D)
 
-#define ID_TEXT_RSTS				(GUI_ID_USER + 0x0E)
-#define ID_EDIT_RSTS        		(GUI_ID_USER + 0x0F)
+#define ID_TEXT_RSTR				(GUI_ID_USER + 0x0E)
+#define ID_EDIT_RSTR        		(GUI_ID_USER + 0x0F)
+
+#define ID_TEXT_RSTS				(GUI_ID_USER + 0x10)
+#define ID_EDIT_RSTS        		(GUI_ID_USER + 0x11)
+
+#define ID_TEXT_LOC					(GUI_ID_USER + 0x12)
+#define ID_EDIT_LOC	        		(GUI_ID_USER + 0x13)
+
+#define ID_TEXT_CALL				(GUI_ID_USER + 0x14)
+#define ID_EDIT_CALL        		(GUI_ID_USER + 0x15)
+
+#define ID_TEXT_NAME				(GUI_ID_USER + 0x16)
+#define ID_EDIT_NAME        		(GUI_ID_USER + 0x17)
+
+#define ID_BUTTON_ADD            	(GUI_ID_USER + 0x18)
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
 {
   // -----------------------------------------------------------------------------------------------------------------------------
   //						name						id					x		y		xsize	ysize	?		?		?
   // -----------------------------------------------------------------------------------------------------------------------------
-  { FRAMEWIN_CreateIndirect, "Quick Log Entry", 	0,       				80,  	110, 	640, 	260, 	FRAMEWIN_CF_ACTIVE	},
+  { FRAMEWIN_CreateIndirect, "Quick Log Entry", 	0,       				190,  	110, 	380, 	250, 	FRAMEWIN_CF_ACTIVE	},
   // Edit boxes
   { TEXT_CreateIndirect,     "Time",				ID_TEXT_TIME,   		5,		7,  	70,  	25, 	0, 	  	0,		0   },
   { EDIT_CreateIndirect,     "time.Edit",  			ID_EDIT_TIME,   		60,  	5,  	100,  	25, 	0,		0,		0 	},
@@ -69,17 +83,25 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
   { TEXT_CreateIndirect,     "Freq",				ID_TEXT_FREQ,   		5,		97,  	70,  	25, 	0, 	  	0,		0   },
   { EDIT_CreateIndirect,     "freq.Edit",    		ID_EDIT_FREQ,   		60,  	95,  	100,  	25, 	0,		0x0,	0 	},
   //
+  { TEXT_CreateIndirect,     "Mode",				ID_TEXT_MODE,   		5,		127,  	70,  	25, 	0, 	  	0,		0   },
+  { EDIT_CreateIndirect,     "freq.Edit",    		ID_EDIT_MODE,   		60,  	125,  	100,  	25, 	0,		0x0,	0 	},
+  //
   { TEXT_CreateIndirect,     "RST-R",				ID_TEXT_RSTR,   		175,	7,  	70,  	25, 	0, 	  	0,		0   },
   { EDIT_CreateIndirect,     "rstr.Edit",    		ID_EDIT_RSTR,   		235,  	5,  	100,  	25, 	0,		0x0,	0 	},
   //
   { TEXT_CreateIndirect,     "RST-S",				ID_TEXT_RSTS,   		175,	37,  	70,  	25, 	0, 	  	0,		0   },
   { EDIT_CreateIndirect,     "rsts.Edit",    		ID_EDIT_RSTS,   		235,  	35,  	100,  	25, 	0,		0x0,	0 	},
   //
-  // Locator..
-  // Mode..
-  // Callsign..
-  // Add button...
-
+  { TEXT_CreateIndirect,     "Locator",				ID_TEXT_LOC,   			175,	67,  	70,  	25, 	0, 	  	0,		0   },
+  { EDIT_CreateIndirect,     "rsts.Edit",    		ID_EDIT_LOC,   			235,  	65,  	100,  	25, 	0,		0x0,	0 	},
+  //
+  { TEXT_CreateIndirect,     "Callsign",			ID_TEXT_CALL,   		175,	97,  	70,  	25, 	0, 	  	0,		0   },
+  { EDIT_CreateIndirect,     "rsts.Edit",    		ID_EDIT_CALL,   		235,  	95,  	100,  	25, 	0,		0x0,	0 	},
+  //
+  { TEXT_CreateIndirect,     "Name",				ID_TEXT_NAME,   		175,	127,  	70,  	25, 	0, 	  	0,		0   },
+  { EDIT_CreateIndirect,     "rsts.Edit",    		ID_EDIT_NAME,   		235,  	125,  	100,  	25, 	0,		0x0,	0 	},
+  // Buttons
+  { BUTTON_CreateIndirect,	 "Add",					ID_BUTTON_ADD, 			60, 	165, 	275, 	40, 	0, 		0x0, 	0   },
 };
 
 WM_HWIN hQuickLogWin = 0;
