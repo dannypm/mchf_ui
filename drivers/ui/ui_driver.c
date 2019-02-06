@@ -508,7 +508,10 @@ static void ui_driver_touch_router(void)
 	//   emWin doesn't like being accessed from separate threads
 	//   and we don't want critical sections on touch events!
 	//
-	if((ui_s.cur_state == MODE_MENU)||(ui_s.cur_state == MODE_SIDE_ENC_MENU)||(ui_s.cur_state == MODE_DESKTOP_FT8))
+	if(		(ui_s.cur_state == MODE_MENU)||\
+			(ui_s.cur_state == MODE_SIDE_ENC_MENU)||\
+			(ui_s.cur_state == MODE_QUICK_LOG)||\
+			(ui_s.cur_state == MODE_DESKTOP_FT8))
 	{
 		// Process pending from digitizer driver
 		if((t_d.pending) && (!TS_State.Pressed))

@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				77
+#define	MCHFX_VER_BUILD				78
 //
 // -----------------------------------------------------------------------------
 //
@@ -254,13 +254,6 @@ struct UI_DRIVER_STATE {
 	uchar	dummy;
 	//
 } UI_DRIVER_STATE;
-//
-struct KEYPAD_STATE {
-
-	uchar	curr_button_id;
-	uchar	hold_time;
-
-} KEYPAD_STATE;
 //
 // -----------------------------------------------------------------------------
 // Hardware regs, read before MMU init

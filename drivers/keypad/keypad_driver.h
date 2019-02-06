@@ -121,6 +121,19 @@
 #define KEY_LED_MID_LIGHT	96
 #define KEY_LED_HIGH_LIGHT	128
 
+struct KEYPAD_STATE {
+
+	// Keypad
+	ulong	tap_cnt;
+	uchar	tap_id;
+
+	// LEDs
+	uchar 	btn_id;
+	ushort 	pwmbuffer[2*24*1];
+	uchar 	start_counter;
+
+} KEYPAD_STATE;
+
 void keypad_driver_init(void);
 void keypad_driver_task(void const * argument);
 

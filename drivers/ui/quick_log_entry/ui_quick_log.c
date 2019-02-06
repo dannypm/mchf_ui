@@ -69,7 +69,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] =
   // -----------------------------------------------------------------------------------------------------------------------------
   //						name						id					x		y		xsize	ysize	?		?		?
   // -----------------------------------------------------------------------------------------------------------------------------
-  { FRAMEWIN_CreateIndirect, "Quick Log Entry", 	0,       				190,  	110, 	380, 	250, 	FRAMEWIN_CF_ACTIVE	},
+  { FRAMEWIN_CreateIndirect, "Quick Log Entry", 	0,       				190,  	110, 	390, 	245, 	FRAMEWIN_CF_ACTIVE	},
   // Edit boxes
   { TEXT_CreateIndirect,     "Time",				ID_TEXT_TIME,   		5,		7,  	70,  	25, 	0, 	  	0,		0   },
   { EDIT_CreateIndirect,     "time.Edit",  			ID_EDIT_TIME,   		60,  	5,  	100,  	25, 	0,		0,		0 	},
@@ -209,6 +209,9 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_YELLOW);
 			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
 			EDIT_SetMaxLen(hEdit,16);												// default 8 char limit is not enough
+			// Show clock
+			ui_quick_log_show_clock(pMsg);
+			//
 			// Band Edit box
 			hEdit = WM_GetDialogItem(hDlg, ID_EDIT_BAND);
 			EDIT_SetFont(hEdit,&GUI_FontAvantGarde16B);
@@ -224,9 +227,47 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
 			EDIT_SetMaxLen(hEdit,24);												// default 8 char limit is not enough
 			EDIT_SetText(hEdit,"14.074.000");
-
-			// Show clock
-			ui_quick_log_show_clock(pMsg);
+			// Mode Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT_MODE);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_GREEN);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			EDIT_SetText(hEdit,"SSB");
+			// RST-R Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT_RSTR);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_GREEN);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			EDIT_SetText(hEdit,"599");
+			// RST-S Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT_RSTS);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_GREEN);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			EDIT_SetText(hEdit,"599");
+			// Locator Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT_LOC);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_GREEN);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			// Name Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT_NAME);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_GREEN);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			// Callsign Edit box
+			hEdit = WM_GetDialogItem(hDlg, ID_EDIT_CALL);
+			EDIT_SetFont(hEdit,&GUI_FontAvantGarde20B);
+			EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_BLACK);
+			EDIT_SetTextColor(hEdit,EDIT_CI_ENABLED,GUI_GREEN);
+			EDIT_SetTextAlign(hEdit,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//
+			WM_SetFocus(hItem); // doesn't work!!!
 
     		break;
     	}
@@ -270,7 +311,8 @@ static void _cbCallback(WM_MESSAGE * pMsg)
 //*----------------------------------------------------------------------------
 static void ui_quick_log_set_profile(void)
 {
-
+	TEXT_SetDefaultTextColor(GUI_STCOLOR_LIGHTBLUE);
+	TEXT_SetDefaultFont(&GUI_FontAvantGarde16B);
 }
 
 //*----------------------------------------------------------------------------

@@ -50,14 +50,8 @@ extern struct	UI_DRIVER_STATE			ui_s;
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
 
-struct KEYPAD_STATE						ks;
-
-// -----------------------
-// LED driving publics
-uchar btn_id = 0;
-ushort pwmbuffer[2*24*1];
-uchar start_counter = 0;
-// -----------------------
+// Local keypad state
+struct 			KEYPAD_STATE			ks;
 
 static void keypad_driver_leds_init(void)
 {
@@ -97,7 +91,7 @@ static void keypad_driver_leds_init(void)
 	// XLAT low
 	KEYLED_XLAT_PORT->BSRRH = KEYLED_XLAT_PIN;
 
-	memset(pwmbuffer,0,2*24*1);
+	memset(ks.pwmbuffer,0,2*24*1);
 }
 
 static void keypad_driver_mini_delay(void)
@@ -124,7 +118,7 @@ static void keypad_driver_shift(void)
 	    	keypad_driver_mini_delay();
 
 	    	// Next data bit
-	    	if (pwmbuffer[c] & (1 << b))
+	    	if (ks.pwmbuffer[c] & (1 << b))
 	    		KEYLED_MOSI_PORT->BSRRL = KEYLED_MOSI_PIN;
 	    	else
 	    		KEYLED_MOSI_PORT->BSRRH = KEYLED_MOSI_PIN;
@@ -149,8 +143,8 @@ static void keypad_driver_shift(void)
 static void keypad_driver_change_led_state(uchar button,uchar brightness)
 {
 	// LED state
-	btn_id = button;
-	pwmbuffer[btn_id] = brightness;
+	ks.btn_id = button;
+	ks.pwmbuffer[ks.btn_id] = brightness;
 
 	keypad_driver_shift();
 }
@@ -165,13 +159,13 @@ static void keyboard_driver_blink_all(void)
 		//	pwmbuffer[0] = 64;
 
 		for(i = 0; i < 24; i++)
-			pwmbuffer[i] = 0;
+			ks.pwmbuffer[i] = 0;
 
-		pwmbuffer[btn_id] = 64;
+		ks.pwmbuffer[ks.btn_id] = 64;
 
-		btn_id++;
-		if(btn_id > 23)
-			btn_id = 0;
+		(ks.btn_id)++;
+		if(ks.btn_id > 23)
+			ks.btn_id = 0;
 
 		keypad_driver_shift();
 		// --------------------------------
@@ -269,9 +263,13 @@ void keypad_driver_init(void)
 	KEYPAD_PORT_Y3->BSRRL = KEYPAD_PIN_Y3;
 	KEYPAD_PORT_Y4->BSRRL = KEYPAD_PIN_Y4;
 
-	// Reset public
-	ks.curr_button_id 	= 0;
-	ks.hold_time		= 0;
+	// Keypad publics
+	ks.btn_id 			= 0;
+	ks.start_counter	= 0;
+
+	// Multitap publics
+	ks.tap_cnt 	= 0;
+	ks.tap_id	= 0;
 
 	keypad_driver_leds_init();
 }
@@ -279,15 +277,15 @@ void keypad_driver_init(void)
 //*----------------------------------------------------------------------------
 //* Function Name       : keypad_cmd_processor_desktop
 //* Object              :
-//* Notes    			: keypad process while in Desktop
+//* Notes    			: keypad commands routed to custom Desktop controls
 //* Notes   			:
 //* Notes    			:
 //* Context    			: CONTEXT_DRIVER_KEYPAD
 //*----------------------------------------------------------------------------
-static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
+static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold, uchar release)
 {
 	#ifdef KEYPAD_ALLOW_DEBUG
-	printf("x=%d,y=%d,hold=%d\r\n",x,y,hold);
+	printf("x=%d, y=%d, hold=%d, release=%d\r\n",x,y,hold,release);
 	#endif
 
 	// SSB - USB/LSB
@@ -295,14 +293,17 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			if(tsu.band[tsu.curr_band].demod_mode > DEMOD_LSB)
-				tsu.band[tsu.curr_band].demod_mode = DEMOD_LSB;
-			else
+			if(!release)
 			{
-				if(tsu.band[tsu.curr_band].demod_mode == DEMOD_LSB)
-					tsu.band[tsu.curr_band].demod_mode = DEMOD_USB;
-				else
+				if(tsu.band[tsu.curr_band].demod_mode > DEMOD_LSB)
 					tsu.band[tsu.curr_band].demod_mode = DEMOD_LSB;
+				else
+				{
+					if(tsu.band[tsu.curr_band].demod_mode == DEMOD_LSB)
+						tsu.band[tsu.curr_band].demod_mode = DEMOD_USB;
+					else
+						tsu.band[tsu.curr_band].demod_mode = DEMOD_LSB;
+				}
 			}
 		}
 		else
@@ -331,7 +332,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_80;
+			if(!release) tsu.curr_band = BAND_MODE_80;
 		}
 		else
 		{
@@ -345,7 +346,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_60;
+			if(!release) tsu.curr_band = BAND_MODE_60;
 		}
 		else
 		{
@@ -359,7 +360,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_40;
+			if(!release) tsu.curr_band = BAND_MODE_40;
 		}
 		else
 		{
@@ -387,7 +388,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.band[tsu.curr_band].demod_mode = DEMOD_CW;
+			if(!release) tsu.band[tsu.curr_band].demod_mode = DEMOD_CW;
 		}
 		else
 		{
@@ -401,7 +402,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_30;
+			if(!release) tsu.curr_band = BAND_MODE_30;
 		}
 		else
 		{
@@ -416,7 +417,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_20;
+			if(!release) tsu.curr_band = BAND_MODE_20;
 
 			// ToDo: to make this work, need to put all other band leds to off
 			//       in every band selection case!
@@ -439,7 +440,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_17;
+			if(!release) tsu.curr_band = BAND_MODE_17;
 		}
 		else
 		{
@@ -453,7 +454,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_15;
+			if(!release) tsu.curr_band = BAND_MODE_15;
 		}
 		else
 		{
@@ -467,29 +468,36 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			// Toggle 1KHz and 10Khz only
-			if(tsu.band[tsu.curr_band].step != T_STEP_1KHZ)
-				tsu.band[tsu.curr_band].step = T_STEP_1KHZ;
-			else
-				tsu.band[tsu.curr_band].step = T_STEP_10KHZ;
+			if(!release)
+			{
+				// Toggle 1KHz and 10Khz only
+				if(tsu.band[tsu.curr_band].step != T_STEP_1KHZ)
+					tsu.band[tsu.curr_band].step = T_STEP_1KHZ;
+				else
+					tsu.band[tsu.curr_band].step = T_STEP_10KHZ;
+			}
 		}
 		else
 		{
-			uchar id;
-			// Jump through all possible steps
-			// Scan
-			for(id = 0; id < T_STEP_MAX_STEPS;id++)
+			if(!release)
 			{
-				if(tune_steps[id] == tsu.band[tsu.curr_band].step)
-					break;
+				uchar id;
+
+				// Jump through all possible steps
+				// Scan
+				for(id = 0; id < T_STEP_MAX_STEPS;id++)
+				{
+					if(tune_steps[id] == tsu.band[tsu.curr_band].step)
+						break;
+				}
+
+				if(id < (T_STEP_MAX_STEPS - 1))
+					id++;
+				else
+					id = 0;
+
+				tsu.band[tsu.curr_band].step = tune_steps[id];
 			}
-
-			if(id < (T_STEP_MAX_STEPS - 1))
-				id++;
-			else
-				id = 0;
-
-			tsu.band[tsu.curr_band].step = tune_steps[id];
 		}
 
 		return;
@@ -499,25 +507,28 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.band[tsu.curr_band].demod_mode = DEMOD_AM;
+			if(!release) tsu.band[tsu.curr_band].demod_mode = DEMOD_AM;
 		}
 		else
 		{
-			// Maybe toggle different digi modes here ?
-			// Default - FT8
-			//
-			// Stay in USB ? Force DSP to digi mode ??
-			//
-			//
-			//tsu.band[tsu.curr_band].demod_mode = DEMOD_DIGI;
-
-			// Pass request to UI driver to change mode
-			if(ui_s.req_state == MODE_DESKTOP)
-				ui_s.req_state = MODE_DESKTOP_FT8;
-			else
+			if(!release)
 			{
-				if(ui_s.req_state == MODE_DESKTOP_FT8)
-					ui_s.req_state = MODE_DESKTOP;
+				// Maybe toggle different digi modes here ?
+				// Default - FT8
+				//
+				// Stay in USB ? Force DSP to digi mode ??
+				//
+				//
+				//tsu.band[tsu.curr_band].demod_mode = DEMOD_DIGI;
+
+				// Pass request to UI driver to change mode
+				if(ui_s.req_state == MODE_DESKTOP)
+					ui_s.req_state = MODE_DESKTOP_FT8;
+				else
+				{
+					if(ui_s.req_state == MODE_DESKTOP_FT8)
+						ui_s.req_state = MODE_DESKTOP;
+				}
 			}
 		}
 
@@ -528,7 +539,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_12;
+			if(!release) tsu.curr_band = BAND_MODE_12;
 		}
 		else
 		{
@@ -542,7 +553,7 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.curr_band = BAND_MODE_10;
+			if(!release) tsu.curr_band = BAND_MODE_10;
 		}
 		else
 		{
@@ -574,11 +585,12 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 		}
 		else
 		{
-			if(!ui_s.lock_requests)
+			//if(!ui_s.lock_requests)
+			if(!release)
 			{
 				// Lock yourself out, then only the UI driver can release the lock
 				// after GUI repaint
-				ui_s.lock_requests = 1;
+				//ui_s.lock_requests = 1;
 
 				// Pass request to UI driver to change mode
 				if(ui_s.req_state == MODE_DESKTOP)
@@ -590,10 +602,10 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 				}
 
 				// Large debounce
-				OsDelayMs(500);
+				//OsDelayMs(500);
 			}
-			else
-				printf("locked\r\n");
+			//else
+			//	printf("locked\r\n");
 		}
 
 		return;
@@ -603,11 +615,14 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			tsu.band[tsu.curr_band].filter++;
-			if(tsu.band[tsu.curr_band].filter > AUDIO_WIDE)
-				tsu.band[tsu.curr_band].filter = AUDIO_300HZ;
+			if(!release)
+			{
+				tsu.band[tsu.curr_band].filter++;
+				if(tsu.band[tsu.curr_band].filter > AUDIO_WIDE)
+					tsu.band[tsu.curr_band].filter = AUDIO_300HZ;
 
-			//printf("keypad filter: %d\r\n",tsu.curr_filter);
+				//printf("keypad filter: %d\r\n",tsu.curr_filter);
+			}
 		}
 		else
 		{
@@ -621,26 +636,29 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			uchar loc_osc_mode = tsu.band[tsu.curr_band].fixed_mode;
-
-			loc_osc_mode = !loc_osc_mode;
-
-			// If back to centre mode, reset NCO freq
-			if(!loc_osc_mode)
+			if(!release)
 			{
-				tsu.band[tsu.curr_band].nco_freq = 0;
+				uchar loc_osc_mode = tsu.band[tsu.curr_band].fixed_mode;
 
-				// Set request to DSP as well
-				tsu.update_nco_dsp_req = 1;
+				loc_osc_mode = !loc_osc_mode;
+
+				// If back to centre mode, reset NCO freq
+				if(!loc_osc_mode)
+				{
+					tsu.band[tsu.curr_band].nco_freq = 0;
+
+					// Set request to DSP as well
+					tsu.update_nco_dsp_req = 1;
+				}
+
+				// Toggle key LED
+				if(!loc_osc_mode)
+					keypad_driver_change_led_state(KEY_LED_FIX,KEY_LED_OFF_LIGHT);
+				else
+					keypad_driver_change_led_state(KEY_LED_FIX,KEY_LED_MID_LIGHT);
+
+				tsu.band[tsu.curr_band].fixed_mode = loc_osc_mode;
 			}
-
-			// Toggle key LED
-			if(!loc_osc_mode)
-				keypad_driver_change_led_state(KEY_LED_FIX,KEY_LED_OFF_LIGHT);
-			else
-				keypad_driver_change_led_state(KEY_LED_FIX,KEY_LED_MID_LIGHT);
-
-			tsu.band[tsu.curr_band].fixed_mode = loc_osc_mode;
 		}
 		else
 		{
@@ -672,13 +690,16 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 		}
 		else
 		{
-			// Pass request to UI driver to change mode
-			if(ui_s.req_state == MODE_DESKTOP)
-				ui_s.req_state = MODE_QUICK_LOG;
-			else
+			if(!release)
 			{
-				if(ui_s.req_state == MODE_QUICK_LOG)
-					ui_s.req_state = MODE_DESKTOP;
+				// Pass request to UI driver to change mode
+				if(ui_s.req_state == MODE_DESKTOP)
+					ui_s.req_state = MODE_QUICK_LOG;
+				//else
+				//{
+					//if(ui_s.req_state == MODE_QUICK_LOG)
+					//	ui_s.req_state = MODE_DESKTOP;
+				//}
 			}
 		}
 
@@ -708,14 +729,17 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			// Toggle active
-			tsu.band[tsu.curr_band].active_vfo = !tsu.band[tsu.curr_band].active_vfo;
+			if(!release)
+			{
+				// Toggle active
+				tsu.band[tsu.curr_band].active_vfo = !tsu.band[tsu.curr_band].active_vfo;
 
-			// Toggle key LED
-			if(!tsu.band[tsu.curr_band].active_vfo)
-				keypad_driver_change_led_state(KEY_LED_SPLIT,KEY_LED_OFF_LIGHT);
-			else
-				keypad_driver_change_led_state(KEY_LED_SPLIT,KEY_LED_MID_LIGHT);
+				// Toggle key LED
+				if(!tsu.band[tsu.curr_band].active_vfo)
+					keypad_driver_change_led_state(KEY_LED_SPLIT,KEY_LED_OFF_LIGHT);
+				else
+					keypad_driver_change_led_state(KEY_LED_SPLIT,KEY_LED_MID_LIGHT);
+			}
 		}
 		else
 		{
@@ -725,17 +749,42 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold)
 }
 
 //*----------------------------------------------------------------------------
-//* Function Name       : keypad_cmd_processor_menu
+//* Function Name       : keypad_handle_multitap
 //* Object              :
-//* Notes    			: keypad process while in Menu
+//* Notes    			: Create Nokia style multitap experience
 //* Notes   			:
 //* Notes    			:
 //* Context    			: CONTEXT_DRIVER_KEYPAD
 //*----------------------------------------------------------------------------
-static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
+static void keypad_handle_multitap(uchar max_ids)
+{
+	//printf("tap_cnt=%d\r\n",ks.tap_cnt);
+
+	// Only if clicks are not far apart
+	if(ks.tap_cnt > 10)
+		return;
+
+	// Erase previous char on screen
+	GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,1);
+	GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,0);
+
+	// Advance tap counter
+	(ks.tap_id)++;
+	if(ks.tap_id > max_ids) ks.tap_id = 0;
+}
+
+//*----------------------------------------------------------------------------
+//* Function Name       : keypad_cmd_processor_wm
+//* Object              :
+//* Notes    			: keypad router for emWin WM control
+//* Notes   			:
+//* Notes    			:
+//* Context    			: CONTEXT_DRIVER_KEYPAD
+//*----------------------------------------------------------------------------
+static void keypad_cmd_processor_wm(uchar x,uchar y, uchar hold, uchar release)
 {
 	#ifdef KEYPAD_ALLOW_DEBUG
-	printf("x=%d,y=%d,hold=%d\r\n",x,y,hold);
+	printf("x=%d, y=%d, hold=%d, release=%d\r\n",x,y,hold,release);
 	#endif
 
 	// SSB - USB/LSB
@@ -752,12 +801,15 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 160m
+	// 160m/1
 	if((x == 2) && (y == 1))
 	{
 		if(!hold)
 		{
-
+			if(!release)
+				GUI_StoreKeyMsg('1',1);
+			else
+				GUI_StoreKeyMsg('1',0);
 		}
 		else
 		{
@@ -766,12 +818,50 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 80m
+	// 80m/2ABC
 	if((x == 3) && (y == 1))
 	{
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(3);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('2',1);
+					else
+						GUI_StoreKeyMsg('2',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('A',1);
+					else
+						GUI_StoreKeyMsg('A',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('B',1);
+					else
+						GUI_StoreKeyMsg('B',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('C',1);
+					else
+						GUI_StoreKeyMsg('C',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -780,12 +870,50 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 60m
+	// 60m/3DEF
 	if((x == 4) && (y == 1))
 	{
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(3);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('3',1);
+					else
+						GUI_StoreKeyMsg('3',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('D',1);
+					else
+						GUI_StoreKeyMsg('D',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('E',1);
+					else
+						GUI_StoreKeyMsg('E',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('F',1);
+					else
+						GUI_StoreKeyMsg('F',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -813,8 +941,10 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			GUI_StoreKeyMsg(GUI_KEY_RIGHT,1);
-			GUI_StoreKeyMsg(GUI_KEY_RIGHT,0);
+			if(!release)
+				GUI_StoreKeyMsg(GUI_KEY_LEFT,1);
+			else
+				GUI_StoreKeyMsg(GUI_KEY_LEFT,0);
 		}
 		else
 		{
@@ -837,12 +967,50 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 30m
+	// 30m/4GHI
 	if((x == 2) && (y == 2))
 	{
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(3);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('4',1);
+					else
+						GUI_StoreKeyMsg('4',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('G',1);
+					else
+						GUI_StoreKeyMsg('G',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('H',1);
+					else
+						GUI_StoreKeyMsg('H',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('I',1);
+					else
+						GUI_StoreKeyMsg('I',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -851,13 +1019,51 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 20m
+	// 20m/5JKL
 	if((x == 3) && (y == 2))
 	{
 
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(3);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('5',1);
+					else
+						GUI_StoreKeyMsg('5',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('J',1);
+					else
+						GUI_StoreKeyMsg('J',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('K',1);
+					else
+						GUI_StoreKeyMsg('K',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('L',1);
+					else
+						GUI_StoreKeyMsg('L',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -866,12 +1072,50 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 17m
+	// 17m/6MNO
 	if((x == 4) && (y == 2))
 	{
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(3);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('6',1);
+					else
+						GUI_StoreKeyMsg('6',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('M',1);
+					else
+						GUI_StoreKeyMsg('M',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('N',1);
+					else
+						GUI_StoreKeyMsg('N',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('O',1);
+					else
+						GUI_StoreKeyMsg('O',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -899,8 +1143,10 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			GUI_StoreKeyMsg(GUI_KEY_LEFT,1);
-			GUI_StoreKeyMsg(GUI_KEY_LEFT,0);
+			if(!release)
+				GUI_StoreKeyMsg(GUI_KEY_RIGHT,1);
+			else
+				GUI_StoreKeyMsg(GUI_KEY_RIGHT,0);
 		}
 		else
 		{
@@ -923,12 +1169,58 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 12m
+	// 12m/7PQRS
 	if((x == 2) && (y == 3))
 	{
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(4);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('7',1);
+					else
+						GUI_StoreKeyMsg('7',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('P',1);
+					else
+						GUI_StoreKeyMsg('P',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('Q',1);
+					else
+						GUI_StoreKeyMsg('Q',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('R',1);
+					else
+						GUI_StoreKeyMsg('R',0);
+					break;
+				}
+				case 4:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('S',1);
+					else
+						GUI_StoreKeyMsg('S',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -937,12 +1229,50 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 10m
+	// 10m/8TUV
 	if((x == 3) && (y == 3))
 	{
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(3);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('8',1);
+					else
+						GUI_StoreKeyMsg('8',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('T',1);
+					else
+						GUI_StoreKeyMsg('T',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('U',1);
+					else
+						GUI_StoreKeyMsg('U',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('V',1);
+					else
+						GUI_StoreKeyMsg('V',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -951,12 +1281,58 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 6m
+	// 6m/9WXYZ
 	if((x == 4) && (y == 3))
 	{
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(4);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('9',1);
+					else
+						GUI_StoreKeyMsg('9',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('W',1);
+					else
+						GUI_StoreKeyMsg('W',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('X',1);
+					else
+						GUI_StoreKeyMsg('X',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('Y',1);
+					else
+						GUI_StoreKeyMsg('Y',0);
+					break;
+				}
+				case 4:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('Z',1);
+					else
+						GUI_StoreKeyMsg('Z',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -970,8 +1346,10 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			GUI_StoreKeyMsg(GUI_KEY_ENTER,1);
-			GUI_StoreKeyMsg(GUI_KEY_ENTER,0);
+			if(!release)
+				GUI_StoreKeyMsg(GUI_KEY_ENTER,1);
+			else
+				GUI_StoreKeyMsg(GUI_KEY_ENTER,0);
 		}
 		else
 		{
@@ -1004,8 +1382,10 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			GUI_StoreKeyMsg(GUI_KEY_HOME,1);
-			GUI_StoreKeyMsg(GUI_KEY_HOME,0);
+			if(!release)
+				GUI_StoreKeyMsg(GUI_KEY_HOME,1);
+			else
+				GUI_StoreKeyMsg(GUI_KEY_HOME,0);
 		}
 		else
 		{
@@ -1028,12 +1408,50 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// 4m
+	// 4m/(special chars)
 	if((x == 2) && (y == 4))
 	{
 		if(!hold)
 		{
+			if(!release) keypad_handle_multitap(3);
 
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('.',1);
+					else
+						GUI_StoreKeyMsg('.',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('/',1);
+					else
+						GUI_StoreKeyMsg('/',0);
+					break;
+				}
+				case 2:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('_',1);
+					else
+						GUI_StoreKeyMsg('_',0);
+					break;
+				}
+				case 3:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('-',1);
+					else
+						GUI_StoreKeyMsg('-',0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
@@ -1042,17 +1460,39 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 
 		return;
 	}
-	// LF(Space)
+	// LF/0(Space)
 	if((x == 3) && (y == 4))
 	{
 		if(!hold)
 		{
-			GUI_StoreKeyMsg(GUI_KEY_SPACE,1);
-			GUI_StoreKeyMsg(GUI_KEY_SPACE,0);
+			if(!release) keypad_handle_multitap(1);
+
+			switch(ks.tap_id)
+			{
+				case 0:
+				{
+					if(!release)
+						GUI_StoreKeyMsg('0',1);
+					else
+						GUI_StoreKeyMsg('0',0);
+					break;
+				}
+				case 1:
+				{
+					if(!release)
+						GUI_StoreKeyMsg(GUI_KEY_SPACE,1);
+					else
+						GUI_StoreKeyMsg(GUI_KEY_SPACE,0);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		else
 		{
-			// ..
+			if(ui_s.req_state == MODE_QUICK_LOG)
+				ui_s.req_state = MODE_DESKTOP;
 		}
 
 		return;
@@ -1062,8 +1502,10 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,1);
-			GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,0);
+			if(!release)
+				GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,1);
+			else
+				GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,0);
 		}
 		else
 		{
@@ -1082,8 +1524,10 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 	{
 		if(!hold)
 		{
-			GUI_StoreKeyMsg(GUI_KEY_TAB,1);
-			GUI_StoreKeyMsg(GUI_KEY_TAB,0);
+			if(!release)
+				GUI_StoreKeyMsg(GUI_KEY_TAB,1);
+			else
+				GUI_StoreKeyMsg(GUI_KEY_TAB,0);
 		}
 		else
 		{
@@ -1100,26 +1544,21 @@ static void keypad_cmd_processor_menu(uchar x,uchar y, uchar hold)
 //* Notes    			:
 //* Context    			: CONTEXT_DRIVER_KEYPAD
 //*----------------------------------------------------------------------------
-static void keypad_cmd_processor(uchar x,uchar y, uchar hold)
+static void keypad_cmd_processor(uchar x,uchar y, uchar hold, uchar release)
 {
-	//if(ui_s.cur_state == MODE_DESKTOP)
-	//	keypad_cmd_processor_desktop(x,y,hold);
-	//else
-	//	keypad_cmd_processor_menu(x,y,hold);
-
 	// Manage different UI driver modes
 	switch(ui_s.cur_state)
 	{
 		// Main radio desktop
 		case MODE_DESKTOP:
 		case MODE_DESKTOP_FT8:
-		case MODE_QUICK_LOG:
-			keypad_cmd_processor_desktop(x,y,hold);
+			keypad_cmd_processor_desktop(x,y,hold,release);
 			break;
 
-		// Menu mode via Window Manager
+		// Route Keypad input to emWin Window Manager
 		case MODE_MENU:
-			keypad_cmd_processor_menu(x,y,hold);
+		case MODE_QUICK_LOG:
+			keypad_cmd_processor_wm(x,y,hold,release);
 			break;
 
 		// Do we need keyboard processing in other modes ?
@@ -1155,81 +1594,91 @@ static uchar keypad_check_input_lines(void)
 }
 
 //*----------------------------------------------------------------------------
-//* Function Name       : keypad_scan_a
+//* Function Name       : keypad_set_out_lines
 //* Object              :
-//* Notes    			: support for press and hold
-//* Notes   			: - non blocking implementation
+//* Notes    			: Set scanning GPIO lines state for scan
+//* Notes   			:
 //* Notes    			:
 //* Context    			: CONTEXT_DRIVER_KEYPAD
 //*----------------------------------------------------------------------------
-static void keypad_scan_a(void)
+static void keypad_set_out_lines(uchar y)
 {
-	uchar i,j,id;
+	// Rotate output state
+	switch(y)
+	{
+		case 0:
+			scan_y1();
+			break;
+		case 1:
+			scan_y2();
+			break;
+		case 2:
+			scan_y3();
+			break;
+		case 3:
+			scan_y4();
+			break;
+		default:
+			scan_off();
+			return;
+	}
+}
+
+//*----------------------------------------------------------------------------
+//* Function Name       : keypad_scan
+//* Object              :
+//* Notes    			: support for press and hold
+//* Notes   			: - non blocking implementation
+//* Notes    			: - support for multitap
+//* Notes    			:
+//* Notes    			: Most multitap scanning keyboard implementations will
+//* Notes    			: do very fast scan and store state in publics. But
+//* Notes    			: our main directive is as low as possible RF noise,
+//* Notes    			: so that is why the slow scanning
+//* Notes    			:
+//* Context    			: CONTEXT_DRIVER_KEYPAD
+//*----------------------------------------------------------------------------
+static void keypad_scan(void)
+{
+	uchar i,j,k,id;
+
+	(ks.tap_cnt)++;											// Increase multitap counter
+	if(ks.tap_cnt > 20) ks.tap_id = 0;						// Reset multitap char id
 
 	// Full 4x6 matrix scan
-	for(i = 0; i < 5; i++)
+	for(i = 0; i < 4; i++)
 	{
-		// Rotate output state
-		switch(i)
+		keypad_set_out_lines(i);							// Rotate output state
+
+		id = keypad_check_input_lines();					// Check lines, and get an id
+		if(!id) continue;									// Next
+
+		for(j = 0; j < 40; j++)								// More than 400mS is press and hold
 		{
-			case 0:
-				scan_y1();
-				break;
-			case 1:
-				scan_y2();
-				break;
-			case 2:
-				scan_y3();
-				break;
-			case 3:
-				scan_y4();
-				break;
-			default:
-				scan_off();
-				return;
-		}
-
-		// Check lines, and get an id
-		id = keypad_check_input_lines();
-
-		// Nothing clicked on this line, check next
-		if(!id)
-			continue;
-
-		//printf("click id: %d\r\n",id);
-
-		// Is button still pressed, maybe hold instead of click ?
-		// 400mS wait for press, enough ?
-		for(j = 0; j < 4; j++)
-		{
-			// Hold delay(also act as debounce delay on click only)
-			OsDelayMs(100);
-
-			// Keep on checking
+			OsDelayMs(10);									// High resolution debounce
 			if(keypad_check_input_lines() != id)
 			{
-				//printf("is click\r\n");
+				keypad_set_out_lines(8);					// Scan off
+				keypad_cmd_processor(id,(i + 1),0,0);		// Process 'click', button down
 
-				// End scan
-				scan_off();
+				if(keypad_check_input_lines() != id)		// Finally is key released ?
+				{
+					ks.tap_cnt = 0;							// Reset multitap counter
+					keypad_cmd_processor(id,(i + 1),0,1);	// Process 'click', button up
+				}
+				else
+					OsDelayMs(100);							// Need this ?
 
-				// Process 'click'
-				keypad_cmd_processor(id,(i + 1),0);
-
-				OsDelayMs(500);
 				return;
 			}
 		}
+		keypad_set_out_lines(8);							// Scan off
+		keypad_cmd_processor(id,(i + 1),1,0);				// Process 'hold', button down
 
-		//printf("is hold\r\n");
+		if(keypad_check_input_lines() != id)				// Finally is key released ?
+			keypad_cmd_processor(id,(i + 1),1,1);			// Process 'hold', button up
 
-		// End scan
-		scan_off();
-
-		// Process 'hold'
-		keypad_cmd_processor(id,(i + 1),1);
-
-		OsDelayMs(500);
+		OsDelayMs(500);										// Static debounce, maybe there is a better way ?
 		return;
 	}
 }
@@ -1257,17 +1706,21 @@ void keypad_driver_task(void const * argument)
 
 keypad_driver_loop:
 
-	if(start_counter < 24)
+	// Start up LED test
+	if(ks.start_counter < 24)
 	{
 		keyboard_driver_blink_all();
-		start_counter++;
+		(ks.start_counter)++;
 
 		OsDelayMs(50);
 		goto keypad_driver_loop;
 	}
 
-	keypad_scan_a();
-	OsDelayMs(60);
+	// Scan for event
+	keypad_scan();
+
+	// Sleep
+	OsDelayMs(50);
 
 	goto keypad_driver_loop;
 }
