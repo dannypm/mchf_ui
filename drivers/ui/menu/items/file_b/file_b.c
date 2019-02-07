@@ -52,8 +52,8 @@
 
 #include "k_module.h"
 
-#include "menu\items\file_b\browser\k_storage.h"
 #include "menu\items\file_b\browser\filebrowser_app.h"
+#include "C:\Projects\mcHFx\firmware\mchf_ui\drivers\sd\hw\k_storage.h"
 
 // ToDo: clean up this path
 #include "C:\Projects\mcHFx\firmware\mchf_ui\middleware\FatFs\src\ff_gen_drv.h"
@@ -63,12 +63,8 @@
 
 #define ID_BUTTON_REFRESH    		(GUI_ID_USER + 0x02)
 #define ID_TREEVIEW          		(GUI_ID_USER + 0x03)
-#define ID_PROGBAR_USB       		(GUI_ID_USER + 0x04)
+#define ID_EDIT_MSD 	       		(GUI_ID_USER + 0x04)
 #define ID_PROGBAR_MSD       		(GUI_ID_USER + 0x05)
-#define ID_TEXT_MSD          		(GUI_ID_USER + 0x06)
-#define ID_TEXT_USB          		(GUI_ID_USER + 0x07)
-#define ID_IMAGE_0           		(GUI_ID_USER + 0x08)
-
 
 #define ID_MENU_OPENFILE     		(GUI_ID_USER + 0x09)
 #define ID_MENU_DELETE       		(GUI_ID_USER + 0x0A)
@@ -87,7 +83,7 @@
 
 #define WM_FORCE_ITEM_DESELECT     	(WM_USER + 0)
 
-extern char USBDISK_Drive[]; 
+//extern char USBDISK_Drive[];
 extern char mSDDISK_Drive[];  
 
 FILELIST_FileTypeDef  *pFileList;
@@ -103,12 +99,15 @@ char    str[FILEMGR_FILE_NAME_SIZE];
 static void Startup(WM_HWIN hWin, uint16_t xpos, uint16_t ypos);
 static void _RefreshBrowser ( WM_HWIN hWin);
 
-//extern unsigned char *acfolder;
-
-extern GUI_CONST_STORAGE GUI_BITMAP bmfilebrowser;
+// Menu image
+extern GUI_CONST_STORAGE GUI_BITMAP bmProgramGroup;
+// TreeView images
+extern GUI_CONST_STORAGE GUI_BITMAP bmClosedFolder;
+extern GUI_CONST_STORAGE GUI_BITMAP bmOpenFolder;
+extern GUI_CONST_STORAGE GUI_BITMAP bmTextLog;
 
 const GUI_BITMAP * file_b_anim[] = {
-  &bmfilebrowser,   &bmfilebrowser,   &bmfilebrowser,   &bmfilebrowser, &bmfilebrowser
+  &bmProgramGroup,   &bmProgramGroup,   &bmProgramGroup,   &bmProgramGroup, &bmProgramGroup
 };
 
 K_ModuleItem_Typedef  file_b =
@@ -116,7 +115,7 @@ K_ModuleItem_Typedef  file_b =
   3,
   "File Browser",
   file_b_anim,
-  &bmfilebrowser,
+  &bmProgramGroup,
   0,
   Startup,
   NULL,
@@ -135,12 +134,10 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 	{ BUTTON_CreateIndirect, 	"Back",			 			ID_BUTTON_EXIT, 	670, 	375, 	120, 	45, 	0, 		0x0, 	0 },
 	//
 	{ BUTTON_CreateIndirect, 	"Refresh", 					ID_BUTTON_REFRESH, 	670, 	310, 	120, 	45, 	0, 		0x0, 	0 },
-	{ TREEVIEW_CreateIndirect, 	"Treeview", 				ID_TREEVIEW, 		7, 		6, 		635, 	410, 	0, 		0x0, 	0 },
-	{ PROGBAR_CreateIndirect, 	"Progbar", 					ID_PROGBAR_MSD, 	670, 	78, 	120, 	25, 	0, 		0x0, 	0 },
-	{ PROGBAR_CreateIndirect, 	"Progbar", 					ID_PROGBAR_USB, 	670, 	28, 	120, 	25, 	0, 		0x0, 	0 },
-	{ TEXT_CreateIndirect, 		"microSD", 					ID_TEXT_MSD, 		670, 	5, 		180, 	20, 	0, 		0x0, 	0 },
-	{ TEXT_CreateIndirect, 		"USB Disk", 				ID_TEXT_USB, 		670, 	58, 	180, 	20, 	0, 		0x0, 	0 },
-	//{ IMAGE_CreateIndirect, 	"Image",		 			ID_IMAGE_0, 		660, 	90, 	100, 	100, 	0, 		0, 		0 },
+	{ TREEVIEW_CreateIndirect, 	"Treeview", 				ID_TREEVIEW, 		7, 		6, 		635, 	380, 	0, 		0x0, 	0 },
+	//
+	{ EDIT_CreateIndirect,     	"msd.Edit",    				ID_EDIT_MSD,   		7,  	395,  	100,  	25, 	0,		0x0,	0 	},
+	{ PROGBAR_CreateIndirect, 	"Progbar", 					ID_PROGBAR_MSD, 	117,	395, 	525, 	25, 	0, 		0x0, 	0 },
 };
 
 static const GUI_WIDGET_CREATE_INFO _aFileInfoDialogCreate[] =
@@ -150,14 +147,14 @@ static const GUI_WIDGET_CREATE_INFO _aFileInfoDialogCreate[] =
 	// -----------------------------------------------------------------------------------------------------------------------------
 	// Self
 	{ FRAMEWIN_CreateIndirect, "File Information", ID_FRAMEWIN_0, 0, 0, 280, 130, 0, 0x0, 0 },
-	{ TEXT_CreateIndirect, "file name", ID_TEXT_FILENAME, 10, 5, 300, 20, 0, 0x0, 0 },
-	{ TEXT_CreateIndirect, "Location: ", ID_TEXT_SOLID_LOCATION, 10, 25, 51, 20, 0, 0x0, 0 },
-	{ TEXT_CreateIndirect, "", ID_TEXT_LOCATION, 59, 25, 300, 20, 0, 0x0, 0 },
-	{ TEXT_CreateIndirect, "Created on : ", ID_TEXT_SOLID_CREATION, 10, 40, 80, 20, 0, 0x0, 0 },
-	{ TEXT_CreateIndirect, "", ID_TEXT_CREATION, 74, 40, 300, 20, 0, 0x0, 0 },
-	{ TEXT_CreateIndirect, "File Size : ", ID_TEXT_SOLID_FILESIZE, 10, 55, 80, 20, 0, 0x0, 0 },
-	{ TEXT_CreateIndirect, "", ID_TEXT_FILESIZE, 57, 55, 300, 20, 0, 0x0, 0 },
-	{ BUTTON_CreateIndirect, "OK", ID_BUTTON_OK_FILEINFO, 90, 81, 80, 26, 0, 0x0, 0 },
+	{ TEXT_CreateIndirect, 		"file name", ID_TEXT_FILENAME, 10, 5, 300, 20, 0, 0x0, 0 },
+	{ TEXT_CreateIndirect, 		"Location: ", ID_TEXT_SOLID_LOCATION, 10, 25, 51, 20, 0, 0x0, 0 },
+	{ TEXT_CreateIndirect, 		"", ID_TEXT_LOCATION, 59, 25, 300, 20, 0, 0x0, 0 },
+	{ TEXT_CreateIndirect, 		"Created on : ", ID_TEXT_SOLID_CREATION, 10, 40, 80, 20, 0, 0x0, 0 },
+	{ TEXT_CreateIndirect, 		"", ID_TEXT_CREATION, 74, 40, 300, 20, 0, 0x0, 0 },
+	{ TEXT_CreateIndirect, 		"File Size : ", ID_TEXT_SOLID_FILESIZE, 10, 55, 80, 20, 0, 0x0, 0 },
+	{ TEXT_CreateIndirect, 		"", ID_TEXT_FILESIZE, 57, 55, 300, 20, 0, 0x0, 0 },
+	{ BUTTON_CreateIndirect, 	"OK", ID_BUTTON_OK_FILEINFO, 90, 81, 80, 26, 0, 0x0, 0 },
 };
 
 /* Array of menu items */
@@ -165,7 +162,7 @@ static MENU_ITEM _aMenuItems[] =
 {
   {"Open File"          , ID_MENU_OPENFILE,  0},
   {"Delete File"        , ID_MENU_DELETE, 0},
-  {"Properties"        , ID_MENU_PROPRIETIES, 0},
+  {"Properties"         , ID_MENU_PROPRIETIES, 0},
   {0                    , 0           ,  MENU_IF_SEPARATOR},
   {0                    , 0           ,  MENU_IF_SEPARATOR},
   {0                    , 0           ,  MENU_IF_SEPARATOR},
@@ -205,7 +202,7 @@ static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char* pT
   */
 static void _OpenPopup(WM_HWIN hParent, MENU_ITEM * pMenuItems, int NumItems, int x, int y) 
 {
-
+#if 0
   printf("_OpenPopup\r\n");
 
   if(!hMenu)
@@ -230,6 +227,7 @@ static void _OpenPopup(WM_HWIN hParent, MENU_ITEM * pMenuItems, int NumItems, in
    * popup menu will be closed, but not deleted.
    */
   MENU_Popup(hMenu, hParent, x, y, 0, 0, 0);
+#endif
 }
 
 /**
@@ -258,11 +256,11 @@ static void _cbFileInfoDialog(WM_MESSAGE * pMsg) {
     hItem = WM_GetDialogItem(pMsg->hWin, ID_TEXT_LOCATION);
     if(SelectedFileName[0] == '0')
     {
-      TEXT_SetText(hItem, "[USB Disk]");
-    }
-    else if(SelectedFileName[0] == '1') 
-    {
-      TEXT_SetText(hItem, "[microSD]");
+    //  TEXT_SetText(hItem, "[USB Disk]");
+    //}
+    //else if(SelectedFileName[0] == '1')
+    //{
+      TEXT_SetText(hItem, "[SD Card]");
     } 
     
     f_stat (SelectedFileName, &fno);
@@ -545,15 +543,15 @@ void _FindFullPath(TREEVIEW_Handle hObj, TREEVIEW_ITEM_Handle hTVItem, char *str
     hTVItem = TREEVIEW_GetItem(hObj, hTVItem,TREEVIEW_GET_PARENT);
     TREEVIEW_ITEM_GetText(hTVItem, (uint8_t *)strtmp, FILEMGR_FULL_PATH_SIZE);
     
-    if(strcmp(strtmp, "microSD") == 0)
+    if(strcmp(strtmp, "SD Card") == 0)
     {
-      strcpy(strtmp, "1:"); 
+      strcpy(strtmp, "0:");
     }
        
-    else if(strcmp(strtmp, "USB Disk") == 0)
-    {
-      strcpy(strtmp, "0:"); 
-    }
+    //else if(strcmp(strtmp, "USB Disk") == 0)
+    //{
+    //  strcpy(strtmp, "0:");
+    //}
     strcat(strtmp, "/");
     strcat(strtmp, str);
     strcpy(str, strtmp);
@@ -616,55 +614,37 @@ static void ShowNodeContent(WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode, char *pat
   */
 static void ExploreDisks(WM_HWIN hTree) 
 {
-  TREEVIEW_ITEM_Handle hItem = 0;
-  TREEVIEW_ITEM_Handle hUSBItem = 0;    
-  TREEVIEW_ITEM_Handle Node = 0;
-  uint32_t Position = 0;
+	TREEVIEW_ITEM_Handle 	hItem = 0;
+	TREEVIEW_ITEM_Handle 	Node = 0;
+	uint32_t 				Position = 0;
 
-  Node = TREEVIEW_InsertItem(hTree, TREEVIEW_ITEM_TYPE_NODE, 0, 0, "Local disks");
+	Node = TREEVIEW_InsertItem(hTree, TREEVIEW_ITEM_TYPE_NODE, 0, 0, "Radio");
   
+	if(k_StorageGetStatus(MSD_DISK_UNIT) == 1)
+	{
+		hItem = TREEVIEW_InsertItem(hTree, TREEVIEW_ITEM_TYPE_NODE, Node, TREEVIEW_INSERT_FIRST_CHILD, "SD Card");
+		ShowNodeContent(hTree, hItem, mSDDISK_Drive, pFileList);
+	}
   
-  if(k_StorageGetStatus(MSD_DISK_UNIT) == 1)
-  {
-    hItem = TREEVIEW_InsertItem(hTree, TREEVIEW_ITEM_TYPE_NODE, Node, TREEVIEW_INSERT_FIRST_CHILD, "microSD");
-  }
-  
-  if(k_StorageGetStatus(USB_DISK_UNIT) == 1)
-  {
-    Position = hItem ? TREEVIEW_INSERT_BELOW : TREEVIEW_INSERT_FIRST_CHILD;
-    hUSBItem = hItem ? hItem : Node;
-    hUSBItem = TREEVIEW_InsertItem(hTree, TREEVIEW_ITEM_TYPE_NODE, hUSBItem, Position, "USB Disk");
-  }
+	TREEVIEW_SetAutoScrollH(hTree, 1);
+	TREEVIEW_SetAutoScrollV(hTree, 1);
+	TREEVIEW_SetIndent(hTree, 22);
 
-  if(k_StorageGetStatus(MSD_DISK_UNIT) == 1)
-  {
-    
-    ShowNodeContent(hTree, hItem, mSDDISK_Drive, pFileList);    
-  }
+	hItem = TREEVIEW_GetItem(hTree, 0, TREEVIEW_GET_FIRST);
+	TREEVIEW_ITEM_Expand(hItem);
   
-  if(k_StorageGetStatus(USB_DISK_UNIT) == 1)
-  {
-    ShowNodeContent(hTree, hUSBItem, USBDISK_Drive, pFileList);
-  }
+	hItem = TREEVIEW_GetItem(hTree, hItem, TREEVIEW_GET_FIRST_CHILD);
+	if(hItem != 0)
+	{
+		TREEVIEW_ITEM_Expand(hItem);
+		hItem = TREEVIEW_GetItem(hTree, hItem, TREEVIEW_GET_NEXT_SIBLING);
+		if(hItem != 0)
+		{
+			TREEVIEW_ITEM_Expand(hItem);
+		}
+	}
   
-  TREEVIEW_SetAutoScrollH(hTree, 1);
-  TREEVIEW_SetAutoScrollV(hTree, 1);
-  TREEVIEW_SetIndent(hTree, 22);
-  hItem = TREEVIEW_GetItem(hTree, 0, TREEVIEW_GET_FIRST);
-  TREEVIEW_ITEM_Expand(hItem);
-  
-  hItem = TREEVIEW_GetItem(hTree, hItem, TREEVIEW_GET_FIRST_CHILD);
-  if(hItem != 0)
-  {
-    TREEVIEW_ITEM_Expand(hItem);
-    hItem = TREEVIEW_GetItem(hTree, hItem, TREEVIEW_GET_NEXT_SIBLING);
-    if(hItem != 0)
-    {      
-      TREEVIEW_ITEM_Expand(hItem); 
-    }
-  }  
-  
-  WM_SetFocus(hTree);
+	WM_SetFocus(hTree);
 }
 
 /**
@@ -672,65 +652,49 @@ static void ExploreDisks(WM_HWIN hTree)
   * @param  hWin: pointer to the parent handle
   * @retval None
   */
-static void _RefreshBrowser ( WM_HWIN hWin) {
+static void _RefreshBrowser ( WM_HWIN hWin)
+{
+	WM_HWIN 				hItem, Hint;
+	TREEVIEW_ITEM_Handle  	hTreeView;
+	uint32_t 				free, total,perc;
+	char 					str[FILEMGR_FULL_PATH_SIZE];
   
-  WM_HWIN hItem, Hint;
- 
-  TREEVIEW_ITEM_Handle  hTreeView;
-  uint32_t free, total;
-  char str[FILEMGR_FULL_PATH_SIZE];
+	//GUI_Exec();
   
-  GUI_Exec();
+	// Show Hint
+	//Hint = WM_CreateWindowAsChild(80, 120, 200, 32, hWin, WM_CF_SHOW, _cbHint, 0);
   
-  /* Show Hint */
-  Hint = WM_CreateWindowAsChild(80,
-                                120,
-                                200, 32,
-                                hWin,
-                                WM_CF_SHOW , 
-                                _cbHint, 
-                                0);
-  
-  GUI_Exec();
+	//GUI_Exec();
 
-  // Doesn't work right ;(
-  hItem = WM_GetDialogItem(hWin, ID_PROGBAR_USB);
+  hItem = WM_GetDialogItem(hWin, ID_PROGBAR_MSD);
   if(k_StorageGetStatus (MSD_DISK_UNIT))
   {
-    free = k_StorageGetFree(MSD_DISK_UNIT);
+    free =  k_StorageGetFree(MSD_DISK_UNIT);
     total = k_StorageGetCapacity(MSD_DISK_UNIT);
 
     //printf("free: %d\r\n",free);
     //printf("total: %d\r\n",total);
 
-    PROGBAR_SetValue (hItem, ((total - free) * 100)/total);
-    hItem = WM_GetDialogItem(hWin, ID_TEXT_MSD); 
-    sprintf(str, "SD [%lu MB]", total / (2 * 1024));
-    TEXT_SetText(hItem, str);      
+    perc = ((total - free)*100)/total;
+
+    if(((total - free)*100)%total)
+    	perc++;
+
+    //printf("perc: %d\r\n",perc);
+
+    //PROGBAR_SetMinMax(hItem, 0, 100);
+    PROGBAR_SetValue (hItem,perc);
+    hItem = WM_GetDialogItem(hWin, ID_EDIT_MSD);
+    sprintf(str, "%d MB", total / (2 * 1024));
+    EDIT_SetText(hItem, str);
   }
   else
   {
     PROGBAR_SetValue (hItem, 0); 
-    hItem = WM_GetDialogItem(hWin, ID_TEXT_MSD); 
-    TEXT_SetText(hItem, "SD [N/A]" );
+    hItem = WM_GetDialogItem(hWin, ID_EDIT_MSD);
+    EDIT_SetText(hItem, "[N/A]" );
   }
   
-  hItem = WM_GetDialogItem(hWin, ID_PROGBAR_MSD);    
-  if(k_StorageGetStatus (USB_DISK_UNIT))
-  {
-    free = k_StorageGetFree(USB_DISK_UNIT);
-    total = k_StorageGetCapacity(USB_DISK_UNIT);
-    PROGBAR_SetValue (hItem, ((total - free) * 100)/total);
-    hItem = WM_GetDialogItem(hWin, ID_TEXT_USB); 
-    sprintf(str, "USB [%lu MB]", total / (2 * 1024));
-    TEXT_SetText(hItem, str);
-  }
-  else
-  {
-    PROGBAR_SetValue (hItem, 0); 
-    hItem = WM_GetDialogItem(hWin, ID_TEXT_USB); 
-    TEXT_SetText(hItem, "USB [N/A]" );
-  }        
   hTreeView = WM_GetDialogItem(hWin, ID_TREEVIEW);
   hItem = TREEVIEW_GetItem(hTreeView, 0, TREEVIEW_GET_FIRST);
   if(hItem != 0)
@@ -739,7 +703,7 @@ static void _RefreshBrowser ( WM_HWIN hWin) {
   }
 
   ExploreDisks(hTreeView);  
-  WM_DeleteWindow(Hint);  
+  //WM_DeleteWindow(Hint);
 }
 
 
@@ -753,13 +717,13 @@ static void _cbMediaConnection(WM_MESSAGE * pMsg)
   
   static WM_HTIMER      hStatusTimer;  
   static uint8_t        prev_sd_status = 0;
-  static uint8_t        prev_usb_status = 0;
+  //static uint8_t        prev_usb_status = 0;
    
   switch (pMsg->MsgId) 
   {
   case WM_CREATE:
     prev_sd_status = k_StorageGetStatus(MSD_DISK_UNIT);
-    prev_usb_status = k_StorageGetStatus(USB_DISK_UNIT);    
+    //prev_usb_status = k_StorageGetStatus(USB_DISK_UNIT);
     hStatusTimer = WM_CreateTimer(pMsg->hWin, 0, 500, 0);      
     break;
     
@@ -769,11 +733,11 @@ static void _cbMediaConnection(WM_MESSAGE * pMsg)
       prev_sd_status = k_StorageGetStatus(MSD_DISK_UNIT);
       _RefreshBrowser(hExplorerWin);
     }
-    else if(prev_usb_status != k_StorageGetStatus(USB_DISK_UNIT))
-    {
-      prev_usb_status = k_StorageGetStatus(USB_DISK_UNIT);
-      _RefreshBrowser(hExplorerWin);
-    }
+    //else if(prev_usb_status != k_StorageGetStatus(USB_DISK_UNIT))
+    //{
+      //prev_usb_status = k_StorageGetStatus(USB_DISK_UNIT);
+      //_RefreshBrowser(hExplorerWin);
+    //}
     WM_RestartTimer(pMsg->Data.v, 500);
     break;
     
@@ -809,6 +773,10 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 			break;
 		}
 
+		case ID_BUTTON_REFRESH:
+			_RefreshBrowser (pMsg->hWin);
+			break;
+
 		// -------------------------------------------------------------
 		default:
 			break;
@@ -827,9 +795,22 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 	{
 		case WM_INIT_DIALOG:
 		{
-			// Init Exit button
-			//hItem = BUTTON_CreateEx(695, 375, 100, 60, pMsg->hWin, WM_CF_SHOW, 0, ID_BUTTON_EXIT);
-			//WM_SetCallback(hItem, _cbButton_exit);
+			// TreeView control
+			hTreeView = WM_GetDialogItem(pMsg->hWin, ID_TREEVIEW);
+			// Set spacing
+			TREEVIEW_SetIndent(hTreeView,48);
+			TREEVIEW_SetTextIndent(hTreeView,48);
+			// Set better looking images
+			TREEVIEW_SetImage(hTreeView,TREEVIEW_BI_CLOSED,	&bmClosedFolder);
+			TREEVIEW_SetImage(hTreeView,TREEVIEW_BI_OPEN,	&bmOpenFolder);
+			TREEVIEW_SetImage(hTreeView,TREEVIEW_BI_LEAF,	&bmTextLog);
+
+			// MSD Size Edit
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_MSD);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
 
 			pFileList = (FILELIST_FileTypeDef *)pvPortMalloc(sizeof(FILELIST_FileTypeDef));
 			//printf("ptr %08x\r\n",pFileList);
@@ -898,9 +879,9 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 					break;
 				}
         
-				case ID_BUTTON_REFRESH:
-					_RefreshBrowser (pMsg->hWin);
-					break;
+				//case ID_BUTTON_REFRESH:
+				//	_RefreshBrowser (pMsg->hWin);
+				//	break;
 
 				case WM_NOTIFICATION_RELEASED:
 					if(Id == ID_BUTTON_EXIT) GUI_EndDialog(pMsg->hWin, 0);

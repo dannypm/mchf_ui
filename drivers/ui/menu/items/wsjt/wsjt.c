@@ -133,6 +133,8 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 		default:
 			break;
 	}
+
+	WM_InvalidateWindow(WM_GetClientWindow(pMsg->hWin));
 }
 
 static void _cbDialog(WM_MESSAGE * pMsg)

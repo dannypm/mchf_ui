@@ -48,20 +48,8 @@
 #include "k_storage.h"
 
 #include "C:\Projects\mcHFx\firmware\mchf_ui\middleware\FatFs\src\ff_gen_drv.h"
-#include "C:\Projects\mcHFx\firmware\mchf_ui\hw\sdcard\sd_card.h"
+#include "sd_card.h"
 
-/** @addtogroup CORE
-  * @{
-  */
-
-/** @defgroup KERNEL_STORAGE
-  * @brief Kernel storage routines
-  * @{
-  */
-
-
-/* External variables --------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
 static struct {
   U32 Mask;
   char c;
@@ -72,13 +60,14 @@ static struct {
   { AM_DIR, 'D' },
   { AM_ARC, 'A' },
 };
+
 /* Private defines -----------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-FATFS USBDISK_FatFs;         /* File system object for USB disk logical drive */
+//FATFS USBDISK_FatFs;         /* File system object for USB disk logical drive */
 FATFS mSDDISK_FatFs;         /* File system object for USB disk logical drive */
 
-char USBDISK_Drive[4];       /* USB Host logical drive number */
+//char USBDISK_Drive[4];       /* USB Host logical drive number */
 char mSDDISK_Drive[4];       /* USB Host logical drive number */
 
 //!USBH_HandleTypeDef  hUSB_Host;
@@ -131,43 +120,7 @@ static void SD_Init(void)
   */
 void k_StorageInit(void)
 {
-#if 0
-  /* Link the USB Host disk I/O driver */
-   FATFS_LinkDriver(&USBH_Driver, USBDISK_Drive);
-  
-  /* Link the micro SD disk I/O driver */
-   FATFS_LinkDriver(&SD_Driver, mSDDISK_Drive);  
-
-  /* Create USB background task */
-  osThreadDef(STORAGE_Thread, StorageThread, osPriorityBelowNormal, 0, 64);
-  osThreadCreate (osThread(STORAGE_Thread), NULL);
-  
-  /* Create Storage Message Queue */
-  osMessageQDef(osqueue, 10, uint16_t);
-  StorageEvent = osMessageCreate (osMessageQ(osqueue), NULL);
-  
-  /* Init Host Library */
-  USBH_Init(&hUSB_Host, USBH_UserProcess, 0);
-  
-  /* Add Supported Class */
-  USBH_RegisterClass(&hUSB_Host, USBH_MSC_CLASS);
-  
-  /* Start Host Process */
-  USBH_Start(&hUSB_Host);
-  
-  /* Enable SD Interrupt mode */
-  BSP_SD_Init();
-  BSP_SD_ITConfig();
-  
-  if(BSP_SD_IsDetected())
-  {
-    osMessagePut ( StorageEvent, MSDDISK_CONNECTION_EVENT, 0);
-  }
-#endif
-#if 1
-	//printf("sd driver init\r\n");
-
-	StorageStatus[USB_DISK_UNIT] = 0;
+	//StorageStatus[USB_DISK_UNIT] = 0;
 	StorageStatus[MSD_DISK_UNIT] = 0;
 
 	// Init the detect pin
@@ -186,7 +139,6 @@ void k_StorageInit(void)
 		if(BSP_SD_IsDetected())
 			osMessagePut ( ConnectionEvent, CARD_CONNECTED, osWaitForever);
 	}
-#endif
 }
 
 /**
@@ -196,43 +148,6 @@ void k_StorageInit(void)
   */
 void StorageThread(void)
 {
-#if 0
-  osEvent event;
-  
-  for( ;; )
-  {
-    event = osMessageGet( StorageEvent, osWaitForever );
-    
-    if( event.status == osEventMessage )
-    {
-      switch(event.value.v)
-      {
-      case USBDISK_CONNECTION_EVENT:
-        f_mount(&USBDISK_FatFs,USBDISK_Drive,  0);
-        StorageStatus[USB_DISK_UNIT] = 1;
-        break;
-        
-      case USBDISK_DISCONNECTION_EVENT:
-        f_mount(0, USBDISK_Drive, 0);
-        StorageStatus[USB_DISK_UNIT] = 0;
-        break;  
-        
-      case MSDDISK_CONNECTION_EVENT:
-        BSP_SD_Init();
-        f_mount(&mSDDISK_FatFs, mSDDISK_Drive, 0);
-        StorageStatus[MSD_DISK_UNIT] = 1;
-        break;
-        
-      case MSDDISK_DISCONNECTION_EVENT:
-        f_mount(0, mSDDISK_Drive, 0);
-        StorageStatus[MSD_DISK_UNIT] = 0;        
-        break;  
-        
-      }
-    }
-  }
-#endif
-#if 1
 	osEvent event;
 
 	event = osMessageGet( ConnectionEvent, osWaitForever );
@@ -281,7 +196,7 @@ void StorageThread(void)
 
 					f_mount(0, mSDDISK_Drive, 0);
 					StorageStatus[MSD_DISK_UNIT] = 0;
-					StorageStatus[USB_DISK_UNIT] = 0;
+					//StorageStatus[USB_DISK_UNIT] = 0;
 				}
 
 				statusChanged = 0;
@@ -289,7 +204,6 @@ void StorageThread(void)
 			}
 	     }
     }
-#endif
 }
 
 /**
@@ -312,18 +226,18 @@ uint32_t k_StorageGetCapacity (uint8_t unit)
   uint32_t   tot_sect = 0;
   FATFS *fs;
   
-  if(unit == 0)
-  {
-    fs = &USBDISK_FatFs;
-    tot_sect = (fs->n_fatent - 2) * fs->csize;
+  //if(unit == 0)
+  //{
+    //fs = &USBDISK_FatFs;
+    //tot_sect = (fs->n_fatent - 2) * fs->csize;
     
-  }
-  else if (unit == 1)
-  {
+  //}
+  //else if (unit == 1)
+  //{
     fs = &mSDDISK_FatFs;
     tot_sect = (fs->n_fatent - 2) * fs->csize;
     
-  }
+  //}
   return (tot_sect);
 }
 
@@ -338,17 +252,21 @@ uint32_t k_StorageGetFree (uint8_t unit)
   FATFS *fs;
   FRESULT res = FR_INT_ERR;
   
-  if(unit == 0)
-  {
-    fs = &USBDISK_FatFs;
-    res = f_getfree("0:", (DWORD *)&fre_clust, &fs);
-  }
-  else if (unit == 1)
-  {
+  //if(unit == 0)
+  //{
+    //fs = &USBDISK_FatFs;
+    //res = f_getfree("0:", (DWORD *)&fre_clust, &fs);
+
+  //}
+  //else if (unit == 1)
+  //{
     fs = &mSDDISK_FatFs;
-    res = f_getfree("1:", (DWORD *)&fre_clust, &fs);
-  }
-  if(res == FR_OK)
+    res = f_getfree("0:", (DWORD *)&fre_clust, &fs);
+
+    //printf("f_getfree res: %d\r\n",res);
+  //}
+
+    if(res == FR_OK)
   {
     return (fre_clust * fs->csize);
   }
@@ -645,13 +563,3 @@ int k_GetData(CHOOSEFILE_INFO * pInfo)
 }
 
 #endif
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

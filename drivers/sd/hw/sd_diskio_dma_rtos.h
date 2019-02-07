@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file    filebrowser_app.c
+  * @file    FatFs/FatFs_uSD_DMA_RTOS/Inc/sd_diskio_dma_rtos.h
   * @author  MCD Application Team
-  * @brief   Utilities for file handling
+  * @brief   Header for sd_diskio_dma_rtos.c module
   ******************************************************************************
   * @attention
   *
@@ -42,120 +42,57 @@
   *
   ******************************************************************************
   */
+
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __SD_DISKIO_H
+#define __SD_DISKIO_H
+
 /* Includes ------------------------------------------------------------------*/
-
-#include "mchf_pro_board.h"
-
-//#include "C:\Projects\mcHFx\firmware\mchf_ui\drivers\sd\hw\k_storage.h"
-
-#include "filebrowser_app.h"
-#include <string.h>
-
-#include "C:\Projects\mcHFx\firmware\mchf_ui\middleware\FatFs\src\ff_gen_drv.h"
-
-/**
-  * @brief  Copy disk content in the explorer list
-  * @param  path: pointer to root path
-  * @param  list: pointer to file list
-  * @retval Status
-  */
-uchar  FILEMGR_ParseDisks (char *path, FILELIST_FileTypeDef *list)
-{
-  FRESULT res;
-  FILINFO fno;
-  DIR dir;
-  char *fn;
-  
-  res = f_opendir(&dir, path);
-  list->ptr = 0;
-  
-  if (res == FR_OK)
-  {
-    
-    while (1)
-    {
-      res = f_readdir(&dir, &fno);
-      
-      if (res != FR_OK || fno.fname[0] == 0)
-      {
-        break;
-      }
-      if (fno.fname[0] == '.')
-      {
-        continue;
-      }
-
-      fn = fno.fname;
-
-      if (list->ptr < FILEMGR_LIST_DEPDTH)
-      {
-        if ((fno.fattrib & AM_DIR) == AM_DIR)
-        {
-          strncpy((char *)list->file[list->ptr].name, (char *)fn, FILEMGR_FILE_NAME_SIZE);
-          list->file[list->ptr].type = FILETYPE_DIR;
-          list->ptr++;
-        }
-        else
-        {
-          strncpy((char *)list->file[list->ptr].name, (char *)fn, FILEMGR_FILE_NAME_SIZE);
-          list->file[list->ptr].type = FILETYPE_FILE;
-          list->ptr++;
-        }
-      }   
-    }
-  }
-  f_closedir(&dir);
-  return res;
-}
-
-/**
-  * @brief  Retrieve the parent directory from full file path
-  * @param  dir: pointer to parent directory
-  * @retval None
-*/
-void FILEMGR_GetParentDir (char *dir)
-{
-  uint16_t idx = FILEMGR_FULL_PATH_SIZE;
-  
-  for ( ; idx > 0; idx --)
-  {
-    
-    if (dir [idx] == '/')
-    {
-      dir [idx + 1] = 0;
-      break;
-    }
-    dir [idx + 1] = 0;
-  }
-}
+///#include "stm32h743i_eval_sd.h"
+//#include "cmsis_os.h"
+/* Exported types ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
+/* Exported functions ------------------------------------------------------- */
+//extern const Diskio_drvTypeDef  SD_Driver;
 
 
-/**
-  * @brief  Retrieve the file name from a full file path
-  * @param  file: pointer to base path
-  * @param  path: pointer to full path
-  * @retval None
-*/
-void FILEMGR_GetFileOnly (char *file, char *path)
-{
-  char *baseName1, *baseName2;
-  baseName1 = strrchr(path,'/');
-  baseName2 = strrchr(path,':');
-  
-  if(baseName1++) 
-  { 
-    strcpy(file, baseName1);
-  }
-  else 
-  {
-    if (baseName2++) 
-    {
-      
-      strcpy(file, baseName2);
-    }
-    else
-    {
-      strcpy(file, path);
-    }
-  }
-}
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+#define QUEUE_SIZE         (uint32_t) 10
+#define READ_CPLT_MSG      (uint32_t) 1
+#define WRITE_CPLT_MSG     (uint32_t) 2
+
+/*
+ * the following Timeout is useful to give the control back to the applications
+ * in case of errors in either BSP_SD_ReadCpltCallback() or BSP_SD_WriteCpltCallback()
+ * the value by default is as defined in the BSP platform driver otherwise 30 secs
+ *
+ */
+
+#define SD_TIMEOUT 30 * 1000
+
+#define SD_DEFAULT_BLOCK_SIZE 512
+
+/*
+ * Depending on the usecase, the SD card initialization could be done at the
+ * application level, if it is the case define the flag below to disable
+ * the BSP_SD_Init() call in the SD_Initialize().
+ */
+
+#define DISABLE_SD_INIT
+
+
+/*
+ * when using cachable memory region, it may be needed to maintain the cache
+ * validity. Enable the define below to activate a cache maintenance at each
+ * read and write operation.
+ * Notice: This is applicable only for cortex M7 based platform.
+ */
+
+#define ENABLE_SD_DMA_CACHE_MAINTENANCE 1
+
+
+#endif /* __SD_DISKIO_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+

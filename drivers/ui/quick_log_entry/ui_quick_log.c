@@ -137,7 +137,6 @@ static void ui_quick_log_show_clock(WM_MESSAGE * pMsg)
 	hEdit = WM_GetDialogItem(pMsg->hWin, ID_EDIT_TIME);
 	EDIT_SetText(hEdit, buf);
 
-
 	EnterCriticalSection();
 	sprintf(buf,"%04d - %02d - %02d",(2018 + Date.Year), Date.Month, Date.Date);
 	ExitCriticalSection();

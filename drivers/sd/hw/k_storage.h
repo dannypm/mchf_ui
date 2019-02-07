@@ -46,10 +46,6 @@
 #ifndef __K_STORAGE_H
 #define __K_STORAGE_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "k_module.h"   
 
@@ -65,9 +61,9 @@
    
 
 
-#define NUM_DISK_UNITS       2
-#define USB_DISK_UNIT        0
-#define MSD_DISK_UNIT        1
+#define NUM_DISK_UNITS       1
+//#define USB_DISK_UNIT        0
+#define MSD_DISK_UNIT        0
 
 /* Exported types ------------------------------------------------------------*/
 typedef enum
@@ -111,10 +107,4 @@ void     k_GetExtOnly(char * pFile, char * pExt);
 
 #endif
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif /*__K_STORAGE_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

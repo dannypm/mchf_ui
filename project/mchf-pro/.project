@@ -206,26 +206,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/hw/rtc/k_rtc.h</locationURI>
 		</link>
 		<link>
-			<name>hw/sdcard/sd_card.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/sdcard/sd_card.c</locationURI>
-		</link>
-		<link>
-			<name>hw/sdcard/sd_card.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/sdcard/sd_card.h</locationURI>
-		</link>
-		<link>
-			<name>hw/sdcard/sd_diskio_dma_rtos.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/sdcard/sd_diskio_dma_rtos.c</locationURI>
-		</link>
-		<link>
-			<name>hw/sdcard/sd_diskio_dma_rtos.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/sdcard/sd_diskio_dma_rtos.h</locationURI>
-		</link>
-		<link>
 			<name>hw/sdram/sdram.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw/sdram/sdram.c</locationURI>
@@ -259,6 +239,36 @@
 			<name>middleware/STemWin_Addons/ST_GUI_Addons.h</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/middleware/STemWin_Addons/ST_GUI_Addons.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/sd/hw/k_storage.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/sd/hw/k_storage.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/sd/hw/k_storage.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/sd/hw/k_storage.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/sd/hw/sd_card.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/sd/hw/sd_card.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/sd/hw/sd_card.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/sd/hw/sd_card.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/sd/hw/sd_diskio_dma_rtos.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/sd/hw/sd_diskio_dma_rtos.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/sd/hw/sd_diskio_dma_rtos.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/sd/hw/sd_diskio_dma_rtos.h</locationURI>
 		</link>
 		<link>
 			<name>drivers/ui/desktop/ui_controls_layout.h</name>
@@ -2664,16 +2674,6 @@
 			<name>drivers/ui/menu/items/file_b/browser/filebrowser_app.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/file_b/browser/filebrowser_app.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/file_b/browser/k_storage.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/file_b/browser/k_storage.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/file_b/browser/k_storage.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/file_b/browser/k_storage.h</locationURI>
 		</link>
 		<link>
 			<name>hw/cmsis/Device/ST/STM32F7xx/Include/stm32f746xx.h</name>

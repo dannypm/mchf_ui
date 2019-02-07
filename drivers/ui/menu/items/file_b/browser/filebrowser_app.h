@@ -47,28 +47,10 @@
 #ifndef __FILEBROWSER_APP_H
 #define __FILEBROWSER_APP_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
+#include "C:\Projects\mcHFx\firmware\mchf_ui\drivers\sd\hw\k_storage.h"
 
-/* Includes ------------------------------------------------------------------*/
-//#include "main.h"
-//#include "k_storage.h"
-
-/* Exported constants --------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
-/* Exported variables --------------------------------------------------------*/
-
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
 void     FILEMGR_GetParentDir (char *dir);
 void     FILEMGR_GetFileOnly (char *file, char *path);
-uchar  FILEMGR_ParseDisks (char *path, FILELIST_FileTypeDef *list);
+uchar    FILEMGR_ParseDisks (char *path, FILELIST_FileTypeDef *list);
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* __FILE_BROWSER_APP_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
