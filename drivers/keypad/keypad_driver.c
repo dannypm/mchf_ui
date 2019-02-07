@@ -45,6 +45,7 @@ T_STEP_10MHZ
 
 #ifdef CONTEXT_DRIVER_KEYPAD
 
+// Public UI driver state
 extern struct	UI_DRIVER_STATE			ui_s;
 
 // Public radio state
@@ -272,6 +273,31 @@ void keypad_driver_init(void)
 	ks.tap_id	= 0;
 
 	keypad_driver_leds_init();
+}
+
+//*----------------------------------------------------------------------------
+//* Function Name       : keypad_handle_multitap
+//* Object              :
+//* Notes    			: Create Nokia style multitap experience
+//* Notes   			:
+//* Notes    			:
+//* Context    			: CONTEXT_DRIVER_KEYPAD
+//*----------------------------------------------------------------------------
+static void keypad_handle_multitap(uchar max_ids)
+{
+	//printf("tap_cnt=%d\r\n",ks.tap_cnt);
+
+	// Only if clicks are not far apart
+	if(ks.tap_cnt > 10)
+		return;
+
+	// Erase previous char on screen
+	GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,1);
+	GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,0);
+
+	// Advance tap counter
+	(ks.tap_id)++;
+	if(ks.tap_id > max_ids) ks.tap_id = 0;
 }
 
 //*----------------------------------------------------------------------------
@@ -524,11 +550,11 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold, uchar rele
 				// Pass request to UI driver to change mode
 				if(ui_s.req_state == MODE_DESKTOP)
 					ui_s.req_state = MODE_DESKTOP_FT8;
-				else
-				{
-					if(ui_s.req_state == MODE_DESKTOP_FT8)
-						ui_s.req_state = MODE_DESKTOP;
-				}
+				//else
+				//{
+				//	if(ui_s.req_state == MODE_DESKTOP_FT8)
+				//		ui_s.req_state = MODE_DESKTOP;
+				//}
 			}
 		}
 
@@ -746,31 +772,6 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold, uchar rele
 			// ..
 		}
 	}
-}
-
-//*----------------------------------------------------------------------------
-//* Function Name       : keypad_handle_multitap
-//* Object              :
-//* Notes    			: Create Nokia style multitap experience
-//* Notes   			:
-//* Notes    			:
-//* Context    			: CONTEXT_DRIVER_KEYPAD
-//*----------------------------------------------------------------------------
-static void keypad_handle_multitap(uchar max_ids)
-{
-	//printf("tap_cnt=%d\r\n",ks.tap_cnt);
-
-	// Only if clicks are not far apart
-	if(ks.tap_cnt > 10)
-		return;
-
-	// Erase previous char on screen
-	GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,1);
-	GUI_StoreKeyMsg(GUI_KEY_BACKSPACE,0);
-
-	// Advance tap counter
-	(ks.tap_id)++;
-	if(ks.tap_id > max_ids) ks.tap_id = 0;
 }
 
 //*----------------------------------------------------------------------------
@@ -1164,7 +1165,8 @@ static void keypad_cmd_processor_wm(uchar x,uchar y, uchar hold, uchar release)
 		}
 		else
 		{
-			// ..
+			if(ui_s.req_state == MODE_DESKTOP_FT8)
+				ui_s.req_state = MODE_DESKTOP;
 		}
 
 		return;
@@ -1549,15 +1551,18 @@ static void keypad_cmd_processor(uchar x,uchar y, uchar hold, uchar release)
 	// Manage different UI driver modes
 	switch(ui_s.cur_state)
 	{
+		// -------------------------------------------------
 		// Main radio desktop
 		case MODE_DESKTOP:
-		case MODE_DESKTOP_FT8:
 			keypad_cmd_processor_desktop(x,y,hold,release);
 			break;
 
+		// -------------------------------------------------
 		// Route Keypad input to emWin Window Manager
 		case MODE_MENU:
 		case MODE_QUICK_LOG:
+		case MODE_DESKTOP_FT8:
+		case MODE_SIDE_ENC_MENU:
 			keypad_cmd_processor_wm(x,y,hold,release);
 			break;
 

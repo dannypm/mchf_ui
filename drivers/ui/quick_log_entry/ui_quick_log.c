@@ -25,8 +25,11 @@
 
 #include "k_rtc.h"
 
+// Public UI driver state
+extern struct	UI_DRIVER_STATE			ui_s;
+
 // Public radio state
-extern struct	TRANSCEIVER_STATE_UI	tsu;
+//extern struct	TRANSCEIVER_STATE_UI	tsu;
 
 #define ID_CHECKBOX_0				(GUI_ID_USER + 0x01)
 #define ID_TEXT_LIST_2             	(GUI_ID_USER + 0x02)
@@ -152,7 +155,32 @@ static void ui_quick_log_show_clock(WM_MESSAGE * pMsg)
 //*----------------------------------------------------------------------------
 static void _cbControl(WM_MESSAGE *pMsg, int Id,int NCode)
 {
+	switch(Id)
+	{
+		// -------------------------------------------------------------
+		// Add Button - add entry to log, then exit
+		//			    we can also return by holding the '0' button,
+		// 				but nothing will be saved
+		case ID_BUTTON_ADD:
+		{
+			if(NCode == WM_NOTIFICATION_RELEASED)
+			{
+				// Create log entry
+				// ...
 
+				// Change public state
+				ui_s.req_state = MODE_DESKTOP;
+
+				// Exit
+				GUI_EndDialog(pMsg->hWin, 0);
+			}
+
+			break;
+		}
+		default:
+			break;
+	}
+	WM_InvalidateWindow(WM_GetClientWindow(pMsg->hWin));
 }
 
 //*----------------------------------------------------------------------------

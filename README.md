@@ -47,6 +47,8 @@ Center/Fixed mode    - https://www.youtube.com/watch?v=uaPRkPgszMI
 
 Side Encoder options - https://youtu.be/0MX4TGASykA 
 
+Multitap Keyboard/QuickLog Entry Menu: https://youtu.be/0jej11uNHG8
+
 Current State of the FT8 Menu - https://pbs.twimg.com/media/DymM8oGW0AEXDCN.jpg:large
 
 --------------------------------------------------------------
