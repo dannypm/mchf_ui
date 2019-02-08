@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				79
+#define	MCHFX_VER_BUILD				80
 //
 // -----------------------------------------------------------------------------
 //

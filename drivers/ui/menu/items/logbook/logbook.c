@@ -49,10 +49,37 @@ K_ModuleItem_Typedef  logbook =
 #define ID_BUTTON_PAGEU			(GUI_ID_USER + 0x03)
 #define ID_BUTTON_PAGED			(GUI_ID_USER + 0x04)
 
-#define ID_TEXT_DX_CALL			(GUI_ID_USER + 0x04)
-#define ID_EDIT_DX_CALL			(GUI_ID_USER + 0x05)
+#define ID_LISTVIEW				(GUI_ID_USER + 0x05)
 
-#define ID_LISTVIEW				(GUI_ID_USER + 0x06)
+#define ID_TEXT_DX_CALL			(GUI_ID_USER + 0x06)
+#define ID_EDIT_DX_CALL			(GUI_ID_USER + 0x07)
+
+#define ID_TEXT_DATE			(GUI_ID_USER + 0x08)
+#define ID_EDIT_DATE			(GUI_ID_USER + 0x09)
+
+#define ID_TEXT_TIME			(GUI_ID_USER + 0x0A)
+#define ID_EDIT_TIME			(GUI_ID_USER + 0x0B)
+
+#define ID_TEXT_BAND			(GUI_ID_USER + 0x0C)
+#define ID_EDIT_BAND			(GUI_ID_USER + 0x0D)
+
+#define ID_TEXT_MODE			(GUI_ID_USER + 0x0E)
+#define ID_EDIT_MODE			(GUI_ID_USER + 0x0F)
+
+#define ID_TEXT_NAME			(GUI_ID_USER + 0x10)
+#define ID_EDIT_NAME			(GUI_ID_USER + 0x11)
+
+#define ID_TEXT_LOC				(GUI_ID_USER + 0x12)
+#define ID_EDIT_LOC				(GUI_ID_USER + 0x13)
+
+#define ID_TEXT_FREQ			(GUI_ID_USER + 0x14)
+#define ID_EDIT_FREQ			(GUI_ID_USER + 0x15)
+
+#define ID_TEXT_RSTR			(GUI_ID_USER + 0x16)
+#define ID_EDIT_RSTR			(GUI_ID_USER + 0x17)
+
+#define ID_TEXT_RSTS			(GUI_ID_USER + 0x18)
+#define ID_EDIT_RSTS			(GUI_ID_USER + 0x19)
 
 static const GUI_WIDGET_CREATE_INFO _aDialog[] = 
 {
@@ -67,11 +94,38 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 	{ BUTTON_CreateIndirect, 	"Update",			 		ID_BUTTON_UPDATE, 	460, 	375, 	120, 	45, 	0, 		0x0, 	0 },
 	{ BUTTON_CreateIndirect, 	"PageUp",			 		ID_BUTTON_PAGEU, 	310, 	375, 	120, 	45, 	0, 		0x0, 	0 },
 	{ BUTTON_CreateIndirect, 	"PageDown",			 		ID_BUTTON_PAGED, 	180, 	375, 	120, 	45, 	0, 		0x0, 	0 },
-	// Edit boxes
-	{ TEXT_CreateIndirect,     	"Callsign",		  			ID_TEXT_DX_CALL,   	5,		7,  	70,  	25, 	0, 	  	0,		0 },
-	{ EDIT_CreateIndirect,     	"dx.call", 					ID_EDIT_DX_CALL,   	80,  	5,  	80,  	25, 	0,		0,		0 },
 	// ListView
 	{ LISTVIEW_CreateIndirect, 	"Listview", 				ID_LISTVIEW, 		170, 	5, 		620, 	360, 	0, 		0, 		0 },
+	// Edit boxes
+	{ TEXT_CreateIndirect,     	"Callsign",		  			ID_TEXT_DX_CALL,   	5,		7,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.call", 				ID_EDIT_DX_CALL,   	80,  	5,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"Date",		  				ID_TEXT_DATE,   	5,		37,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.date", 				ID_EDIT_DATE,   	80,  	35,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"Time",		  				ID_TEXT_TIME,   	5,		67,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.time", 				ID_EDIT_TIME,   	80,  	65,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"Band",		  				ID_TEXT_BAND,   	5,		97,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.band", 				ID_EDIT_BAND,   	80,  	95,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"Mode",		  				ID_TEXT_MODE,   	5,		127,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.mode", 				ID_EDIT_MODE,   	80,  	125,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"Name",		  				ID_TEXT_NAME,   	5,		157,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.name", 				ID_EDIT_NAME,   	80,  	155,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"Locator",	  				ID_TEXT_LOC,   		5,		187,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.loc", 				ID_EDIT_LOC,   		80,  	185,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"Freq",		  				ID_TEXT_FREQ,  		5,		217,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.freq", 				ID_EDIT_FREQ,  		80,  	215,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"RST-R",					ID_TEXT_RSTR,  		5,		247,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.rstr", 				ID_EDIT_RSTR,  		80,  	245,  	80,  	25, 	0,		0,		0 },
+	//
+	{ TEXT_CreateIndirect,     	"RST-S",					ID_TEXT_RSTS,  		5,		277,  	70,  	25, 	0, 	  	0,		0 },
+	{ EDIT_CreateIndirect,     	"edit.rsts", 				ID_EDIT_RSTS,  		80,  	275,  	80,  	25, 	0,		0,		0 },
 };
 
 //
@@ -136,14 +190,6 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 		{
 			//HEADER_Handle hHeader;
 
-			// Callsign edit
-			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_DX_CALL);
-			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
-			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
-			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
-			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
-			EDIT_SetText(hItem,"LZ2IIS");
-
 			// ListView
 			hItem = WM_GetDialogItem(pMsg->hWin, ID_LISTVIEW);
 			//hHeader = LISTVIEW_GetHeader(hItem);
@@ -170,6 +216,69 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 			LISTVIEW_SetGridVis(hItem, 1);
 			// -- scrollbar looks ugly!
 			//SCROLLBAR_SetWidth(SCROLLBAR_CreateAttached(hItem, SCROLLBAR_CF_VERTICAL),20);
+
+			// Callsign edit
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_DX_CALL);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//EDIT_SetText(hItem,"LZ2IIS");
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_DATE);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_TIME);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_BAND);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_MODE);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_NAME);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_LOC);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_FREQ);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_RSTR);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
+			//
+			hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_RSTS);
+			EDIT_SetFont(hItem,&GUI_FontAvantGarde16B);
+			EDIT_SetBkColor(hItem,EDIT_CI_ENABLED,GUI_STCOLOR_LIGHTBLUE);
+			EDIT_SetTextColor(hItem,EDIT_CI_ENABLED,GUI_WHITE);
+			EDIT_SetTextAlign(hItem,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
 
 			break;
 		}
@@ -215,4 +324,3 @@ static void Startup(WM_HWIN hWin, uint16_t xpos, uint16_t ypos)
 {
 	GUI_CreateDialogBox(_aDialog, GUI_COUNTOF(_aDialog), _cbDialog, hWin, xpos, ypos);
 }
-
