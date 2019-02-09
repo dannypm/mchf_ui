@@ -23,7 +23,7 @@
 #include "dialog.h"
 #include "ST_GUI_Addons.h"
 
-#include "k_rtc.h"
+#include "hw\rtc\k_rtc.h"
 
 #define ID_WINDOW_0               	(GUI_ID_USER + 0x00)
 

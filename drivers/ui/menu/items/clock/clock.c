@@ -53,7 +53,7 @@
 #include "ST_GUI_Addons.h"
 
 #include "k_module.h"
-#include "k_rtc.h"
+#include "hw\rtc\k_rtc.h"
 
 static void Startup(WM_HWIN hWin, uint16_t xpos, uint16_t ypos);
 

@@ -33,7 +33,7 @@
 #endif
 
 // Hardware and libs
-#include "sdram.h"
+#include "hw/sdram/sdram.h"
 #include "watchdog.h"
 
 // Drivers
@@ -46,7 +46,7 @@
 #include "net_driver.h"
 
 // rtc
-#include "k_rtc.h"
+#include "hw\rtc\k_rtc.h"
 
 // Allocate OS heap, based on linker script definition
 #ifdef CHIP_F7

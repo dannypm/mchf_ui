@@ -166,56 +166,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/ui_driver.h</locationURI>
 		</link>
 		<link>
-			<name>hw/dsp_eep/hw_dsp_eep.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/dsp_eep/hw_dsp_eep.c</locationURI>
-		</link>
-		<link>
-			<name>hw/dsp_eep/hw_dsp_eep.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/dsp_eep/hw_dsp_eep.h</locationURI>
-		</link>
-		<link>
-			<name>hw/lcd/gui_conf.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/lcd/gui_conf.c</locationURI>
-		</link>
-		<link>
-			<name>hw/lcd/gui_conf.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/lcd/gui_conf.h</locationURI>
-		</link>
-		<link>
-			<name>hw/lcd/mchf_lcd.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/lcd/mchf_lcd.c</locationURI>
-		</link>
-		<link>
-			<name>hw/lcd/mchf_lcd.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/lcd/mchf_lcd.h</locationURI>
-		</link>
-		<link>
-			<name>hw/rtc/k_rtc.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/rtc/k_rtc.c</locationURI>
-		</link>
-		<link>
-			<name>hw/rtc/k_rtc.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/rtc/k_rtc.h</locationURI>
-		</link>
-		<link>
-			<name>hw/sdram/sdram.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/sdram/sdram.c</locationURI>
-		</link>
-		<link>
-			<name>hw/sdram/sdram.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/sdram/sdram.h</locationURI>
-		</link>
-		<link>
 			<name>hw/util/cpu_utils.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw/util/cpu_utils.c</locationURI>
@@ -226,14 +176,14 @@
 			<locationURI>PARENT-2-PROJECT_LOC/hw/util/cpu_utils.h</locationURI>
 		</link>
 		<link>
-			<name>hw/watchdog/watchdog.c</name>
+			<name>hw/util/watchdog.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/watchdog/watchdog.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/hw/util/watchdog.c</locationURI>
 		</link>
 		<link>
-			<name>hw/watchdog/watchdog.h</name>
+			<name>hw/util/watchdog.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw/watchdog/watchdog.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/hw/util/watchdog.h</locationURI>
 		</link>
 		<link>
 			<name>middleware/STemWin_Addons/ST_GUI_Addons.h</name>
@@ -926,6 +876,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/middleware/STemWin/inc/WM_Intern.h</locationURI>
 		</link>
 		<link>
+			<name>drivers/api/hw/dsp_eep/hw_dsp_eep.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/api/hw/dsp_eep/hw_dsp_eep.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/api/hw/dsp_eep/hw_dsp_eep.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/api/hw/dsp_eep/hw_dsp_eep.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/desktop/agc/ui_controls_agc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/agc/ui_controls_agc.c</locationURI>
@@ -1109,6 +1069,46 @@
 			<name>drivers/ui/desktop/volume/ui_controls_volume.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/desktop/volume/ui_controls_volume.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/hw/lcd/gui_conf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/hw/lcd/gui_conf.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/hw/lcd/gui_conf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/hw/lcd/gui_conf.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/hw/lcd/mchf_lcd.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/hw/lcd/mchf_lcd.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/hw/lcd/mchf_lcd.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/hw/lcd/mchf_lcd.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/hw/rtc/k_rtc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/hw/rtc/k_rtc.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/hw/rtc/k_rtc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/hw/rtc/k_rtc.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/hw/sdram/sdram.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/hw/sdram/sdram.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/ui/hw/sdram/sdram.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/hw/sdram/sdram.h</locationURI>
 		</link>
 		<link>
 			<name>hw/hal/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h</name>

@@ -57,7 +57,7 @@ Attention : Do not modify this file ! If you do, you will not
 #ifndef  GUI_CONFDEFAULTS_H
 #define  GUI_CONFDEFAULTS_H
 
-#include "gui_conf.h"
+#include "hw\lcd\gui_conf.h"
 
 #ifndef   GUI_USE_MIXCOLORS
   #define GUI_USE_MIXCOLORS 1

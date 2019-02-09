@@ -23,7 +23,7 @@
 #include "dialog.h"
 #include "ST_GUI_Addons.h"
 
-#include "k_rtc.h"
+#include "hw\rtc\k_rtc.h"
 
 // Public UI driver state
 extern struct	UI_DRIVER_STATE			ui_s;

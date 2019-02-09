@@ -29,7 +29,7 @@
 #include "ui_side_enc_menu.h"
 
 // DSP write request proxy
-#include "dsp_eep\hw_dsp_eep.h"
+#include "hw\dsp_eep\hw_dsp_eep.h"
 
 #include "gui.h"
 #include "dialog.h"

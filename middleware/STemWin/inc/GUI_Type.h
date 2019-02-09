@@ -58,7 +58,7 @@ Attention : Do not modify this file ! If you do, you will not
 #define  GUITYPE_H_INCLUDED
 
 #include "LCD.h"
-#include "gui_conf.h"
+#include "hw\lcd\gui_conf.h"
 
 /*********************************************************************
 *

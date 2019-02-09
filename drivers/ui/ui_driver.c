@@ -20,8 +20,8 @@
 #include "ui_driver.h"
 //
 #include "touch_driver.h"
-#include "k_rtc.h"
-#include "dsp_eep\hw_dsp_eep.h"
+#include "hw\rtc\k_rtc.h"
+#include "hw\dsp_eep\hw_dsp_eep.h"
 //
 #include "gui.h"
 #include "dialog.h"

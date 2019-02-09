@@ -62,12 +62,6 @@ To use this module, the following steps should be followed :
 #include "cpu_utils.h"
 #include "watchdog.h"
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
 xTaskHandle    		xIdleHandle = NULL;
 volatile uint32_t  	osCPU_Usage = 0;
 uint32_t       		osCPU_IdleStartTime = 0;

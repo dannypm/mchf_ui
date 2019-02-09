@@ -20,13 +20,7 @@
 #include "dialog.h"
 #include "ST_GUI_Addons.h"
 
-#include "C:\Projects\mcHFx\firmware\mchf_ui\hw\watchdog\watchdog.h"
-
-// Externally declared s-meter bmp
-//extern GUI_CONST_STORAGE GUI_BITMAP bmscale;
-
-// Speaker icon in C file as binary resource
-//extern GUI_CONST_STORAGE GUI_BITMAP bmtechrubio;
+//#include "watchdog.h"
 
 // Core unique regs loaded to RAM
 extern struct	CM7_CORE_DETAILS	ccd;

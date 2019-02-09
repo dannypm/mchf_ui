@@ -23,7 +23,7 @@
 
 #include "ui_controls_agc.h"
 #include "desktop\ui_controls_layout.h"
-#include "dsp_eep\hw_dsp_eep.h"
+#include "hw\dsp_eep\hw_dsp_eep.h"
 
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
