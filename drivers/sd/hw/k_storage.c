@@ -129,8 +129,8 @@ void k_StorageInit(void)
 	// Link driver and start state machine
 	if(FATFS_LinkDriver(&SD_Driver, SDPath) == 0)
 	{
-		//printf("sd driver fatfs link ok\r\n");
-		//printf("drive name: %s\r\n",SDPath);
+		printf("sd driver fatfs link ok\r\n");
+		printf("drive name: %s\r\n",SDPath);
 
 		// Create Storage Message Queue
 		osMessageQDef(osqueue, 10, uint16_t);
@@ -226,8 +226,8 @@ uint32_t k_StorageGetCapacity (uint8_t unit)
   uint32_t   tot_sect = 0;
   FATFS *fs;
   
-  //if(unit == 0)
-  //{
+  if(unit == 0)
+  {
     //fs = &USBDISK_FatFs;
     //tot_sect = (fs->n_fatent - 2) * fs->csize;
     
@@ -236,8 +236,8 @@ uint32_t k_StorageGetCapacity (uint8_t unit)
   //{
     fs = &mSDDISK_FatFs;
     tot_sect = (fs->n_fatent - 2) * fs->csize;
-    
-  //}
+  }
+
   return (tot_sect);
 }
 
@@ -252,8 +252,8 @@ uint32_t k_StorageGetFree (uint8_t unit)
   FATFS *fs;
   FRESULT res = FR_INT_ERR;
   
-  //if(unit == 0)
-  //{
+  if(unit == 0)
+  {
     //fs = &USBDISK_FatFs;
     //res = f_getfree("0:", (DWORD *)&fre_clust, &fs);
 
@@ -261,19 +261,16 @@ uint32_t k_StorageGetFree (uint8_t unit)
   //else if (unit == 1)
   //{
     fs = &mSDDISK_FatFs;
-    res = f_getfree("0:", (DWORD *)&fre_clust, &fs);
+    res = f_getfree(SDPath, (DWORD *)&fre_clust, &fs);
 
     //printf("f_getfree res: %d\r\n",res);
-  //}
+  }
 
-    if(res == FR_OK)
-  {
+  if(res == FR_OK)
     return (fre_clust * fs->csize);
-  }
   else
-  {
     return 0;
-  }
+
 }
 
 #if 0

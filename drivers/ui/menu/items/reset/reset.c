@@ -72,10 +72,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 	{ BUTTON_CreateIndirect, 	"Restart DSP",	 		ID_BUTTON_DSP_RESET,	40, 	120, 	120, 	45, 	0, 		0x0, 	0 },
 };
 
-// Public radio state
-extern struct	TRANSCEIVER_STATE_UI	tsu;
-
-// Driver communication
+// API Driver messaging
 extern osMessageQId 					ApiMessage;
 struct APIMessage						api_reset;
 

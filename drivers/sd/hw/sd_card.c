@@ -374,11 +374,6 @@ __weak void BSP_SD_MspInit(SD_HandleTypeDef *hsd, void *Params)
   /* Enable SDIO clock */
   __HAL_RCC_SDMMC1_CLK_ENABLE();
 
-  /* Enable GPIOs clock */
-  //__HAL_RCC_GPIOB_CLK_ENABLE();
-  //__HAL_RCC_GPIOC_CLK_ENABLE();
-  //__HAL_RCC_GPIOD_CLK_ENABLE();
-
   gpio_init_structure.Mode      = GPIO_MODE_AF_PP;
   gpio_init_structure.Pull      = GPIO_NOPULL;
   gpio_init_structure.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -394,19 +389,6 @@ __weak void BSP_SD_MspInit(SD_HandleTypeDef *hsd, void *Params)
   /* GPIOD configuration */
   gpio_init_structure.Pin = GPIO_PIN_2;
   HAL_GPIO_Init(GPIOD, &gpio_init_structure);
-
-  /* D0DIR(PC6), D123DIR(PC7) */
-  //gpio_init_structure.Alternate = GPIO_AF8_SDIO1;
-
-  /* GPIOC configuration */
-  //gpio_init_structure.Pin = GPIO_PIN_6 | GPIO_PIN_7;
-  //HAL_GPIO_Init(GPIOC, &gpio_init_structure);
-
-  /* CKIN(PB8), CDIR(PB9) */
-  //gpio_init_structure.Alternate = GPIO_AF7_SDIO1;
-  /* GPIOB configuration */
-  //gpio_init_structure.Pin = GPIO_PIN_8 | GPIO_PIN_9;
-  //HAL_GPIO_Init(GPIOB, &gpio_init_structure);
 
   __HAL_RCC_SDMMC1_FORCE_RESET();
   __HAL_RCC_SDMMC1_RELEASE_RESET();
