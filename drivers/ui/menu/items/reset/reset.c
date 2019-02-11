@@ -56,19 +56,28 @@ K_ModuleItem_Typedef  reset =
 #define ID_BUTTON_EXIT            	(GUI_ID_USER + 0x01)
 
 #define ID_BUTTON_UI_RESET		  	(GUI_ID_USER + 0x02)
+#define ID_BUTTON_DSP_RESET		  	(GUI_ID_USER + 0x03)
 
 static const GUI_WIDGET_CREATE_INFO _aDialog[] = 
 {
 	// -----------------------------------------------------------------------------------------------------------------------------
-	//							name						id					x		y		xsize	ysize	?		?		?
+	//							name					id						x		y		xsize	ysize	?		?		?
 	// -----------------------------------------------------------------------------------------------------------------------------
 	// Self
-	{ WINDOW_CreateIndirect,	"", 						ID_WINDOW_0,		0,    	0,		800,	430, 	0, 		0x64, 	0 },
+	{ WINDOW_CreateIndirect,	"", 					ID_WINDOW_0,			0,    	0,		800,	430, 	0, 		0x64, 	0 },
 	// Back Button
-	{ BUTTON_CreateIndirect, 	"Back",			 			ID_BUTTON_EXIT, 	670, 	375, 	120, 	45, 	0, 		0x0, 	0 },
+	{ BUTTON_CreateIndirect, 	"Back",			 		ID_BUTTON_EXIT, 		670, 	375, 	120, 	45, 	0, 		0x0, 	0 },
 	//
-	{ BUTTON_CreateIndirect, 	"Reset UI",		 			ID_BUTTON_UI_RESET,	40, 	40, 	120, 	45, 	0, 		0x0, 	0 },
+	{ BUTTON_CreateIndirect, 	"Restart UI",	 		ID_BUTTON_UI_RESET,		40, 	40, 	120, 	45, 	0, 		0x0, 	0 },
+	{ BUTTON_CreateIndirect, 	"Restart DSP",	 		ID_BUTTON_DSP_RESET,	40, 	120, 	120, 	45, 	0, 		0x0, 	0 },
 };
+
+// Public radio state
+extern struct	TRANSCEIVER_STATE_UI	tsu;
+
+// Driver communication
+extern osMessageQId 					ApiMessage;
+struct APIMessage						api_reset;
 
 static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 {
@@ -90,7 +99,7 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 		}
 
 		// -------------------------------------------------------------
-		// Button - rest ui
+		// Button - restart UI
 		case ID_BUTTON_UI_RESET:
 		{
 			switch(NCode)
@@ -98,6 +107,29 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 				case WM_NOTIFICATION_RELEASED:
 					NVIC_SystemReset();
 					break;
+			}
+			break;
+		}
+
+		// -------------------------------------------------------------
+		// Button - restart DSP
+		case ID_BUTTON_DSP_RESET:
+		{
+			switch(NCode)
+			{
+				// Just set flag(or msg), to signal API driver, if DSP will honour the request, well that is another thing
+				// This would reset both boards actually as UI power supply is coming from DSP controlled regulator
+				case WM_NOTIFICATION_RELEASED:
+				{
+					// old via shared flag
+					//tsu.update_dsp_restart = 1;
+					//
+					// New implementation via message
+					api_reset.usMessageID 	= API_RESTART;
+					api_reset.ucPayload		= 0;									// no data
+					osMessagePut(ApiMessage, (ulong)&api_reset, osWaitForever);
+					break;
+				}
 			}
 			break;
 		}
@@ -116,13 +148,7 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 	switch (pMsg->MsgId)
 	{
 		case WM_INIT_DIALOG:
-		{
-			// Init Exit button
-			//hItem = BUTTON_CreateEx(695, 375, 100, 60, pMsg->hWin, WM_CF_SHOW, 0, ID_BUTTON_EXIT);
-			//WM_SetCallback(hItem, _cbButton_exit);
-
 			break;
-		}
 
 		case WM_PAINT:
 			break;

@@ -62,6 +62,9 @@ extern void xPortSysTickHandler(void);
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
 
+// Driver communication
+osMessageQId 	ApiMessage;
+
 //*----------------------------------------------------------------------------
 //* Function Name       : HardFault_Handler
 //* Object              : blink LCD backlight once
@@ -313,6 +316,8 @@ static void transceiver_state_init(void)
 	tsu.update_demod_dsp_req	= 0;
 	tsu.update_filter_dsp_req	= 0;
 	tsu.update_nco_dsp_req		= 0;
+	tsu.update_dsp_eep_req 		= 0;
+	tsu.update_dsp_restart 		= 0;
 
 	// Mute off
 	tsu.audio_mute_flag = 0;
@@ -702,6 +707,10 @@ int main(void)
 
 	// Init HW
 	basic_hw_init();
+
+	// Drivers communication
+	osMessageQDef(osqueue, 5, sizeof(struct APIMessage *));
+	ApiMessage = osMessageCreate (osMessageQ(osqueue), NULL);
 
 	// Create drivers
 	threads_launcher();

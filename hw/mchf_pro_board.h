@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				81
+#define	MCHFX_VER_BUILD				82
 //
 // -----------------------------------------------------------------------------
 //
@@ -256,6 +256,36 @@ struct UI_DRIVER_STATE {
 } UI_DRIVER_STATE;
 //
 // -----------------------------------------------------------------------------
+// DSP API codes
+//
+#define API_UPD_FREQ					0x0001
+#define API_UPD_BAND					0x0002
+#define API_UPD_VOL						0x0003
+#define API_UPD_DEMOD					0x0004
+#define API_UPD_FILT					0x0005
+#define API_UPD_STEP					0x0006
+#define API_UPD_NCO						0x0007
+#define API_CW_TX						0x0008
+#define API_ENABLE_POST					0x0009
+#define API_WRITE_EEP					0x000A
+#define API_RESTART						0x000B
+//
+// The 16 bit msg id is used in the DSP handler directly
+// to switch execution, the data buffer is for extra values
+// So, 14 bytes might not be enough, but every task should allocate
+// own static RAM copy, which reserves extra memory
+// but is needed as this struct is passed in queue via pointer and
+// needs to be valid while the message is propagating, so can't be temporary
+// function stack that might not be valid in few uS, specially in fast
+// UI redrawing routines
+struct APIMessage {
+
+	ushort 	usMessageID;
+	uchar	ucPayload;
+	uchar 	ucData[13];
+
+} APIMessage;
+// -----------------------------------------------------------------------------
 // Hardware regs, read before MMU init
 struct CM7_CORE_DETAILS {
 
@@ -368,6 +398,8 @@ struct TRANSCEIVER_STATE_UI {
 	ushort	update_dsp_eep_offset;
 	uchar	update_dsp_eep_size;
 	ulong	update_dsp_eep_value;
+
+	uchar	update_dsp_restart;
 
 	// Always align last member!
 

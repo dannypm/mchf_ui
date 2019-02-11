@@ -67,6 +67,9 @@ extern struct 		UI_SW	ui_sw;
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
 
+// Driver communication
+extern 			osMessageQId 			ApiMessage;
+
 //#ifdef CHIP_F7
 
 SPI_HandleTypeDef 	ApiSpiHandle;
@@ -379,6 +382,34 @@ static void api_ui_send_spi(void)
 	#endif
 }
 
+// Directly send OS messages to DSP
+static void api_ui_send_spi_a(ulong *msg)
+{
+	struct APIMessage *api_msg = (struct APIMessage *)msg;
+	uchar  i;
+
+	printf("api_ui_send_spi_a,msg: 0x%02x\r\n",api_msg->usMessageID);
+
+	aTxBuffer[0x00] = (api_msg->usMessageID >>   8);
+	aTxBuffer[0x01] = (api_msg->usMessageID & 0xFF);
+
+	if(api_msg->ucPayload)
+	{
+		for(i = 0; i < 13; i++)
+			aTxBuffer[i] = api_msg->ucData[i];
+	}
+
+	// Generate DSP IRQ
+	GPIOD->BSRRH = GPIO_PIN_5;
+	__asm(".word 0x46C046C0");
+
+	HAL_SPI_Transmit(&ApiSpiHandle,(uint8_t*)aTxBuffer, 16, 1000);
+
+	// Release DSP IRQ
+	__asm(".word 0x46C046C0");
+	GPIOD->BSRRL = GPIO_PIN_5;
+}
+
 static void api_ui_process_broadcast(void)
 {
 	ulong i,temp;
@@ -665,7 +696,9 @@ static void api_ui_send_fast_cmd(void)
 	{
 		ushort offset = 0, size = 0;
 
-		//printf("update DSP eep request process..\r\n");
+		#ifdef API_UI_ALLOW_DEBUG
+		printf("update DSP eep request process..\r\n");
+		#endif
 
 		aTxBuffer[0x00] = (API_WRITE_EEP >>   8);
 		aTxBuffer[0x01] = (API_WRITE_EEP & 0xFF);
@@ -686,6 +719,44 @@ static void api_ui_send_fast_cmd(void)
 		return;
 	}
 #endif
+#if 0
+	// Send DSP restart request
+	if(tsu.update_dsp_restart)
+	{
+		#ifdef API_UI_ALLOW_DEBUG
+		printf("restart DSP request process..\r\n");
+		#endif
+
+		aTxBuffer[0x00] = (API_RESTART >>   8);
+		aTxBuffer[0x01] = (API_RESTART & 0xFF);
+		// Send
+		api_ui_send_spi();
+		//  Reset flag
+		tsu.update_dsp_restart = 0;
+		return;
+	}
+#endif
+}
+
+// This version using messaging, instead of public flags
+//
+// - work in progress
+//
+static void api_ui_send_fast_cmd_a(void)
+{
+	osEvent event;
+
+	// Wait for a short time for pending messages
+	event = osMessageGet(ApiMessage, 20);
+	if(event.status != osEventMessage)
+		return;												// ideally this should fire every 20mS
+
+	// Check status type
+	if(event.status != osEventMessage)
+		return;												// is that even possible ?
+
+	// Send
+	api_ui_send_spi_a(event.value.p);
 }
 
 // CS pin is also used to enter bootloader mode,
@@ -701,6 +772,7 @@ static void api_ui_allow_broadcast(void)
 
 static void api_driver_worker(void)
 {
+	api_ui_send_fast_cmd_a();
 	api_ui_send_fast_cmd();
 	api_ui_process_broadcast();
 }
@@ -720,13 +792,13 @@ void api_driver_task(void const * argument)
 	//--api_ui_hw_init();
 	// -----------------------------------------------
 
-	OsDelayMs(200);
+	//OsDelayMs(200);
 
 api_driver_loop:
 
 	api_driver_worker();
-	OsDelayMs(20);
 
+	//-- OsDelayMs(20);		instead of idle-ing here, wait messages. ToDo: test if this stalls other drivers!!!
 	goto api_driver_loop;
 }
 

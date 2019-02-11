@@ -138,7 +138,7 @@ uint8_t BSP_SD_Init(void)
   if(BSP_SD_IsDetected() != SD_PRESENT)
   {
 	  printf("BSP_SD_Init->not present\r\n");
-    return MSD_ERROR_SD_NOT_PRESENT;
+	  return MSD_ERROR_SD_NOT_PRESENT;
   }
 
   /* uSD device interface configuration */
