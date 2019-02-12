@@ -45,6 +45,8 @@ The radio in action:
 
 Center/Fixed mode    - https://www.youtube.com/watch?v=uaPRkPgszMI
 
+Analogue S-meter	- https://youtu.be/kt2p1det-wE
+
 Side Encoder options - https://youtu.be/0MX4TGASykA 
 
 Multitap Keyboard/QuickLog Entry Menu: https://youtu.be/0jej11uNHG8
