@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				82
+#define	MCHFX_VER_BUILD				83
 //
 // -----------------------------------------------------------------------------
 //
@@ -272,17 +272,20 @@ struct UI_DRIVER_STATE {
 //
 // The 16 bit msg id is used in the DSP handler directly
 // to switch execution, the data buffer is for extra values
-// So, 14 bytes might not be enough, but every task should allocate
+// So, 14 bytes might not be enough, but every task(control?) should allocate
 // own static RAM copy, which reserves extra memory
 // but is needed as this struct is passed in queue via pointer and
 // needs to be valid while the message is propagating, so can't be temporary
 // function stack that might not be valid in few uS, specially in fast
 // UI redrawing routines
+//
+#define API_MAX_PAYLOAD					13
+//
 struct APIMessage {
 
 	ushort 	usMessageID;
 	uchar	ucPayload;
-	uchar 	ucData[13];
+	uchar 	ucData[API_MAX_PAYLOAD];
 
 } APIMessage;
 // -----------------------------------------------------------------------------

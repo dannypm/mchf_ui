@@ -31,9 +31,12 @@ uchar loc_band;
 // Public radio state
 extern struct	TRANSCEIVER_STATE_UI	tsu;
 
+// API Driver messaging
+extern osMessageQId 					ApiMessage;
+struct APIMessage						api_band;
+
 // ToDo: this control kinda sucks, it needs serious re-write!
 //
-
 
 //*----------------------------------------------------------------------------
 //* Function Name       :
@@ -103,7 +106,16 @@ void ui_controls_band_refresh(void)
 
 	// -----------------------------------------------------------
 	// This will cause API driver to send request for band change to DSP
+	// old via shared flag
 	tsu.update_band_dsp_req = 1;
+	//
+	// New implementation via message
+	//api_band.usMessageID 	= API_UPD_BAND;
+	//api_band.ucPayload		= 1;				// payload count
+	//api_band.ucData[0] 		= tsu.curr_band;
+	//osMessagePut(ApiMessage, (ulong)&api_band, osWaitForever);
+	// Temp!!! Until all settings are changed via msg
+	//OsDelayMs(100);
 
 	// -----------------------------------------------------------
 	// Update main oscillator frequency on band change

@@ -119,11 +119,11 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 				case WM_NOTIFICATION_RELEASED:
 				{
 					// old via shared flag
-					//tsu.update_dsp_restart = 1;
+					//--tsu.update_dsp_restart = 1;
 					//
 					// New implementation via message
 					api_reset.usMessageID 	= API_RESTART;
-					api_reset.ucPayload		= 0;									// no data
+					api_reset.ucPayload		= 0;									// payload count
 					osMessagePut(ApiMessage, (ulong)&api_reset, osWaitForever);
 					break;
 				}

@@ -17,7 +17,7 @@
 #ifndef __API_DRIVER_H
 #define __API_DRIVER_H
 
-//#define API_UI_ALLOW_DEBUG
+#define API_UI_ALLOW_DEBUG
 
 #define API_TRANSFER_SIZE				300
 //#define API_NO_UPDATE					0xFF

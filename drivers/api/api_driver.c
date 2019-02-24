@@ -388,15 +388,24 @@ static void api_ui_send_spi_a(ulong *msg)
 	struct APIMessage *api_msg = (struct APIMessage *)msg;
 	uchar  i;
 
+	#ifdef API_UI_ALLOW_DEBUG
 	printf("api_ui_send_spi_a,msg: 0x%02x\r\n",api_msg->usMessageID);
+	#endif
 
+	// DSP command
 	aTxBuffer[0x00] = (api_msg->usMessageID >>   8);
 	aTxBuffer[0x01] = (api_msg->usMessageID & 0xFF);
 
-	if(api_msg->ucPayload)
+	// Add payload, if present in the message
+	if((api_msg->ucPayload) && (api_msg->ucPayload < (API_MAX_PAYLOAD + 13)))
 	{
-		for(i = 0; i < 13; i++)
-			aTxBuffer[i] = api_msg->ucData[i];
+		for(i = 0; i < API_MAX_PAYLOAD; i++)
+		{
+			if(i < api_msg->ucPayload)
+				aTxBuffer[i + 2] = api_msg->ucData[i];
+			else
+				aTxBuffer[i + 2] = 0;
+		}
 	}
 
 	// Generate DSP IRQ
@@ -504,6 +513,7 @@ static void api_ui_send_fast_cmd(void)
 
 	if(rx_active)
 		return;
+
 #if 1
 	// Change band - always first as highest priority call
 	if(tsu.update_band_dsp_req)
@@ -719,7 +729,7 @@ static void api_ui_send_fast_cmd(void)
 		return;
 	}
 #endif
-#if 0
+#if 0								// moved to new function
 	// Send DSP restart request
 	if(tsu.update_dsp_restart)
 	{
