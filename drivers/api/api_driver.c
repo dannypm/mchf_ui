@@ -68,7 +68,7 @@ extern struct 		UI_SW	ui_sw;
 extern struct	TRANSCEIVER_STATE_UI	tsu;
 
 // Driver communication
-extern 			osMessageQId 			ApiMessage;
+extern 			osMessageQId 			hApiMessage;
 
 //#ifdef CHIP_F7
 
@@ -397,7 +397,7 @@ static void api_ui_send_spi_a(ulong *msg)
 	aTxBuffer[0x01] = (api_msg->usMessageID & 0xFF);
 
 	// Add payload, if present in the message
-	if((api_msg->ucPayload) && (api_msg->ucPayload < (API_MAX_PAYLOAD + 13)))
+	if((api_msg->ucPayload) && (api_msg->ucPayload < (API_MAX_PAYLOAD + 1)))
 	{
 		for(i = 0; i < API_MAX_PAYLOAD; i++)
 		{
@@ -514,7 +514,7 @@ static void api_ui_send_fast_cmd(void)
 	if(rx_active)
 		return;
 
-#if 1
+#if 0
 	// Change band - always first as highest priority call
 	if(tsu.update_band_dsp_req)
 	{
@@ -757,7 +757,7 @@ static void api_ui_send_fast_cmd_a(void)
 	osEvent event;
 
 	// Wait for a short time for pending messages
-	event = osMessageGet(ApiMessage, 20);
+	event = osMessageGet(hApiMessage, 20);
 	if(event.status != osEventMessage)
 		return;												// ideally this should fire every 20mS
 

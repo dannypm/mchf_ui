@@ -26,7 +26,7 @@
 #define	MCHFX_VER_MAJOR				0
 #define	MCHFX_VER_MINOR				0
 #define	MCHFX_VER_RELEASE			0
-#define	MCHFX_VER_BUILD				83
+#define	MCHFX_VER_BUILD				84
 //
 // -----------------------------------------------------------------------------
 //
@@ -203,8 +203,8 @@
 // c lib stuff like printf, memcpy, '/', '%' etc that usually gets compiled
 // as shared resource into the CONTEXT_RESET_VECTOR space! Use as much
 // critical sections as needed, but on functions that needs fast execution
-// like freq_update(), use custom low level implementation, instead of
-// execution blocking
+// like ui_controls_frequency_refresh(), use custom low level implementation,
+// instead of execution blocking
 //
 // -- Following defines could be used to stop specific drivers
 //
@@ -219,6 +219,7 @@
 #define CONTEXT_SD					// ToDo: Make possible full disable of this driver!
 //#define CONTEXT_NET
 #endif
+#define CONTEXT_DRIVER_DSP
 // -----------------------------------------------------------------------------
 //
 //#define H7_200MHZ
@@ -288,6 +289,19 @@ struct APIMessage {
 	uchar 	ucData[API_MAX_PAYLOAD];
 
 } APIMessage;
+// -----------------------------------------------------------------------------
+// calls to DPS driver
+//
+#define DSP_MAX_PAYLOAD					50
+//
+struct DSPMessage {
+
+	uchar 	ucMessageID;
+	uchar	ucProcessDone;
+	uchar	ucDataReady;
+	char 	cData[DSP_MAX_PAYLOAD];
+
+} DSPMessage;
 // -----------------------------------------------------------------------------
 // Hardware regs, read before MMU init
 struct CM7_CORE_DETAILS {

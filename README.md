@@ -2,8 +2,12 @@
 
 -- mcHF rev 0.8 UI board firmware --
 
-Note: This code is still somehow experimental. For older mcHF board revisions, please use the better supported 
-fork of the code here: https://github.com/df8oe/UHSDR
+This is the firmware for the UI board application processor (STM32H753IIT6). Other
+relevant sub-projects:
+
+DSP(Logic board):		https://github.com/m0nka/mchf_dsp
+DSP bootloader:			https://github.com/m0nka/mchf_dsp_bootloader
+UI bootloader:			https://github.com/m0nka/mchf_ui_boot
 
 -------------------------------------------------------------------------------------------------------------
 How to compile:
@@ -52,6 +56,11 @@ Side Encoder options - https://youtu.be/0MX4TGASykA
 Multitap Keyboard/QuickLog Entry Menu: https://youtu.be/0jej11uNHG8
 
 Current State of the FT8 Menu - https://pbs.twimg.com/media/DymM8oGW0AEXDCN.jpg:large
+
+-------------------------------------------------------------------------------------------------------------
+
+Note: This code is still somehow experimental and requires 0.8(7.5) HW. For older mcHF board revisions, please 
+use the better supported fork of the code here: https://github.com/df8oe/UHSDR
 
 --------------------------------------------------------------
 Krassi Atanassov, M0NKA

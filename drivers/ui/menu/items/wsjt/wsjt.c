@@ -7,8 +7,8 @@
 
 #include "k_module.h"
 
-#include "menu\items\wsjt\digi\ft8_lib-master\gen_ft8.h"
-#include "menu\items\wsjt\digi\ft8_lib-master\decode_ft8.h"
+//#include "menu\items\wsjt\digi\ft8_lib-master\gen_ft8.h"
+//#include "menu\items\wsjt\digi\ft8_lib-master\decode_ft8.h"
 
 extern GUI_CONST_STORAGE GUI_BITMAP bmwsjtx_globe_1024x1024;
 
@@ -45,12 +45,19 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 	// Back Button
 	{ BUTTON_CreateIndirect, 	"Back",			 			ID_BUTTON_EXIT, 	670, 	375, 	120, 	45, 	0, 		0x0, 	0 },
 	//
-	{ BUTTON_CreateIndirect, 	"Encode",		 			ID_BUTTON_ENCODE,	670, 	40, 	120, 	45, 	0, 		0x0, 	0 },
-	{ EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT0,   	20,  	45,  	400,  	40, 	EDIT_CI_ENABELD,0 },
-	{ BUTTON_CreateIndirect, 	"Decode",		 			ID_BUTTON_DECODE,	670, 	120, 	120, 	45, 	0, 		0x0, 	0 },
-	{ EDIT_CreateIndirect,     NULL,     					GUI_ID_EDIT1,   	20,  	125,  	400,  	40, 	EDIT_CI_ENABELD,0 },
+	{ BUTTON_CreateIndirect, 	"Encode",		 			ID_BUTTON_ENCODE,	670, 	20, 	120, 	45, 	0, 		0x0, 	0 },
+	{ EDIT_CreateIndirect,     	NULL,     					GUI_ID_EDIT0,   	20,  	20,  	300,  	40, 	EDIT_CI_ENABELD,0 },
+	{ BUTTON_CreateIndirect, 	"Decode",		 			ID_BUTTON_DECODE,	670, 	80, 	120, 	45, 	0, 		0x0, 	0 },
+	{ EDIT_CreateIndirect,     	NULL,     					GUI_ID_EDIT1,   	340,  	20,  	300,  	40, 	EDIT_CI_ENABELD,0 },
 
 };
+
+// For delayed DSP processing
+WM_HTIMER 		hTimerDsp;
+
+// DSP Driver messaging
+extern osMessageQId 				hDspMessage;
+struct DSPMessage					wsjt_dsp_call;
 
 static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 {
@@ -81,21 +88,37 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 			{
 				case WM_NOTIFICATION_RELEASED:
 				{
-					for(i = 0; i < 40; i++)
-						buf[i] = 0;
-
-					hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT0);
-					EDIT_GetText(hItem,buf,40);
-
 					// Encode and save
 					//
 					// This stalls the UI repaint, so if this menu
 					// stays, need to have non blocking implementation of
 					// this call!
+					//for(i = 0; i < 40; i++)
+					//	buf[i] = 0;
 					//
-					encode_ft8_message(buf,1);
+					//hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT0);
+					//EDIT_GetText(hItem,buf,40);
+					//
+					//encode_ft8_message(buf,1);
+					//GUI_MessageBox("Message encoded and saved to card!","Information",GUI_MB_OK);
 
-					GUI_MessageBox("Message encoded and saved to card!","Information",GUI_MB_OK);
+					// ------------------------------------------------------------
+					// new, via message to DSP driver
+					//
+					for(i = 0; i < DSP_MAX_PAYLOAD; i++)
+						wsjt_dsp_call.cData[i] = 0;
+
+					hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT0);
+					EDIT_GetText(hItem,wsjt_dsp_call.cData,DSP_MAX_PAYLOAD);
+
+					wsjt_dsp_call.ucMessageID 	= 1;	// menu in driver to call
+					wsjt_dsp_call.ucProcessDone = 0;	// flag to signal encode done
+					osMessagePut(hDspMessage, (ulong)&wsjt_dsp_call, osWaitForever);
+
+					// Disable button
+					hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_ENCODE);
+					WM_DisableWindow(hItem);
+
 					break;
 				}
 			}
@@ -110,19 +133,30 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 			{
 				case WM_NOTIFICATION_RELEASED:
 				{
-					for(i = 0; i < 40; i++)
-						buf[i] = 0;
-
-					// Decode
+					// ------------------------------------------------------------
+					//for(i = 0; i < 40; i++)
+					//	buf[i] = 0;
+					// Decode - old, direct call to library
 					//
 					// This stalls the UI repaint, so if this menu
 					// stays, need to have non blocking implementation of
 					// this call!
 					//
-					decode_ft8_message(buf);
+					//decode_ft8_message(buf);
+					//hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT1);
+					//EDIT_SetText(hItem,buf);
 
-					hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT1);
-					EDIT_SetText(hItem,buf);
+					// ------------------------------------------------------------
+					// new, via message to DSP driver
+					//
+					wsjt_dsp_call.ucMessageID 	= 2;	// menu in driver to call
+					wsjt_dsp_call.ucDataReady	= 0;	// clear data ready flag
+					osMessagePut(hDspMessage, (ulong)&wsjt_dsp_call, osWaitForever);
+
+					// Disable button
+					hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_DECODE);
+					WM_DisableWindow(hItem);
+
 					break;
 				}
 			}
@@ -146,6 +180,11 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 	{
 		case WM_INIT_DIALOG:
 		{
+			// Timer for delayed DSP processing
+			wsjt_dsp_call.ucDataReady = 0;
+			wsjt_dsp_call.ucProcessDone = 0;
+			hTimerDsp = WM_CreateTimer(pMsg->hWin, 0, 500, 0);
+
 			// Encode input edit
 			hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT0);
 			EDIT_SetFont(hItem,&GUI_FontAvantGarde20B);
@@ -170,7 +209,47 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 			break;
 
 		case WM_DELETE:
+		{
+			WM_DeleteTimer(hTimerDsp);
+			wsjt_dsp_call.ucDataReady = 0;
+			wsjt_dsp_call.ucProcessDone = 0;
 			break;
+		}
+
+		case WM_TIMER:
+		{
+			// Decode finished
+			if(wsjt_dsp_call.ucDataReady)
+			{
+				//--printf("wsjt menu, DSP driver signalled data ready\r\n");
+
+				// Copy data to Edit
+				hItem = WM_GetDialogItem(pMsg->hWin, GUI_ID_EDIT1);
+				EDIT_SetText(hItem,wsjt_dsp_call.cData);
+
+				// Clear flag to prevent excessive repaint here
+				wsjt_dsp_call.ucDataReady = 0;
+
+				// Enable button
+				hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_DECODE);
+				WM_EnableWindow(hItem);
+			}
+
+			// Encode finished
+			if(wsjt_dsp_call.ucProcessDone)
+			{
+				wsjt_dsp_call.ucProcessDone = 0;
+
+				// Enable button
+				hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_ENCODE);
+				WM_EnableWindow(hItem);
+			}
+
+			WM_InvalidateWindow(pMsg->hWin);
+			WM_RestartTimer(pMsg->Data.v, 1000);
+			break;
+		}
+
 
 		case WM_NOTIFY_PARENT:
 		{

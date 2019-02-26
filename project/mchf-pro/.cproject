@@ -182,6 +182,7 @@
 									<listOptionValue builtIn="false" value="../../../drivers/rotary"/>
 									<listOptionValue builtIn="false" value="../../../drivers/sd"/>
 									<listOptionValue builtIn="false" value="../../../drivers/net"/>
+									<listOptionValue builtIn="false" value="../../../drivers/dsp"/>
 									<listOptionValue builtIn="false" value="../../../hw/cmsis/Device/ST/STM32F7xx/Include"/>
 									<listOptionValue builtIn="false" value="../../../hw/cmsis/Device/ST/STM32H7xx/Include"/>
 									<listOptionValue builtIn="false" value="../../../hw/hal/STM32F7xx_HAL_Driver/Inc"/>

@@ -80,10 +80,17 @@ uchar  FILEMGR_ParseDisks (char *path, FILELIST_FileTypeDef *list)
       {
         break;
       }
+
+      //printf("next file: %s, attrib: 0x%02x\n\r",fno.fname,fno.fattrib);
+
       if (fno.fname[0] == '.')
       {
         continue;
       }
+
+      // Do not show deleted files
+      if ((fno.fattrib & AM_HID) == AM_HID)
+    	  continue;
 
       fn = fno.fname;
 

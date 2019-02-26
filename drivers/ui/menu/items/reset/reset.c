@@ -73,7 +73,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 };
 
 // API Driver messaging
-extern osMessageQId 					ApiMessage;
+extern osMessageQId 					hApiMessage;
 struct APIMessage						api_reset;
 
 static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
@@ -124,7 +124,7 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 					// New implementation via message
 					api_reset.usMessageID 	= API_RESTART;
 					api_reset.ucPayload		= 0;									// payload count
-					osMessagePut(ApiMessage, (ulong)&api_reset, osWaitForever);
+					osMessagePut(hApiMessage, (ulong)&api_reset, osWaitForever);
 					break;
 				}
 			}

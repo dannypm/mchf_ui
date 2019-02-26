@@ -44,6 +44,7 @@
 #include "rotary_driver.h"
 #include "sd_driver.h"
 #include "net_driver.h"
+#include "dsp_driver.h"
 
 // rtc
 #include "hw\rtc\k_rtc.h"
@@ -63,7 +64,12 @@ extern void xPortSysTickHandler(void);
 extern struct	TRANSCEIVER_STATE_UI	tsu;
 
 // Driver communication
-osMessageQId 	ApiMessage;
+#ifdef CONTEXT_DRIVER_API
+osMessageQId 	hApiMessage;
+#endif
+#ifdef CONTEXT_DRIVER_DSP
+osMessageQId 	hDspMessage;
+#endif
 
 //*----------------------------------------------------------------------------
 //* Function Name       : HardFault_Handler
@@ -541,42 +547,67 @@ static void transceiver_load_eep_values(void)
 //*----------------------------------------------------------------------------
 static void threads_launcher(void)
 {
+	// ---------------------------------------------------------
+	// Drivers communication
+	#ifdef CONTEXT_DRIVER_API
+	osMessageQDef(api_queue, 5, sizeof(struct APIMessage *));
+	hApiMessage = osMessageCreate (osMessageQ(api_queue), NULL);
+	#endif
+	#ifdef CONTEXT_DRIVER_DSP
+	osMessageQDef(dsp_queue, 5, sizeof(struct DSPMessage *));
+	hDspMessage = osMessageCreate (osMessageQ(dsp_queue), NULL);
+	#endif
+
+	// --------------------------------------------------------------------------------------------------
 	// Create API driver
 	#ifdef CONTEXT_DRIVER_API
 	osThreadDef(api_driver_task_m, 	api_driver_task, 					osPriorityNormal, 		0, 	256);
 	osThreadCreate (osThread(api_driver_task_m), NULL);
 	#endif
+	// --------------------------------------------------------------------------------------------------
 	// Create UI driver
 	// ToDo: Check stack usage and priority level !!!
 	#ifdef CONTEXT_DRIVER_UI
 	osThreadDef(ui_driver_task_m, 	ui_driver_task, 					osPriorityNormal, 		0, 	8192);
 	osThreadCreate (osThread(ui_driver_task_m), NULL);
 	#endif
+	// --------------------------------------------------------------------------------------------------
 	// Create digitizer driver
 	#ifdef CONTEXT_DRIVER_DIGITIZER
 	osThreadDef(touch_driver_m, 	touch_driver, 						osPriorityNormal, 		0, 	256);
 	osThreadCreate (osThread(touch_driver_m), NULL);
 	#endif
+	// --------------------------------------------------------------------------------------------------
 	// Create keypad driver
 	#ifdef CONTEXT_DRIVER_KEYPAD
 	osThreadDef(keypad_task_driver_m, 		keypad_driver_task, 		osPriorityNormal, 		0, 	256);
 	osThreadCreate (osThread(keypad_task_driver_m), NULL);
 	#endif
+	// --------------------------------------------------------------------------------------------------
 	// Create rotary encoders driver
 	#ifdef CONTEXT_ROTARY
 	osThreadDef(rotary_driver_m, 	rotary_driver, 						osPriorityNormal, 		0, 	256);
 	osThreadCreate (osThread(rotary_driver_m), NULL);
 	#endif
+	// --------------------------------------------------------------------------------------------------
 	// Create SD card driver
 	#ifdef CONTEXT_SD
 	osThreadDef(sd_driver_task_m, 	sd_driver_task, 					osPriorityNormal, 		0, 	256);
 	osThreadCreate (osThread(sd_driver_task_m), NULL);
 	#endif
+	// --------------------------------------------------------------------------------------------------
 	// Create Network driver
 	#ifdef CONTEXT_NET
 	osThreadDef(net_driver_task_m, 	net_driver_task, 					osPriorityNormal, 		0, 	256);
 	osThreadCreate (osThread(net_driver_task_m), NULL);
 	#endif
+	// --------------------------------------------------------------------------------------------------
+	// Create DSP driver
+	#ifdef CONTEXT_DRIVER_DSP
+	osThreadDef(dsp_driver_task_m, 	dsp_driver_task, 					osPriorityNormal, 		0, 	2048);
+	osThreadCreate (osThread(dsp_driver_task_m), NULL);
+	#endif
+	// --------------------------------------------------------------------------------------------------
 }
 
 //*----------------------------------------------------------------------------
@@ -707,10 +738,6 @@ int main(void)
 
 	// Init HW
 	basic_hw_init();
-
-	// Drivers communication
-	osMessageQDef(osqueue, 5, sizeof(struct APIMessage *));
-	ApiMessage = osMessageCreate (osMessageQ(osqueue), NULL);
 
 	// Create drivers
 	threads_launcher();

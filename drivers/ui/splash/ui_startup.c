@@ -119,35 +119,35 @@ void ui_startup(void)
 
 	#ifdef CONTEXT_DRIVER_UI
 	curr_y += 24;
-	GUI_DispStringAt(" - User Interface(UI)", 5,curr_y);
+	GUI_DispStringAt(" - User Interface(UI) driver", 5,curr_y);
 	#endif
 	#ifdef CONTEXT_DRIVER_KEYPAD
 	curr_y += 24;
-	GUI_DispStringAt(" - Keypad Input/LEDs", 5,curr_y);
+	GUI_DispStringAt(" - Keypad Input/LEDs driver", 5,curr_y);
 	#endif
 	#ifdef CONTEXT_DRIVER_DIGITIZER
 	curr_y += 24;
-	GUI_DispStringAt(" - Touch Panel Input", 5,curr_y);
-	#endif
-	#ifdef CONTEXT_DRIVER_KEYPAD_LED
-	curr_y += 24;
-	GUI_DispStringAt(" - Keypad LEDs(old)", 5,curr_y);
+	GUI_DispStringAt(" - Touch Panel Input driver", 5,curr_y);
 	#endif
 	#ifdef CONTEXT_DRIVER_API
 	curr_y += 24;
-	GUI_DispStringAt(" - DSP API Interface", 5,curr_y);
+	GUI_DispStringAt(" - DSP API Interface driver", 5,curr_y);
 	#endif
 	#ifdef CONTEXT_ROTARY
 	curr_y += 24;
-	GUI_DispStringAt(" - Rotary Encoders Input", 5,curr_y);
+	GUI_DispStringAt(" - Rotary Encoders Input driver", 5,curr_y);
 	#endif
 	#ifdef CONTEXT_SD
 	curr_y += 24;
-	GUI_DispStringAt(" - SD Card and File System", 5,curr_y);
+	GUI_DispStringAt(" - SD Card and File System driver", 5,curr_y);
 	#endif
 	#ifdef CONTEXT_NET
 	curr_y += 24;
-	GUI_DispStringAt(" - Internet interface", 5,curr_y);
+	GUI_DispStringAt(" - Internet interface driver", 5,curr_y);
+	#endif
+	#ifdef CONTEXT_DRIVER_DSP
+	curr_y += 24;
+	GUI_DispStringAt(" - DSP background processing driver", 5,curr_y);
 	#endif
 
 	// Firmware ID print

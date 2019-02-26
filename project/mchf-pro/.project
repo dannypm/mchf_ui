@@ -116,6 +116,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/digitizer/touch_driver.h</locationURI>
 		</link>
 		<link>
+			<name>drivers/dsp/dsp_driver.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/dsp_driver.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/dsp_driver.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/dsp_driver.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/keypad/keypad_driver.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/keypad/keypad_driver.c</locationURI>
@@ -884,6 +894,26 @@
 			<name>drivers/api/hw/dsp_eep/hw_dsp_eep.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/api/hw/dsp_eep/hw_dsp_eep.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/decode_ft8.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/decode_ft8.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/decode_ft8.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/decode_ft8.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/gen_ft8.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/gen_ft8.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/gen_ft8.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/gen_ft8.h</locationURI>
 		</link>
 		<link>
 			<name>drivers/ui/desktop/agc/ui_controls_agc.c</name>
@@ -2576,6 +2606,106 @@
 			<locationURI>PARENT-2-PROJECT_LOC/middleware/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c</locationURI>
 		</link>
 		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/common/wave.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/common/wave.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/common/wave.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/common/wave.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/fft/kiss_fft.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/fft/kiss_fft.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/fft/kiss_fft.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/fft/kiss_fft.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/fft/kiss_fftr.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/fft/kiss_fftr.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/fft/kiss_fftr.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/fft/kiss_fftr.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/decode.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/decode.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/decode.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/decode.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/encode_v2.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/encode_v2.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/encode_v2.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/encode_v2.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/ft8_constants.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/ft8_constants.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/ft8_constants.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/ft8_constants.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/ldpc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/ldpc.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/ldpc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/ldpc.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/pack_v2.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/pack_v2.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/pack_v2.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/pack_v2.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/text.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/text.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/text.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/text.h</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/unpack_v2.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/unpack_v2.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/dsp/digi/ft8_lib-master/ft8/unpack_v2.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/drivers/dsp/digi/ft8_lib-master/ft8/unpack_v2.h</locationURI>
+		</link>
+		<link>
 			<name>drivers/ui/menu/items/clock/clock.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/clock/clock.c</locationURI>
@@ -2704,126 +2834,6 @@
 			<name>hw/cmsis/Device/ST/STM32H7xx/Include/system_stm32h7xx.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw/cmsis/Device/ST/STM32H7xx/Include/system_stm32h7xx.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/decode_ft8.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/decode_ft8.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/decode_ft8.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/decode_ft8.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/gen_ft8.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/gen_ft8.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/gen_ft8.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/gen_ft8.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/common/wave.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/common/wave.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/common/wave.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/common/wave.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/fft/kiss_fft.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/fft/kiss_fft.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/fft/kiss_fft.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/fft/kiss_fft.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/fft/kiss_fftr.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/fft/kiss_fftr.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/fft/kiss_fftr.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/fft/kiss_fftr.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/decode.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/decode.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/decode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/decode.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/encode_v2.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/encode_v2.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/encode_v2.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/encode_v2.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/ft8_constants.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/ft8_constants.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/ft8_constants.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/ft8_constants.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/ldpc.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/ldpc.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/ldpc.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/ldpc.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/pack_v2.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/pack_v2.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/pack_v2.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/pack_v2.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/text.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/text.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/text.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/text.h</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/unpack_v2.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/unpack_v2.c</locationURI>
-		</link>
-		<link>
-			<name>drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/unpack_v2.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/drivers/ui/menu/items/wsjt/digi/ft8_lib-master/ft8/unpack_v2.h</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
