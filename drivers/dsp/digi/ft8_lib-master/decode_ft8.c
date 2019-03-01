@@ -310,7 +310,7 @@ void decode_ft8_message(char *msg)
 	uint8_t 	*power = (uint8_t *)(0xc0277000 + num_samples*4); 	// uint8_t power[num_blocks * 4 * num_bins];
 	// --------------------------------------------------------------------------------------------------------------------------------
 
-	#if 0
+	#if 1
 	// Get file data - not working
 	int rc = load_wav(ft8_signal, &num_samples, &sample_rate, "sample.wav");
 	if (rc < 0)
@@ -321,7 +321,7 @@ void decode_ft8_message(char *msg)
 	}
 	#endif
 
-	#if 1
+	#if 0
 	// Use local generation, to public RAM, instead of file values - works with the decoder
 	encode_ft8_message("CQ M0NKA IO92",0);
 	#endif

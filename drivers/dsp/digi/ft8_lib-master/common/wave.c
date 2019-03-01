@@ -178,7 +178,7 @@ int load_wav(float *signal, int *num_samples, int *sample_rate, char *path)
     *sample_rate = sampleRate;
 
     //printf("num_samples %d \r\n",*num_samples);
-    //printf("sample_rate %d \r\n",*sample_rate);
+    printf("sample_rate %d \r\n",*sample_rate);
 
     // Original, probably fast, but lots of extra RAM needed
 	#if 0

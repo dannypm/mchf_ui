@@ -52,10 +52,10 @@ uchar got_data = 0;
 #endif
 
 // DMA buffers
-uchar 				DmaInBuffer[API_TRANSFER_SIZE];
+uchar 				DmaInBuffer[2048];	//API_TRANSFER_SIZE
 uchar 				DmaOuBuffer[API_TRANSFER_SIZE];
 // Local buffers
-uchar 				aRxBuffer[API_TRANSFER_SIZE];
+uchar 				aRxBuffer[2048];	//API_TRANSFER_SIZE
 uchar 				aTxBuffer[API_TRANSFER_SIZE];
 uchar				rx_done = 0;
 uchar				rx_active = 0;
@@ -75,6 +75,8 @@ extern 			osMessageQId 			hApiMessage;
 SPI_HandleTypeDef 	ApiSpiHandle;
 
 //uchar dsp_irq_test = 0;
+
+uchar bc_mode = 1;
 
 // SPI DMA RX
 void SPIx_DMA_RX_IRQHandler(void)
@@ -123,13 +125,18 @@ void EXTI9_5_IRQHandler(void)
 void EXTI4_IRQHandler(void)
 {
 	ulong i,res;
+	ulong tr_size = API_TRANSFER_SIZE;
+
+	//if(bc_mode == 2) tr_size = 512;
 
 	if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_4) != RESET)
 	{
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
 
+		if(bc_mode == 2) return;
+
 		rx_active = 1;	// lock out the api_ui_send_fast_cmd
-		res = HAL_SPI_Receive(&ApiSpiHandle,(uint8_t*)DmaInBuffer, API_TRANSFER_SIZE, 5000);
+		res = HAL_SPI_Receive(&ApiSpiHandle,(uint8_t*)DmaInBuffer, tr_size, 5000);
 		rx_active = 0; 	// release lock
 
 		if(res == HAL_OK)
@@ -139,7 +146,7 @@ void EXTI4_IRQHandler(void)
 			if(!rx_done)
 			{
 				// Copy to another buffer to prevent hanging
-      			for(i = 0; i < API_TRANSFER_SIZE; i++)
+      			for(i = 0; i < tr_size; i++)
       				aRxBuffer[i] = DmaInBuffer[i];
 
       			// Processing flag
@@ -396,6 +403,10 @@ static void api_ui_send_spi_a(ulong *msg)
 	aTxBuffer[0x00] = (api_msg->usMessageID >>   8);
 	aTxBuffer[0x01] = (api_msg->usMessageID & 0xFF);
 
+	// Trap broadcast mode changes
+	if(api_msg->usMessageID == API_BROADCAST_MODE)
+		bc_mode = api_msg->ucData[0];
+
 	// Add payload, if present in the message
 	if((api_msg->ucPayload) && (api_msg->ucPayload < (API_MAX_PAYLOAD + 1)))
 	{
@@ -429,7 +440,10 @@ static void api_ui_process_broadcast(void)
 
 	// Data valid ?
 	if((aRxBuffer[0] != 0x12) || (aRxBuffer[1] != 0x34) || (aRxBuffer[298] != 0x55) || (aRxBuffer[299] != 0xAA))
+	{
+		printf("sig: %02x %02x\r\n",aRxBuffer[0],aRxBuffer[1]);
 		goto exit_anyway;
+	}
 
 	// Check seq no
 	if(tsu.dsp_seq_number_old == aRxBuffer[3])
@@ -769,16 +783,21 @@ static void api_ui_send_fast_cmd_a(void)
 	api_ui_send_spi_a(event.value.p);
 }
 
-// CS pin is also used to enter bootloader mode,
-// that is why delayed start of broadcast
-//
-static void api_ui_allow_broadcast(void)
+#if 0
+// --
+uchar bc_mode_toggle = 0;
+static void api_ui_change_broadcast_mode(void)
 {
 	// Broadcast on
-	aTxBuffer[0x00] = (API_ENABLE_POST >>   8);
-	aTxBuffer[0x01] = (API_ENABLE_POST & 0xFF);
+	aTxBuffer[0x00] = (API_BROADCAST_MODE >>   8);
+	aTxBuffer[0x01] = (API_BROADCAST_MODE & 0xFF);
+	aTxBuffer[0x02] = bc_mode_toggle;
 	api_ui_send_spi();
+
+	bc_mode_toggle++;
+	if(bc_mode_toggle > 2) bc_mode_toggle = 0;
 }
+#endif
 
 static void api_driver_worker(void)
 {
@@ -789,9 +808,6 @@ static void api_driver_worker(void)
 
 void api_driver_task(void const * argument)
 {
-	// HW init is done, we can allow the DSP to start broadcast
-	//--api_ui_allow_broadcast();
-
 	// Delay start, so UI can paint properly
 	OsDelayMs(3000);
 

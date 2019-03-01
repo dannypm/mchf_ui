@@ -250,7 +250,7 @@ static void ui_controls_draw_needle(void * p)
 			//GUI_SetColor(GUI_BLUE);
 			//GUI_SetFont(&GUI_Font8x16_1);
 			sprintf(buf,"DSP:%d.%d.%d.%d",tsu.dsp_rev1,tsu.dsp_rev2,tsu.dsp_rev3,tsu.dsp_rev4);
-			GUI_DispStringAt(buf,S_METER_X + 225,S_METER_Y + bmscale.YSize - 16);
+			GUI_DispStringAt(buf,S_METER_X + 240,S_METER_Y + bmscale.YSize - 16);
 		}
 		// Repaint count
 		//GUI_SetColor(GUI_BLUE);

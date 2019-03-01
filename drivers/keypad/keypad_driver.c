@@ -54,6 +54,10 @@ extern struct	TRANSCEIVER_STATE_UI	tsu;
 // Local keypad state
 struct 			KEYPAD_STATE			ks;
 
+// API Driver messaging
+//extern osMessageQId 					hApiMessage;
+//struct APIMessage						api_keypad;
+
 static void keypad_driver_leds_init(void)
 {
 	GPIO_InitTypeDef  gpio_init_structure;
@@ -300,6 +304,8 @@ static void keypad_handle_multitap(uchar max_ids)
 	if(ks.tap_id > max_ids) ks.tap_id = 0;
 }
 
+//uchar bc_mode_toggle = 0;
+
 //*----------------------------------------------------------------------------
 //* Function Name       : keypad_cmd_processor_desktop
 //* Object              :
@@ -345,6 +351,24 @@ static void keypad_cmd_processor_desktop(uchar x,uchar y, uchar hold, uchar rele
 		if(!hold)
 		{
 			//tsu.curr_band = BAND_MODE_160;
+
+			if(!release)
+			{
+				#if 0
+				// ------------------------------------------------------------------
+				// Test only
+				printf("bc_mode_toggle: %d\n\r",bc_mode_toggle);
+				api_keypad.usMessageID 		= API_BROADCAST_MODE;
+				api_keypad.ucPayload		= 1;					// payload count
+				api_keypad.ucData[0] 		= bc_mode_toggle;
+				osMessagePut(hApiMessage, (ulong)&api_keypad, osWaitForever);
+				//
+				bc_mode_toggle++;
+				if(bc_mode_toggle > 2) bc_mode_toggle = 0;
+				// ------------------------------------------------------------------
+				#endif
+			}
+
 		}
 		else
 		{

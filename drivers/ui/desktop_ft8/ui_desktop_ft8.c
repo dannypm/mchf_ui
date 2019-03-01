@@ -60,6 +60,10 @@ WM_HWIN 			hDesktopFT8 = 0;
 WM_HTIMER 			hTimerTime;
 RTC_DateTypeDef     InitDate;
 
+// API Driver messaging
+extern osMessageQId 					hApiMessage;
+struct APIMessage						api_ft8_desktop;
+
 //*----------------------------------------------------------------------------
 //* Function Name       : ui_desktop_ft8_show_clock
 //* Object              : refresh clock (every 1s)
@@ -360,10 +364,18 @@ static void ui_desktop_ft8_set_profile(void)
 //*----------------------------------------------------------------------------
 void ui_desktop_ft8_create(void)
 {
+	//printf("enter ft8 desktop\n\r");
+
 	ui_desktop_ft8_set_profile();
 
 	WM_SetCallback(WM_HBKWIN, &_cbBkWindow);
 	hDesktopFT8 = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+
+	// Ask DSP to switch mode
+	api_ft8_desktop.usMessageID 	= API_BROADCAST_MODE;
+	api_ft8_desktop.ucPayload		= 1;	// cnt
+	api_ft8_desktop.ucData[0] 		= 2;	// mode
+	osMessagePut(hApiMessage, (ulong)&api_ft8_desktop, osWaitForever);
 }
 
 //*----------------------------------------------------------------------------
@@ -375,6 +387,8 @@ void ui_desktop_ft8_create(void)
 //*----------------------------------------------------------------------------
 void ui_desktop_ft8_destroy(void)
 {
+	//printf("exit ft8 desktop\n\r");
+
 	if(hDesktopFT8)
 	{
 		WM_SetCallback		(WM_HBKWIN, 0);
@@ -384,4 +398,10 @@ void ui_desktop_ft8_destroy(void)
 
 	// Just a quick clean up hack
 	LISTBOX_SetDefaultBkColor(LISTBOX_CI_UNSEL,GUI_WHITE);
+
+	// Restore DSP mode
+	api_ft8_desktop.usMessageID 	= API_BROADCAST_MODE;
+	api_ft8_desktop.ucPayload		= 1;	// cnt
+	api_ft8_desktop.ucData[0] 		= 1;	// mode
+	osMessagePut(hApiMessage, (ulong)&api_ft8_desktop, osWaitForever);
 }
