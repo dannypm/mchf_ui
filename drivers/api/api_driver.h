@@ -22,6 +22,17 @@
 #define API_TRANSFER_SIZE				300
 //#define API_NO_UPDATE					0xFF
 
+// DMA transfers - still work in progress
+//#define	API_DRIVER_USE_DMA
+
+//#define SPI2_TX_DMA_STREAM               DMA2_Stream3
+//#define SPI2_TX_DMA_REQUEST              DMA_REQUEST_SPI2_TX
+//#define SPI2_DMA_TX_IRQn                 DMA2_Stream3_IRQn
+
+#define SPI2_RX_DMA_STREAM               DMA2_Stream2
+#define SPI2_RX_DMA_REQUEST              DMA_REQUEST_SPI2_RX
+#define SPI2_DMA_RX_IRQn                 DMA2_Stream2_IRQn
+
 // ---------------------------------------------------------------------------
 // Old proto PCBs have PD5 as DSP CS(our IRQ) and PD4 as DSP IRQ(our CS)
 // but it makes sense to swap them, so the local IRQ(DSP CS) goes to
