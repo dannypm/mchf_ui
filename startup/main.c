@@ -362,7 +362,7 @@ static void transceiver_state_init(void)
 //* Output Parameters   :
 //* Functions called    :
 //*----------------------------------------------------------------------------
-static void transceiver_init_eep_defaults(void)
+void transceiver_init_eep_defaults(void)
 {
 	ulong i;
 	//uchar *bkp = (uchar *)0x38800000;

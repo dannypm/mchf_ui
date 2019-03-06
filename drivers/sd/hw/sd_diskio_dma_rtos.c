@@ -51,6 +51,8 @@
 
 #include "sd_card.h"
 
+#ifdef CONTEXT_SD
+
 /* Private variables ---------------------------------------------------------*/
 /* Disk status */
 static volatile DSTATUS Stat = STA_NOINIT;
@@ -325,3 +327,4 @@ void BSP_SD_ReadCpltCallback(void)
 }
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 
+#endif

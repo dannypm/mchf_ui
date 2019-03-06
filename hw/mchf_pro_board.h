@@ -208,18 +208,15 @@
 //
 // -- Following defines could be used to stop specific drivers
 //
-// - working on both chips
 #define CONTEXT_DRIVER_UI
+#define CONTEXT_DRIVER_API
 #define CONTEXT_DRIVER_KEYPAD
 #define CONTEXT_DRIVER_DIGITIZER
-#define CONTEXT_DRIVER_API
 #define CONTEXT_ROTARY
-// - not ported to F7 yet :(
-#ifdef CHIP_H7
-#define CONTEXT_SD					// ToDo: Make possible full disable of this driver!
-//#define CONTEXT_NET
-#endif
+#define CONTEXT_SD
 #define CONTEXT_DRIVER_DSP
+//#define CONTEXT_NET
+//
 // -----------------------------------------------------------------------------
 //
 //#define H7_200MHZ
@@ -516,5 +513,8 @@ void 	mchf_pro_board_swo_init(void);
 void 	mchf_pro_board_mco2_on(void);
 
 void 	mchf_pro_board_sensitive_hw_init(void);
+
+// in main.c !
+void 	transceiver_init_eep_defaults(void);
 
 #endif

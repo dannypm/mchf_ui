@@ -171,6 +171,8 @@ static MENU_ITEM _aMenuItems[] =
 
 MENU_Handle hMenu;
 
+#ifdef CONTEXT_SD
+
 /**
   * @brief  Adds one menu item to the given menu
   * @param  hMenu:    pointer to the handle of menu
@@ -915,9 +917,13 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 	}
 }
 
+#endif
+
 static void Startup(WM_HWIN hWin, uint16_t xpos, uint16_t ypos)
 {
 	pFileList = NULL;
 
+	#ifdef CONTEXT_SD
 	hExplorerWin = GUI_CreateDialogBox(_aDialog, GUI_COUNTOF(_aDialog), _cbDialog, hWin, xpos, ypos);
+	#endif
 }

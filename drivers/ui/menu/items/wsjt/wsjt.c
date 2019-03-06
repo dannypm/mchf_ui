@@ -55,9 +55,11 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 // For delayed DSP processing
 WM_HTIMER 		hTimerDsp;
 
+#ifdef CONTEXT_DRIVER_DSP
 // DSP Driver messaging
 extern osMessageQId 				hDspMessage;
 struct DSPMessage					wsjt_dsp_call;
+#endif
 
 static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 {
@@ -105,6 +107,7 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 					// ------------------------------------------------------------
 					// new, via message to DSP driver
 					//
+					#ifdef CONTEXT_DRIVER_DSP
 					for(i = 0; i < DSP_MAX_PAYLOAD; i++)
 						wsjt_dsp_call.cData[i] = 0;
 
@@ -114,6 +117,7 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 					wsjt_dsp_call.ucMessageID 	= 1;	// menu in driver to call
 					wsjt_dsp_call.ucProcessDone = 0;	// flag to signal encode done
 					osMessagePut(hDspMessage, (ulong)&wsjt_dsp_call, osWaitForever);
+					#endif
 
 					// Disable button
 					hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_ENCODE);
@@ -149,9 +153,11 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 					// ------------------------------------------------------------
 					// new, via message to DSP driver
 					//
+					#ifdef CONTEXT_DRIVER_DSP
 					wsjt_dsp_call.ucMessageID 	= 2;	// menu in driver to call
 					wsjt_dsp_call.ucDataReady	= 0;	// clear data ready flag
 					osMessagePut(hDspMessage, (ulong)&wsjt_dsp_call, osWaitForever);
+					#endif
 
 					// Disable button
 					hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_DECODE);
@@ -181,8 +187,10 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 		case WM_INIT_DIALOG:
 		{
 			// Timer for delayed DSP processing
+			#ifdef CONTEXT_DRIVER_DSP
 			wsjt_dsp_call.ucDataReady = 0;
 			wsjt_dsp_call.ucProcessDone = 0;
+			#endif
 			hTimerDsp = WM_CreateTimer(pMsg->hWin, 0, 500, 0);
 
 			// Encode input edit
@@ -211,13 +219,16 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 		case WM_DELETE:
 		{
 			WM_DeleteTimer(hTimerDsp);
+			#ifdef CONTEXT_DRIVER_DSP
 			wsjt_dsp_call.ucDataReady = 0;
 			wsjt_dsp_call.ucProcessDone = 0;
+			#endif
 			break;
 		}
 
 		case WM_TIMER:
 		{
+			#ifdef CONTEXT_DRIVER_DSP
 			// Decode finished
 			if(wsjt_dsp_call.ucDataReady)
 			{
@@ -244,12 +255,12 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 				hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_ENCODE);
 				WM_EnableWindow(hItem);
 			}
+			#endif
 
 			WM_InvalidateWindow(pMsg->hWin);
 			WM_RestartTimer(pMsg->Data.v, 1000);
 			break;
 		}
-
 
 		case WM_NOTIFY_PARENT:
 		{

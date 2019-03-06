@@ -35,14 +35,18 @@
 #endif
 
 #ifdef API_DRIVER_USE_DMA
+//
 enum {
 	TRANSFER_WAIT,
 	TRANSFER_COMPLETE,
 	TRANSFER_ERROR
 };
+//
 __IO uint32_t wTransferState = TRANSFER_WAIT;
-static DMA_HandleTypeDef hdma_tx;
-static DMA_HandleTypeDef hdma_rx;
+//
+DMA_HandleTypeDef hdma_tx;
+DMA_HandleTypeDef hdma_rx;
+//
 #endif
 
 // DMA buffers
@@ -54,6 +58,9 @@ uchar 				aTxBuffer[API_TRANSFER_SIZE];
 uchar				rx_done = 0;
 uchar				rx_active = 0;
 ushort				cmd_req_in_progress = 0;
+
+// DMA RX buffer in D1 RAM (also used by WSPR decoder!)
+uchar 				*ucDmaSafeBuffer = (uchar *)0x30000000;
 
 // Spectrum control publics
 extern struct 		UI_SW	ui_sw;
@@ -75,56 +82,44 @@ uchar bc_mode = 1;
 #ifdef API_DRIVER_USE_DMA
 // ---------------------------------------
 // SPI DMA TX
-//void DMA2_Stream3_IRQHandler(void)
-//{
-//  HAL_DMA_IRQHandler(ApiSpiHandle.hdmatx);
-//}
+void DMA2_Stream3_IRQHandler(void)
+{
+	HAL_DMA_IRQHandler(ApiSpiHandle.hdmatx);
+}
 // ---------------------------------------
 // SPI DMA RX
 void DMA2_Stream2_IRQHandler(void)
 {
-  HAL_DMA_IRQHandler(ApiSpiHandle.hdmarx);
+	HAL_DMA_IRQHandler(ApiSpiHandle.hdmarx);
 }
 // ---------------------------------------
 // SPI IRQ
 void SPI2_IRQHandler(void)
 {
-  HAL_SPI_IRQHandler(&ApiSpiHandle);
+	HAL_SPI_IRQHandler(&ApiSpiHandle);
 }
-#endif
-
-#ifndef API_SWAPPED_CS_IRQ
-void EXTI9_5_IRQHandler(void)
+// Complete from SPI HAL(full duplex)
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	ulong i,res;
-
-	if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_5) != RESET)
-	{
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_5);
-
-		rx_active = 1;	// lock out the api_ui_send_fast_cmd
-		res = HAL_SPI_Receive(&ApiSpiHandle,(uint8_t*)DmaInBuffer, API_TRANSFER_SIZE, 5000);
-		rx_active = 0; 	// release lock
-
-		if(res == HAL_OK)
-		{
-			// On success, copy to local buffer and set flag for further processing
-			// without stalling the IRQ
-			if(!rx_done)
-			{
-				// Copy to another buffer to prevent hanging
-      			for(i = 0; i < API_TRANSFER_SIZE; i++)
-      				aRxBuffer[i] = DmaInBuffer[i];
-
-      			// Processing flag
-      			rx_done = 1;
-      		}
-		}
-	}
+	//if(hspi->Instance == SPI2)
+		wTransferState = TRANSFER_COMPLETE;
+}
+// Complete from SPI HAL (RX only)
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+	//if(hspi->Instance == SPI2)
+	wTransferState = TRANSFER_COMPLETE;
+}
+// Error from SPI HAL
+ushort spi_error;
+void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
+{
+	//if(hspi->Instance == SPI2)
+	wTransferState = TRANSFER_ERROR;
+	spi_error = hspi->ErrorCode;
 }
 #endif
 
-#ifdef API_SWAPPED_CS_IRQ
 void EXTI4_IRQHandler(void)
 {
 	ulong i,res;
@@ -160,131 +155,75 @@ void EXTI4_IRQHandler(void)
 		#endif
 
 		#ifdef API_DRIVER_USE_DMA
-		// Just restart transfer, instead of circular buffer ?
-		HAL_SPI_Receive_DMA(&ApiSpiHandle,(uint8_t *)aRxBuffer, 300);
+		if(wTransferState != TRANSFER_WAIT)
+		{
+			wTransferState = TRANSFER_WAIT;
+			HAL_SPI_Receive_DMA(&ApiSpiHandle,ucDmaSafeBuffer,API_DMA_RX_B_SIZE);
+			//HAL_SPI_TransmitReceive_DMA(&ApiSpiHandle,ucDmaSafeBuffer,ucDmaSafeBuffer,API_DMA_RX_B_SIZE);
+		}
 		#endif
 	}
 }
-#endif
 
 //void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 static void api_ui_spi_hw_init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStruct;
 
-	//if(hspi->Instance != SPI2)
-	//	return;
-
+	// SPI clock on
 	__HAL_RCC_SPI2_CLK_ENABLE();
 
-	#ifndef API_SWAPPED_CS_IRQ
-	// IRQ - PD4
-	GPIO_InitStruct.Pin		  = GPIO_PIN_4;
-	GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-	// High by default
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET);
-
-	// CS - PD5 as gpio
-	GPIO_InitStruct.Pin = GPIO_PIN_5;
-	GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-	// CS interrupt
-	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0x0F, 0x00);
-	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+	// DMA clock on
+	#ifdef API_DRIVER_USE_DMA
+	__HAL_RCC_DMA2_CLK_ENABLE();
 	#endif
 
-	#ifdef API_SWAPPED_CS_IRQ
-#if 1
 	// Local IRQ(DSP CS) - PD4
 	GPIO_InitStruct.Pin		  = GPIO_PIN_4;
 	GPIO_InitStruct.Mode      = GPIO_MODE_IT_FALLING;
-
-	#ifdef CHIP_F7
-	GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
-	#endif
-
-	#ifdef CHIP_H7
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_LOW;
-	#endif
-
 	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 	// CS interrupt
 	HAL_NVIC_SetPriority(EXTI4_IRQn, 0x0F, 0x00);
 	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
-#endif
-#if 1
+
 	// Local CS(DSP IRQ) - PD5
 	GPIO_InitStruct.Pin 	= GPIO_PIN_5;
 	GPIO_InitStruct.Mode 	= GPIO_MODE_OUTPUT_PP;
-	#ifdef CHIP_F7
-	GPIO_InitStruct.Speed 	= GPIO_SPEED_HIGH;
-	#endif
-	#ifdef CHIP_H7
 	GPIO_InitStruct.Speed 	= GPIO_SPEED_FREQ_VERY_HIGH;
-	#endif
 	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 	// High by default
-	//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, GPIO_PIN_SET);
 	GPIOD->BSRRL = GPIO_PIN_5;
-
-#endif
-	#endif
 
 	// SPI SCK
 	GPIO_InitStruct.Pin       = GPIO_PIN_9;
 	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-	#ifdef CHIP_F7
-	GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
-	#endif
-	#ifdef CHIP_H7
+	GPIO_InitStruct.Pull      = GPIO_PULLDOWN;
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
-	#endif
 	GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-	#if 1
 	// SPI MISO
 	GPIO_InitStruct.Pin 	  = GPIO_PIN_2;
 	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-	#ifdef CHIP_F7
-	GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
-	#endif
-	#ifdef CHIP_H7
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
-	#endif
 	GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-	#endif
-	#if 1
+
 	// SPI MOSI
 	GPIO_InitStruct.Pin		  = GPIO_PIN_1;
 	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-	#ifdef CHIP_F7
-	GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
-	#endif
-	#ifdef CHIP_H7
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
-	#endif
 	GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-	#endif
 
 	#ifdef API_DRIVER_USE_DMA
-	//__HAL_RCC_DMA1_CLK_ENABLE();
-	__HAL_RCC_DMA2_CLK_ENABLE();
 
-	#if 0
 	// Configure the DMA handler for Transmit
-	hdma_tx.Instance                 = DMA1_Stream3;
+	/*hdma_tx.Instance                 = SPI2_TX_DMA_STREAM;
 
-	hdma_tx.Init.Channel             = DMA_CHANNEL_0;
 	hdma_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 	hdma_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
 	hdma_tx.Init.MemBurst            = DMA_MBURST_INC4;
@@ -301,44 +240,43 @@ static void api_ui_spi_hw_init(void)
 	HAL_DMA_Init(&hdma_tx);
 
 	// Associate the initialized DMA handle to the the SPI handle
-	__HAL_LINKDMA(&ApiSpiHandle, hdmatx, hdma_tx);
-	#endif
+	__HAL_LINKDMA(&ApiSpiHandle, hdmatx, hdma_tx);*/
 
-	 // Configure the DMA handler for Receive
-	 hdma_rx.Instance                 = SPI2_RX_DMA_STREAM;
+	// Configure the DMA handler for Receive
+	hdma_rx.Instance                 = SPI2_RX_DMA_STREAM;
 
-	 hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
-	 hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-	 hdma_rx.Init.MemBurst            = DMA_MBURST_INC4;
-	 hdma_rx.Init.PeriphBurst         = DMA_PBURST_INC4;
-	 hdma_tx.Init.Request             = SPI2_RX_DMA_REQUEST;
-	 hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
-	 hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
-	 hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
-	 hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-	 hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-	 hdma_rx.Init.Mode                = DMA_NORMAL;
-	 hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
+	hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+	hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+	hdma_rx.Init.MemBurst            = DMA_MBURST_INC4;
+	hdma_rx.Init.PeriphBurst         = DMA_PBURST_INC4;
+	hdma_tx.Init.Request             = SPI2_RX_DMA_REQUEST;
+	hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+	hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
+	hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
+	hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+	hdma_rx.Init.Mode                = DMA_NORMAL;
+	hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
 
-	 if(HAL_DMA_Init(&hdma_rx) != HAL_OK)
-	 {
-		 printf("dma err!\r\n");
-	 }
+	if(HAL_DMA_Init(&hdma_rx) != HAL_OK)
+	{
+		printf("dma err!\r\n");
+	}
 
-	 // Associate the initialised DMA handle to the the SPI handle
-	 __HAL_LINKDMA(&ApiSpiHandle, hdmarx, hdma_rx);
+	// Associate the initialised DMA handle to the the SPI handle
+	__HAL_LINKDMA(&ApiSpiHandle, hdmarx, hdma_rx);
 
-	 // NVIC configuration for DMA transfer complete interrupt (SPI2_TX)
-	 //HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 1, 1);
-	 //HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
+	// NVIC configuration for DMA transfer complete interrupt (SPI2_TX)
+	//HAL_NVIC_SetPriority(SPI2_DMA_TX_IRQn, 1, 1);
+	//HAL_NVIC_EnableIRQ	 (SPI2_DMA_TX_IRQn);
 
-	 // NVIC configuration for DMA transfer complete interrupt (SPI2_RX)
-	 HAL_NVIC_SetPriority(SPI2_DMA_RX_IRQn, 1, 0);
-	 HAL_NVIC_EnableIRQ  (SPI2_DMA_RX_IRQn);
+	// NVIC configuration for DMA transfer complete interrupt (SPI2_RX)
+	HAL_NVIC_SetPriority(SPI2_DMA_RX_IRQn, 1, 0);
+	HAL_NVIC_EnableIRQ  (SPI2_DMA_RX_IRQn);
 
-	 // NVIC for SPI
-	 HAL_NVIC_SetPriority(SPI2_IRQn, 1, 0);
-	 HAL_NVIC_EnableIRQ  (SPI2_IRQn);
+	// NVIC for SPI
+	HAL_NVIC_SetPriority(SPI2_IRQn, 1, 0);
+	HAL_NVIC_EnableIRQ  (SPI2_IRQn);
 #endif
 }
 
@@ -346,12 +284,10 @@ static void api_ui_spi_hw_init(void)
 // due to H7 bug..
 void api_driver_hw_init(void)
 {
-	//printf("api_ui_hw_init->1\r\n");
-
 	api_ui_spi_hw_init();
 
 	ApiSpiHandle.Instance               = SPI2;
-	ApiSpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+	ApiSpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
 	ApiSpiHandle.Init.Direction         = SPI_DIRECTION_2LINES;
 	ApiSpiHandle.Init.CLKPhase          = SPI_PHASE_2EDGE;
 	ApiSpiHandle.Init.CLKPolarity       = SPI_POLARITY_HIGH;
@@ -364,44 +300,31 @@ void api_driver_hw_init(void)
 	ApiSpiHandle.Init.Mode 			 	= SPI_MODE_SLAVE;
 
 	// H7 only maybe ?
-	ApiSpiHandle.Init.NSSPMode          = SPI_NSS_PULSE_DISABLE;
-	ApiSpiHandle.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_ENABLE;  // Recommended setting to avoid glitches
+	//ApiSpiHandle.Init.NSSPMode          = SPI_NSS_PULSE_DISABLE;
+	//ApiSpiHandle.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_ENABLE;  // Recommended setting to avoid glitches
 
 	if(HAL_SPI_Init(&ApiSpiHandle) != HAL_OK)
 	{
 		printf("spi err init\r\n");
 	}
 
-	 //printf("api_ui_hw_init->2\r\n");
-
-#ifdef API_DRIVER_USE_DMA
-	 //HAL_SPI_Receive_DMA(&ApiSpiHandle,(uint8_t *)aRxBuffer, 300);
-#endif
-	 //printf("api_ui_hw_init->3\r\n");
+	#ifdef API_DRIVER_USE_DMA
+	wTransferState = TRANSFER_WAIT;
+	HAL_SPI_Receive_DMA(&ApiSpiHandle,ucDmaSafeBuffer,API_DMA_RX_B_SIZE);
+	//HAL_SPI_TransmitReceive_DMA(&ApiSpiHandle,ucDmaSafeBuffer,ucDmaSafeBuffer,API_DMA_RX_B_SIZE);
+	#endif
 }
 
 static void api_ui_send_spi(void)
 {
 	// Generate DSP IRQ
-	#ifndef API_SWAPPED_CS_IRQ
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
-	#endif
-	#ifdef API_SWAPPED_CS_IRQ
-	//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, GPIO_PIN_RESET);
 	GPIOD->BSRRH = GPIO_PIN_5;
-	#endif
 	__asm(".word 0x46C046C0");
 
 	HAL_SPI_Transmit(&ApiSpiHandle,(uint8_t*)aTxBuffer, 16, 1000);
 
 	__asm(".word 0x46C046C0");
-	#ifndef API_SWAPPED_CS_IRQ
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET);
-	#endif
-	#ifdef API_SWAPPED_CS_IRQ
-	//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, GPIO_PIN_SET);
 	GPIOD->BSRRL = GPIO_PIN_5;
-	#endif
 }
 
 // Directly send OS messages to DSP
@@ -455,8 +378,29 @@ static void api_ui_process_broadcast(void)
 	#endif
 
 	#ifdef API_DRIVER_USE_DMA
+	//
 	// DMA finished ?
-	if(wTransferState != TRANSFER_COMPLETE) return;
+	if(wTransferState == TRANSFER_WAIT)
+	{
+		printf("wait dma...\r\n");
+		return;
+	}
+	//
+	if(wTransferState != TRANSFER_WAIT)
+		printf("done dma.\r\n");
+	//
+	if(wTransferState != TRANSFER_COMPLETE)
+	{
+		printf("error %d %04x\r\n",wTransferState,spi_error);
+		return;
+	}
+	//
+	printf("dma data\r\n");
+	// Invalidate cache prior to access by CPU
+	SCB_InvalidateDCache_by_Addr ((uint32_t *)ucDmaSafeBuffer, API_DMA_RX_B_SIZE);
+	//
+	for(i = 0; i < API_DMA_RX_B_SIZE; i++)
+		aRxBuffer[i] = ucDmaSafeBuffer[i];
 	#endif
 
 	// Data valid ?

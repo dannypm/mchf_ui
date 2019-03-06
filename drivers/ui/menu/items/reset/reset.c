@@ -57,6 +57,7 @@ K_ModuleItem_Typedef  reset =
 
 #define ID_BUTTON_UI_RESET		  	(GUI_ID_USER + 0x02)
 #define ID_BUTTON_DSP_RESET		  	(GUI_ID_USER + 0x03)
+#define ID_BUTTON_EEP_RESET		  	(GUI_ID_USER + 0x04)
 
 static const GUI_WIDGET_CREATE_INFO _aDialog[] = 
 {
@@ -70,6 +71,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialog[] =
 	//
 	{ BUTTON_CreateIndirect, 	"Restart UI",	 		ID_BUTTON_UI_RESET,		40, 	40, 	120, 	45, 	0, 		0x0, 	0 },
 	{ BUTTON_CreateIndirect, 	"Restart DSP",	 		ID_BUTTON_DSP_RESET,	40, 	120, 	120, 	45, 	0, 		0x0, 	0 },
+	{ BUTTON_CreateIndirect, 	"Reset Eeprom",	 		ID_BUTTON_EEP_RESET,	40, 	200, 	120, 	45, 	0, 		0x0, 	0 },
 };
 
 // API Driver messaging
@@ -125,6 +127,21 @@ static void _cbControl(WM_MESSAGE * pMsg, int Id, int NCode)
 					api_reset.usMessageID 	= API_RESTART;
 					api_reset.ucPayload		= 0;									// payload count
 					osMessagePut(hApiMessage, (ulong)&api_reset, osWaitForever);
+					break;
+				}
+			}
+			break;
+		}
+
+		// -------------------------------------------------------------
+		// Button - reset eeprom to default
+		case ID_BUTTON_EEP_RESET:
+		{
+			switch(NCode)
+			{
+				case WM_NOTIFICATION_RELEASED:
+				{
+					transceiver_init_eep_defaults();
 					break;
 				}
 			}
