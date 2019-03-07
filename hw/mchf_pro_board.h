@@ -215,7 +215,7 @@
 #define CONTEXT_ROTARY
 #define CONTEXT_SD
 #define CONTEXT_DRIVER_DSP
-//#define CONTEXT_NET
+//--#define CONTEXT_NET
 //
 // -----------------------------------------------------------------------------
 //

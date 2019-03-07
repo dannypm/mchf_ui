@@ -494,7 +494,17 @@ void HAL_LTDC_LineEvenCallback(LTDC_HandleTypeDef *hltdc)
     }
   }
   
+  // ------------------------------------------------------------------------------------------------------
+  // ToDo: Check if relevant on H7 at all!
+  //
+  // https://community.st.com/s/question/0D50X00009XkfAPSAZ/spi-overrun?t=1551962415721
+  //
   HAL_LTDC_ProgramLineEvent(hltdc, 0);
+  //
+  // Enable the Line interrupt
+  //--__HAL_LTDC_ENABLE_IT(hltdc, LTDC_IT_LI);
+  //
+  // ------------------------------------------------------------------------------------------------------
 }
 
 /*******************************************************************************
